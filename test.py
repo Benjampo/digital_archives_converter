@@ -19,7 +19,14 @@ def delete_empty_folders(path):
             except Exception as e:
                 print(f"Error deleting empty folder {dir_path}: {str(e)}")
 
-def convert_folder(source_folder, destination_folder):
+def convert_folder(source_folder, destination_folder=None):
+    # Use the source folder if destination folder is not provided
+    if destination_folder is None:
+        destination_folder = source_folder
+        add_master_prefix = True
+    else:
+        add_master_prefix = False
+
     # Use the existing destination folder if it exists, otherwise clone the source folder
     if os.path.exists(destination_folder):
         print(f"Using existing destination folder: {destination_folder}")
@@ -40,6 +47,8 @@ def convert_folder(source_folder, destination_folder):
             for img_file in image_files:
                 input_path = os.path.join(root, img_file)
                 output_path = os.path.splitext(input_path)[0] + '.tiff'
+                if add_master_prefix:
+                    output_path = os.path.join(root, 'Master_' + os.path.basename(output_path))
                 try:
                     with Image.open(input_path) as img:
                         img.save(output_path, 'TIFF')
@@ -190,4 +199,4 @@ def convert_folder(source_folder, destination_folder):
     logging.info(f"Conversion complete. Output folder: {destination_folder}")
 
 # Example usage
-convert_folder('/Users/civiliste/Desktop/CUNEO_archives_numerisees', '/Users/civiliste/Desktop/Master_test')
+convert_folder('/Users/benjaminporchet/Desktop/example_folder')
