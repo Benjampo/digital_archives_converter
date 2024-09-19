@@ -32,7 +32,7 @@ def start_conversion():
     hide_inputs()
     
     try:
-        convert_folder(source_folder, destination_folder)
+        convert_folder(source_folder, destination_folder, progress_bar)
         messagebox.showinfo("Success", "Conversion completed successfully.")
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {str(e)}")

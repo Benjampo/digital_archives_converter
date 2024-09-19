@@ -2,9 +2,15 @@ import os
 import subprocess
 import logging
 
-def convert_to_mkv(video_ts_path, output_path):
+def convert_to_mkv(video_ts_path, output_path, progress_bar=None):
     import os
     vob_files = sorted([f for f in os.listdir(video_ts_path) if f.endswith('.VOB')])
+    
+    # Example of updating the progress bar within this function
+    if progress_bar:
+        progress_bar['value'] += 1
+        progress_bar.update_idletasks()
+    
     if vob_files:
         mkv_files = []
         for vob_file in vob_files:
