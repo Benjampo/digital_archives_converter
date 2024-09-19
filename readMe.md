@@ -39,12 +39,12 @@ This tool converts various media files (images, audio, video) to archival format
 
 1. Create a virtual environment:
    ```
-   python -m venv env
+   python -m venv venv
    ```
 
 2. Activate the virtual environment:
    ```
-   source env/bin/activate
+   source venv/bin/activate
    ```
 
 3. Install the required packages:
@@ -72,18 +72,10 @@ This tool converts various media files (images, audio, video) to archival format
 
 2. Run the script:
    ```
-   python test.py
+   python convert.py
    ```
 
-   Or use the provided shell script:
-   ```
-   ./run_script.sh
-   ```
 
 3. The script will process the files in the specified source folder and output the converted files to the destination folder.
 
 4. Progress will be displayed in the console, along with logging information.
-
-## Configuration
-
-You can modify the source and destination folders in the `test.py` file:
