@@ -37,30 +37,38 @@ This tool converts various media files (images, audio, video) to archival format
 
 ## Setup
 
-1. Clone this repository:
-   ```
-   git clone <repository-url>
-   cd <repository-directory>
-   ```
-
-2. Create a virtual environment:
+1. Create a virtual environment:
    ```
    python -m venv env
    ```
 
-3. Activate the virtual environment:
+2. Activate the virtual environment:
    ```
    source env/bin/activate
    ```
 
-4. Install the required packages:
+3. Install the required packages:
    ```
    pip install -r requirements.txt
    ```
 
 ## Usage
 
-1. Ensure your virtual environment is activated.
+1. Ensure your virtual environment is activated. If you haven't created one yet, follow these steps:
+
+- Create a virtual environment:
+     ```
+     python -m venv env
+     ```
+   - Activate the virtual environment:
+     - On macOS and Linux:
+       ```
+       source env/bin/activate
+       ```
+     - On Windows:
+       ```
+       .\env\Scripts\activate
+       ```
 
 2. Run the script:
    ```
