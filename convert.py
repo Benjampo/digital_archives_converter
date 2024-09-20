@@ -10,6 +10,7 @@ from helpers.converters.videos import convert_videos
 from helpers.converters.text import convert_text
 from helpers.converters.mkv import convert_to_mkv
 from helpers.delete_empty_folders import delete_empty_folders
+from helpers.to_snake_case import to_snake_case
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -28,6 +29,13 @@ def convert_folder(source_folder, destination_folder=None):
         print(f"Cloning source folder to: {destination_folder}")
         shutil.copytree(source_folder, destination_folder)
         print(f"Cloned source folder to: {destination_folder}")
+
+    for root, dirs, files in os.walk(destination_folder):
+        logging.info(f"Renaming files to camel case in {root}")
+        for file in files:
+            logging.info(f"Renaming {file} to {to_snake_case(file)}")
+            new_name = to_snake_case(file)
+            os.rename(os.path.join(root, file), os.path.join(root, new_name))
 
     # Walk through the cloned folder
     for root, dirs, files in os.walk(destination_folder):
