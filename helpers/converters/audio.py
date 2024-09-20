@@ -2,7 +2,8 @@ import os
 import subprocess
 import logging
 
-def convert_to_audio(audio_files):
+def convert_audio(files, root):
+    audio_files = [f for f in files if f.lower().endswith(('.mp3', '.aac', '.m4a', '.flac', '.ogg', '.m4p', '.aif', '.aiff'))]
     for audio_file in audio_files:
         input_path = os.path.join(root, audio_file)
         output_path = os.path.splitext(input_path)[0] + '.wav'
@@ -19,5 +20,3 @@ def convert_to_audio(audio_files):
             os.remove(input_path)  # Remove the original audio file
         except subprocess.CalledProcessError as e:
             print(f"Error converting {audio_file} to WAV: {e.stderr}")
-    progress_bar['value'] += 1
-    root.update()

@@ -2,7 +2,7 @@ import os
 import subprocess
 import logging
 
-def convert_to_videos(source_folder, destination_folder):
+def convert_videos(files, root):
     video_files = [f for f in files if f.lower().endswith(('.mp4', '.avi', '.mov', '.wmv', '.flv'))]
     for video_file in video_files:
         input_path = os.path.join(root, video_file)
@@ -22,5 +22,3 @@ def convert_to_videos(source_folder, destination_folder):
             os.remove(input_path)  # Remove the original video file
         except subprocess.CalledProcessError as e:
             print(f"Error converting {video_file} to FFV1: {e.stderr}")
-        progress_bar['value'] += 1
-        root.update()

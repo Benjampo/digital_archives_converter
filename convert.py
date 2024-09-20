@@ -1,11 +1,13 @@
 import os
 import subprocess
 import shutil
+from PIL import Image
 import logging
 
-from helpers.converters.images import convert_to_images
-from helpers.converters.audio import convert_to_audio
-from helpers.converters.videos import convert_to_videos
+from helpers.converters.images import convert_images
+from helpers.converters.audio import convert_audio
+from helpers.converters.videos import convert_videos
+from helpers.converters.text import convert_text
 from helpers.converters.mkv import convert_to_mkv
 from helpers.delete_empty_folders import delete_empty_folders
 
@@ -14,18 +16,35 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 
 
-def convert_folder(source_folder, destination_folder, progress_bar):
-    # Example of updating the progress bar
-    total_files = len(os.listdir(source_folder))
-    progress_bar['maximum'] = total_files
+def convert_folder(source_folder, destination_folder=None):
+    # If no destination folder is provided, create one with "Master_" prefixed
+    if destination_folder is None:
+        destination_folder = os.path.join(os.path.dirname(source_folder), f"Master_{os.path.basename(source_folder)}")
     
-    for i, file in enumerate(os.listdir(source_folder)):
-        # Perform conversion (example function call)
-        convert_to_mkv(os.path.join(source_folder, file), destination_folder)
-        
-        # Update progress bar
-        progress_bar['value'] = i + 1
-        progress_bar.update_idletasks()
+    # Use the existing destination folder if it exists, otherwise clone the source folder
+    if os.path.exists(destination_folder):
+        print(f"Using existing destination folder: {destination_folder}")
+    else:
+        print(f"Cloning source folder to: {destination_folder}")
+        shutil.copytree(source_folder, destination_folder)
+        print(f"Cloned source folder to: {destination_folder}")
+
+    # Walk through the cloned folder
+    for root, dirs, files in os.walk(destination_folder):
+        # Handle image files
+        convert_images(files, root)
+            
+        # Handle audio files
+        convert_audio(files, root)
+            
+        # Handle classic video files
+        convert_videos(files, root)
+
+        # Handle text files
+        convert_text(files, root)
+
+        if 'VIDEO_TS' in dirs:
+            convert_to_mkv(files, root)
 
     # After all conversions, delete empty folders
     logging.info("Deleting empty folders...")
@@ -33,12 +52,5 @@ def convert_folder(source_folder, destination_folder, progress_bar):
 
     logging.info(f"Conversion complete. Output folder: {destination_folder}")
 
-    # Show the input fields and buttons again
-    show_inputs()
-
-
-
-
-
-
-
+# Example usage
+convert_folder('/Users/benjaminporchet/Desktop/example_folder')

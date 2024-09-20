@@ -2,15 +2,9 @@ import os
 import subprocess
 import logging
 
-def convert_to_mkv(video_ts_path, output_path, progress_bar=None):
-    import os
+def convert_to_mkv(files, root):
+    video_ts_path = os.path.join(root, 'VIDEO_TS')
     vob_files = sorted([f for f in os.listdir(video_ts_path) if f.endswith('.VOB')])
-    
-    # Example of updating the progress bar within this function
-    if progress_bar:
-        progress_bar['value'] += 1
-        progress_bar.update_idletasks()
-    
     if vob_files:
         mkv_files = []
         for vob_file in vob_files:
@@ -34,12 +28,11 @@ def convert_to_mkv(video_ts_path, output_path, progress_bar=None):
             try:
                 subprocess.run(ffmpeg_command, check=True, stderr=subprocess.PIPE, universal_newlines=True)
                 logging.info(f"Converted {vob_file} to {os.path.basename(output_file)}")
+           
                 mkv_files.append(output_file)
             except subprocess.CalledProcessError as e:
                 print(f"Warning: FFmpeg encountered an error processing {vob_file}: {e.stderr}")
                 print("Attempting to continue processing...")
-            progress_bar['value'] += 1
-            root.update()
         
         # Delete MKV files shorter than 5 seconds
         for mkv_file in mkv_files[:]:
