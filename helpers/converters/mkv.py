@@ -27,7 +27,6 @@ def convert_to_mkv(files, root):
             
             try:
                 subprocess.run(ffmpeg_command, check=True, stderr=subprocess.PIPE, universal_newlines=True)
-                logging.info(f"Converted {vob_file} to {os.path.basename(output_file)}")
            
                 mkv_files.append(output_file)
             except subprocess.CalledProcessError as e:
@@ -65,7 +64,6 @@ def convert_to_mkv(files, root):
             
             try:
                 subprocess.run(merge_command, check=True, stderr=subprocess.PIPE, universal_newlines=True)
-                logging.info(f"Merged MKV files into {os.path.basename(merged_output)}")
                 
                 # Delete individual MKV files and concat list
                 for mkv_file in mkv_files:
@@ -75,7 +73,6 @@ def convert_to_mkv(files, root):
                 # Delete VIDEO_TS folder after successful merge
                 try:
                     shutil.rmtree(video_ts_path)
-                    logging.info(f"Deleted VIDEO_TS folder: {video_ts_path}")
                 except PermissionError:
                     logging.warning(f"Unable to delete {video_ts_path} due to permission error. Skipping.")
                 except Exception as e:
@@ -93,3 +90,4 @@ def convert_to_mkv(files, root):
                 logging.warning(f"Unable to delete {video_ts_path} due to permission error. Skipping.")
             except Exception as e:
                 logging.error(f"Error deleting {video_ts_path}: {str(e)}")
+                    

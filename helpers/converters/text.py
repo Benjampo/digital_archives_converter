@@ -5,8 +5,8 @@ import logging
 
 def convert_text(files, root):
     text_files = [f for f in files if f.lower().endswith(('.txt', '.doc', '.docx', '.rtf', '.odt'))]
-
     for text_file in text_files:
+
         input_path = os.path.join(root, text_file)
         output_path = os.path.splitext(input_path)[0] + '.pdf'
         try:
@@ -19,7 +19,6 @@ def convert_text(files, root):
                 input_path
             ]
             result = subprocess.run(unoconv_command, check=True, capture_output=True, text=True)
-            logging.info(f"Converted {text_file} to PDF/A-2b")
             os.remove(input_path)  # Remove the original text file
         except subprocess.CalledProcessError as e:
             logging.error(f"Error converting {text_file} to PDF/A-2b: {e.stderr}")

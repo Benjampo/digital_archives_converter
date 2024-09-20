@@ -32,12 +32,13 @@ def convert_folder(source_folder, destination_folder=None):
 
     for root, dirs, files in os.walk(destination_folder):
         for file in files:
-            logging.info(f"Renaming {file} to {to_snake_case(file)}")
             new_name = to_snake_case(file)
             os.rename(os.path.join(root, file), os.path.join(root, new_name))
+        
 
     # Walk through the cloned folder
     for root, dirs, files in os.walk(destination_folder):
+       
         # Handle image files
         convert_images(files, root)
             
@@ -54,10 +55,8 @@ def convert_folder(source_folder, destination_folder=None):
             convert_to_mkv(files, root)
 
     # After all conversions, delete empty folders
-    logging.info("Deleting empty folders...")
     delete_empty_folders(destination_folder)
 
-    logging.info(f"Conversion complete. Output folder: {destination_folder}")
 
 # Example usage
 convert_folder('/Users/benjaminporchet/Desktop/example_folder')

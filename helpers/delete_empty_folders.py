@@ -8,6 +8,6 @@ def delete_empty_folders(path):
             try:
                 if not os.listdir(dir_path):
                     os.rmdir(dir_path)
-                    print(f"Deleted empty folder: {dir_path}")
+                    print(f"Deleted empty folder")
             except Exception as e:
                 print(f"Error deleting empty folder {dir_path}: {str(e)}")
