@@ -4,4 +4,4 @@ python-docx
 reportlab
 unoconv
 setuptools
-
+tqdm

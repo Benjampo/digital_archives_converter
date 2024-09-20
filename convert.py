@@ -3,6 +3,7 @@ import subprocess
 import shutil
 from PIL import Image
 import logging
+from tqdm import tqdm
 
 from helpers.converters.images import convert_images
 from helpers.converters.audio import convert_audio
@@ -24,39 +25,37 @@ def convert_folder(source_folder, destination_folder=None):
     
     # Use the existing destination folder if it exists, otherwise clone the source folder
     if os.path.exists(destination_folder):
-        print(f"Using existing destination folder: {destination_folder}")
+        tqdm.write(f"Using existing destination folder: {destination_folder}")
     else:
-        print(f"Cloning source folder...")
+        tqdm.write(f"Cloning source folder...")
         shutil.copytree(source_folder, destination_folder)
-        print(f"Cloned source folder")
+        tqdm.write(f"Cloned source folder")
 
-    for root, dirs, files in os.walk(destination_folder):
-        for file in files:
-            new_name = to_snake_case(file)
-            os.rename(os.path.join(root, file), os.path.join(root, new_name))
-        
+    # Get total number of files
+    total_files = sum([len(files) for _, _, files in os.walk(destination_folder)])
 
-    # Walk through the cloned folder
-    for root, dirs, files in os.walk(destination_folder):
-       
-        # Handle image files
-        convert_images(files, root)
-            
-        # Handle audio files
-        convert_audio(files, root)
-            
-        # Handle classic video files
-        convert_videos(files, root)
+    with tqdm(total=total_files, desc="Converting files", unit="file") as pbar:
+        for root, dirs, files in os.walk(destination_folder):
+            for file in files:
+                # Rename file to snake_case
+                new_name = to_snake_case(file)
+                os.rename(os.path.join(root, file), os.path.join(root, new_name))
+                
+                # Perform conversions
+                convert_images([new_name], root)
+                convert_audio([new_name], root)
+                convert_videos([new_name], root)
+                convert_text([new_name], root)
 
-        # Handle text files
-        convert_text(files, root)
+                if 'VIDEO_TS' in dirs:
+                    convert_to_mkv([new_name], root)
 
-        if 'VIDEO_TS' in dirs:
-            convert_to_mkv(files, root)
+                # Update progress bar
+                pbar.update(1)
 
-    # After all conversions, delete empty folders
+    tqdm.write("Deleting empty folders...")
     delete_empty_folders(destination_folder)
-
+    tqdm.write("Conversion complete!")
 
 # Example usage
 convert_folder('/Users/benjaminporchet/Desktop/example_folder')
