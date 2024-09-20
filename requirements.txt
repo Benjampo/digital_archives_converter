@@ -1,4 +1,7 @@
 Pillow
 tqdm
-docx2pdf
-pymupdf
+python-docx
+reportlab
+unoconv
+setuptools
+

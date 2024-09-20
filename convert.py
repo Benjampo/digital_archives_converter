@@ -26,12 +26,11 @@ def convert_folder(source_folder, destination_folder=None):
     if os.path.exists(destination_folder):
         print(f"Using existing destination folder: {destination_folder}")
     else:
-        print(f"Cloning source folder to: {destination_folder}")
+        print(f"Cloning source folder...")
         shutil.copytree(source_folder, destination_folder)
-        print(f"Cloned source folder to: {destination_folder}")
+        print(f"Cloned source folder")
 
     for root, dirs, files in os.walk(destination_folder):
-        logging.info(f"Renaming files to camel case in {root}")
         for file in files:
             logging.info(f"Renaming {file} to {to_snake_case(file)}")
             new_name = to_snake_case(file)

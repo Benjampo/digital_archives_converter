@@ -34,6 +34,10 @@ This tool converts various media files (images, audio, video) to archival format
    ```
    brew install ffmpeg
    ```
+4. Install libreoffice:
+   ```
+   brew install libreoffice
+   ```
 
 ## Setup
 
@@ -51,24 +55,6 @@ This tool converts various media files (images, audio, video) to archival format
    ```
    pip install -r requirements.txt
    ```
-
-## Usage
-
-1. Ensure your virtual environment is activated. If you haven't created one yet, follow these steps:
-
-- Create a virtual environment:
-     ```
-     python -m venv env
-     ```
-   - Activate the virtual environment:
-     - On macOS and Linux:
-       ```
-       source env/bin/activate
-       ```
-     - On Windows:
-       ```
-       .\env\Scripts\activate
-       ```
 
 2. Run the script:
    ```
