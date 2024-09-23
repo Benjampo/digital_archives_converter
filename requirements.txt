@@ -5,3 +5,5 @@ reportlab
 unoconv
 setuptools
 tqdm
+rich
+
