@@ -35,7 +35,7 @@ def copy_folder_with_progress(source, destination):
     total_items = total_files + total_folders
 
     with Progress(
-        SpinnerColumn(),
+        SpinnerColumn(spinner_name='clock'),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
@@ -75,7 +75,7 @@ def convert_folder(source_folder, destination_folder=None):
 
     # Walk through the cloned folder and rename files with progress bar
     with Progress(
-        SpinnerColumn(),
+        SpinnerColumn(spinner_name='clock'),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
@@ -95,31 +95,48 @@ def convert_folder(source_folder, destination_folder=None):
         # Ensure the progress bar completes
         progress.update(rename_task, completed=total_files)
 
-    # Walk through the cloned folder
-    for root, dirs, files in os.walk(destination_folder):
-        for file in files:
-            if file == '.DS_Store':  # Skip .DS_Store files
-                continue
+    # Walk through the cloned folder and convert files with progress bar
+    with Progress(
+        SpinnerColumn(spinner_name='clock'),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        TextColumn("[progress.files] {task.completed}/{task.total} :file_folder:"),
+        TextColumn("[progress.current_file] {task.fields[current_file]}")
+    ) as progress:
+        total_files, _ = count_files_and_folders(destination_folder)
+        convert_task = progress.add_task("[bold blue]Converting files...[/bold blue]", total=total_files, current_file="")
 
-            # Handle image files
-            convert_images([file], root)
-            
-            # Handle audio files
-            convert_audio([file], root)
-            
-            # Handle classic video files
-            convert_videos([file], root)
-            
-            # Handle text files
-            convert_text([file], root)
-            
-            if 'VIDEO_TS' in dirs:
-                convert_to_mkv([file], root)
+        for root, dirs, files in os.walk(destination_folder):
+            for file in files:
+                if file == '.DS_Store':  # Skip .DS_Store files
+                    continue
+
+                # Update the current file in the progress bar
+                progress.update(convert_task, advance=1, current_file=file)
+
+                # Handle image files
+                convert_images([file], root)
+                
+                # Handle audio files
+                convert_audio([file], root)
+                
+                # Handle classic video files
+                convert_videos([file], root)
+                
+                # Handle text files
+                convert_text([file], root)
+                
+                if 'VIDEO_TS' in dirs:
+                    convert_to_mkv([file], root)
+
+        # Ensure the progress bar completes
+        progress.update(convert_task, completed=total_files)
 
     # After all conversions, delete empty folders
-    delete_task = progress.add_task("[bold red]Deleting empty folders...[/bold red]", total=total_folders)
+    delete_task = progress.add_task("[bold red]Deleting empty folders...[/bold red]", total=total_files)
     delete_empty_folders(destination_folder)
-    progress.update(delete_task, completed=total_folders)
+    progress.update(delete_task, completed=total_files)
     console.print("[bold cyan]Conversion completed![/bold cyan] :sparkles:")
 
 # Example usage
