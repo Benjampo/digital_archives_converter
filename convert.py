@@ -140,4 +140,4 @@ def convert_folder(source_folder, destination_folder=None):
     console.print("[bold cyan]Conversion completed![/bold cyan] :sparkles:")
 
 # Example usage
-convert_folder('/Users/benjaminporchet/Desktop/example_folder')
+convert_folder('/Users/civiliste/Desktop/sample')
