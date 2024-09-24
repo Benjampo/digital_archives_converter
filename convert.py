@@ -31,36 +31,24 @@ def convert_folder(source_folder, destination_folder=None):
     # Use the existing destination folder if it exists, otherwise clone the source folder
     if os.path.exists(destination_folder):
         print(f"[bold green]Using existing destination folder:[/bold green] [italic]{destination_folder}[/italic]")
-        
-        # Check for missing files and folders
-        missing_items = False
-        for root, dirs, files in os.walk(source_folder):
-            relative_path = os.path.relpath(root, source_folder)
-            dest_root = os.path.join(destination_folder, relative_path)
-            
-            for dir in dirs:
-                if not os.path.exists(os.path.join(dest_root, dir)):
-                    missing_items = True
-                    break
-            
-            for file in files:
-                if not os.path.exists(os.path.join(dest_root, file)):
-                    missing_items = True
-                    break
-            
-            if missing_items:
-                break
-        
-        if missing_items:
-            print(f"[bold yellow]Resuming copying missing items...[/bold yellow]")
-            copy_folder_with_progress(source_folder, destination_folder)
-            print(f"[bold green]Completed copying missing items[/bold green]")
-        else:
-            print(f"[bold green]All files and folders are present in the destination folder[/bold green]")
     else:
         print(f"[bold yellow]Cloning source folder...[/bold yellow]")
         copy_folder_with_progress(source_folder, destination_folder)
         print(f"[bold green]Cloned source folder[/bold green]")
+
+    # Check for duplicate filenames (without extensions) and rename if necessary
+    for root, dirs, files in os.walk(destination_folder):
+        name_count = {}
+        for file in files:
+            if file == '.DS_Store':  # Skip .DS_Store files
+                continue
+            name, ext = os.path.splitext(file)
+            if name in name_count:
+                name_count[name] += 1
+                new_name = f"{name}_{name_count[name]}{ext}"
+                os.rename(os.path.join(root, file), os.path.join(root, new_name))
+            else:
+                name_count[name] = 0
 
     # Walk through the cloned folder and rename files with progress bar
     with Progress(
@@ -101,23 +89,20 @@ def convert_folder(source_folder, destination_folder=None):
                 if file == '.DS_Store':  # Skip .DS_Store files
                     continue
 
-                # Update the current file in the progress bar
                 progress.update(convert_task, advance=1, current_file=file)
 
-                # Handle image files
-                convert_images([file], root)
-                
-                # Handle audio files
-                convert_audio([file], root)
-                
-                # Handle classic video files
-                convert_videos([file], root)
-                
-                # Handle text files
-                convert_text([file], root)
-                
-                if 'VIDEO_TS' in dirs:
-                    convert_to_mkv([file], root)
+                file_path = os.path.join(root, file)
+                if os.path.exists(file_path):
+                    convert_images([file], root)
+                    convert_audio([file], root)
+                    convert_videos([file], root)
+                    convert_text([file], root)
+
+            # Check for VIDEO_TS directory and convert it
+            if 'VIDEO_TS' in dirs:
+                video_ts_path = os.path.join(root, 'VIDEO_TS')
+                convert_to_mkv([video_ts_path], root)
+                progress.update(convert_task, advance=1, current_file='VIDEO_TS')
 
         # Ensure the progress bar completes
         progress.update(convert_task, completed=total_files)

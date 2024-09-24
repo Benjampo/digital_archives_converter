@@ -4,7 +4,7 @@ import logging
 
 
 def convert_text(files, root):
-    text_files = [f for f in files if f.lower().endswith(('.txt', '.doc', '.docx', '.rtf', '.odt'))]
+    text_files = [f for f in files if f.lower().endswith(('.txt', '.doc','.pdf', '.docx', '.rtf', '.odt'))]
     for text_file in text_files:
 
         input_path = os.path.join(root, text_file)

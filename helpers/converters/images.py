@@ -3,7 +3,7 @@ import os
 import logging
 
 def convert_images(files, root):
-    image_files = [f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif', '.bmp'))]
+    image_files = [f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.tif', '.png', '.gif', '.bmp'))]
     for img_file in image_files:
         input_path = os.path.join(root, img_file)
         output_path = os.path.splitext(input_path)[0] + '.tiff'

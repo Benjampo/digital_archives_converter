@@ -4,7 +4,7 @@ import logging
 
 def convert_to_mkv(files, root):
     video_ts_path = os.path.join(root, 'VIDEO_TS')
-    vob_files = sorted([f for f in os.listdir(video_ts_path) if f.endswith('.VOB')])
+    vob_files = sorted([f for f in os.listdir(video_ts_path) if f.lower().endswith('.vob')])
     if vob_files:
         mkv_files = []
         for vob_file in vob_files:
@@ -47,8 +47,8 @@ def convert_to_mkv(files, root):
 
         # Merge remaining MKV files
         if mkv_files:
-            merged_output = os.path.join(root, f"{os.path.basename(root)}.mkv")
-            concat_file = os.path.join(root, 'concat_list.txt')
+            merged_output = os.path.join(transition_path, f"{os.path.basename(root)}.mkv")  # Use transition folder
+            concat_file = os.path.join(transition_path, 'concat_list.txt')  # Use transition folder
             with open(concat_file, 'w') as f:
                 for mkv_file in mkv_files:
                     f.write(f"file '{mkv_file}'\n")
@@ -65,10 +65,17 @@ def convert_to_mkv(files, root):
             try:
                 subprocess.run(merge_command, check=True, stderr=subprocess.PIPE, universal_newlines=True)
                 
+                # Move the merged MKV file to the root folder
+                final_output = os.path.join(root, f"{os.path.basename(root)}.mkv")
+                shutil.move(merged_output, final_output)
+                
                 # Delete individual MKV files and concat list
                 for mkv_file in mkv_files:
                     os.remove(mkv_file)
                 os.remove(concat_file)
+
+                # Delete transition folder after successful merge
+                shutil.rmtree(transition_path)
 
                 # Delete VIDEO_TS folder after successful merge
                 try:
@@ -90,4 +97,3 @@ def convert_to_mkv(files, root):
                 logging.warning(f"Unable to delete {video_ts_path} due to permission error. Skipping.")
             except Exception as e:
                 logging.error(f"Error deleting {video_ts_path}: {str(e)}")
-                    
