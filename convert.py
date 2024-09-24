@@ -16,47 +16,10 @@ from helpers.converters.text import convert_text
 from helpers.converters.mkv import convert_to_mkv
 from helpers.delete_empty_folders import delete_empty_folders
 from helpers.to_snake_case import to_snake_case
-
-# Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+from helpers.folders import count_files_and_folders, copy_folder_with_progress
 
 
 
-def count_files_and_folders(folder):
-    total_files = 0
-    total_folders = 0
-    for _, dirs, files in os.walk(folder):
-        total_files += len(files)
-        total_folders += len(dirs)
-    return total_files, total_folders
-
-def copy_folder_with_progress(source, destination):
-    total_files, total_folders = count_files_and_folders(source)
-    total_items = total_files + total_folders
-
-    with Progress(
-        SpinnerColumn(spinner_name='clock'),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-        TimeRemainingColumn()
-    ) as progress:
-        task = progress.add_task("Copying folder...", total=total_items)
-
-        for root, dirs, files in os.walk(source):
-            # Create directories in the destination folder
-            for dir in dirs:
-                src_dir = os.path.join(root, dir)
-                dst_dir = os.path.join(destination, os.path.relpath(src_dir, source))
-                os.makedirs(dst_dir, exist_ok=True)
-                progress.advance(task)
-
-            # Copy files to the destination folder
-            for file in files:
-                src_file = os.path.join(root, file)
-                dst_file = os.path.join(destination, os.path.relpath(src_file, source))
-                shutil.copy2(src_file, dst_file)
-                progress.advance(task)
 
 def convert_folder(source_folder, destination_folder=None):
     print("[bold cyan]Starting conversion[/bold cyan] :cd:")
@@ -68,6 +31,32 @@ def convert_folder(source_folder, destination_folder=None):
     # Use the existing destination folder if it exists, otherwise clone the source folder
     if os.path.exists(destination_folder):
         print(f"[bold green]Using existing destination folder:[/bold green] [italic]{destination_folder}[/italic]")
+        
+        # Check for missing files and folders
+        missing_items = False
+        for root, dirs, files in os.walk(source_folder):
+            relative_path = os.path.relpath(root, source_folder)
+            dest_root = os.path.join(destination_folder, relative_path)
+            
+            for dir in dirs:
+                if not os.path.exists(os.path.join(dest_root, dir)):
+                    missing_items = True
+                    break
+            
+            for file in files:
+                if not os.path.exists(os.path.join(dest_root, file)):
+                    missing_items = True
+                    break
+            
+            if missing_items:
+                break
+        
+        if missing_items:
+            print(f"[bold yellow]Resuming copying missing items...[/bold yellow]")
+            copy_folder_with_progress(source_folder, destination_folder)
+            print(f"[bold green]Completed copying missing items[/bold green]")
+        else:
+            print(f"[bold green]All files and folders are present in the destination folder[/bold green]")
     else:
         print(f"[bold yellow]Cloning source folder...[/bold yellow]")
         copy_folder_with_progress(source_folder, destination_folder)
