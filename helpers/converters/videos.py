@@ -10,6 +10,11 @@ def convert_videos(files, root):
             print(f"Warning: File not found: {input_path}")
             continue
 
+        # Skip files that are already converted
+        if file.lower().endswith('_ffv1.mkv'):
+            print(f"Skipping already converted file: {file}")
+            continue
+
         for video_file in video_files:
             if video_file == file:
                 output_path = os.path.splitext(input_path)[0] + '_ffv1.mkv'
