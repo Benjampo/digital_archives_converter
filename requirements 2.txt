@@ -1,9 +1,0 @@
-Pillow
-tqdm
-python-docx
-reportlab
-unoconv
-setuptools
-tqdm
-rich
-
