@@ -2,7 +2,6 @@ import os
 import subprocess
 import shutil
 import logging
-import sys
 
 def convert_to_mkv(files, root):
     video_ts_path = os.path.join(root, 'VIDEO_TS')
@@ -29,7 +28,7 @@ def convert_to_mkv(files, root):
                 print(f"Error checking duration of {vob_file}: {e}")
                 continue
             
-            # FFmpeg command to convert each VOB file to MKV with progress
+            # FFmpeg command to convert each VOB file to MKV
             ffmpeg_command = [
                 'ffmpeg',
                 '-i', input_file,
@@ -40,27 +39,16 @@ def convert_to_mkv(files, root):
                 '-err_detect', 'ignore_err',
                 '-fflags', '+genpts',
                 '-max_interleave_delta', '0',
-                '-progress', '-',  # Add this line to enable progress output
                 output_file
             ]
             try:
-                process = subprocess.Popen(ffmpeg_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                while True:
-                    output = process.stdout.readline()
-                    if output == '' and process.poll() is not None:
-                        break
-                    if output:
-                        sys.stdout.write(output)
-                        sys.stdout.flush()
-                process.wait()
-                if process.returncode == 0:
-                    mkv_files.append(output_file)
-                else:
-                    raise subprocess.CalledProcessError(process.returncode, ffmpeg_command)
+                subprocess.run(ffmpeg_command, timeout=1200, check=True, stderr=subprocess.PIPE, universal_newlines=True)
+                mkv_files.append(output_file)
+
             except subprocess.CalledProcessError as e:
                 print(f"Warning: FFmpeg encountered an error processing {vob_file}: {e.stderr}")
                 print("Attempting to continue processing...")
-                
+        
         # Merge remaining MKV files
         if mkv_files:
             merged_output = os.path.join(subfolder, f"{os.path.basename(root)}.mkv")
