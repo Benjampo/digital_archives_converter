@@ -26,7 +26,7 @@ def convert_to_mkv(files, root):
             ]
             
             try:
-                subprocess.run(ffmpeg_command, check=True, stderr=subprocess.PIPE, universal_newlines=True)
+                subprocess.run(ffmpeg_command, timeout=1200, check=True, stderr=subprocess.PIPE, universal_newlines=True)
            
                 mkv_files.append(output_file)
             except subprocess.CalledProcessError as e:

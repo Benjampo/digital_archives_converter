@@ -18,7 +18,7 @@ def convert_text(files, root):
                 '-o', output_path,
                 input_path
             ]
-            result = subprocess.run(unoconv_command, check=True, capture_output=True, text=True)
+            result = subprocess.run(unoconv_command, timeout=600, check=True, capture_output=True, text=True)
             os.remove(input_path)  # Remove the original text file
         except subprocess.CalledProcessError as e:
             logging.error(f"Error converting {text_file} to PDF/A-2b: {e.stderr}")
