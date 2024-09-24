@@ -2,8 +2,9 @@ import os
 import subprocess
 import shutil
 import logging
+import sys
 
-def convert_to_mkv(files, root, progress=None, task=None):
+def convert_to_mkv(files, root):
     video_ts_path = os.path.join(root, 'VIDEO_TS')
     vob_files = sorted([f for f in os.listdir(video_ts_path) if f.lower().endswith('.vob')])
     
@@ -28,7 +29,7 @@ def convert_to_mkv(files, root, progress=None, task=None):
                 print(f"Error checking duration of {vob_file}: {e}")
                 continue
             
-            # FFmpeg command to convert each VOB file to MKV
+            # FFmpeg command to convert each VOB file to MKV with progress
             ffmpeg_command = [
                 'ffmpeg',
                 '-i', input_file,
@@ -39,30 +40,27 @@ def convert_to_mkv(files, root, progress=None, task=None):
                 '-err_detect', 'ignore_err',
                 '-fflags', '+genpts',
                 '-max_interleave_delta', '0',
+                '-progress', '-',  # Add this line to enable progress output
                 output_file
             ]
-            
             try:
-                subprocess.run(ffmpeg_command, timeout=1200, check=True, stderr=subprocess.PIPE, universal_newlines=True)
-                mkv_files.append(output_file)
-                if progress and task:
-                    progress.advance(task)
+                process = subprocess.Popen(ffmpeg_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+                while True:
+                    output = process.stdout.readline()
+                    if output == '' and process.poll() is not None:
+                        break
+                    if output:
+                        sys.stdout.write(output)
+                        sys.stdout.flush()
+                process.wait()
+                if process.returncode == 0:
+                    mkv_files.append(output_file)
+                else:
+                    raise subprocess.CalledProcessError(process.returncode, ffmpeg_command)
             except subprocess.CalledProcessError as e:
                 print(f"Warning: FFmpeg encountered an error processing {vob_file}: {e.stderr}")
                 print("Attempting to continue processing...")
-        
-        # Delete MKV files shorter than 5 seconds
-        for mkv_file in mkv_files[:]:
-            duration_command = ['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', mkv_file]
-            try:
-                duration = float(subprocess.check_output(duration_command).decode('utf-8').strip())
-                if duration < 5:
-                    os.remove(mkv_file)
-                    mkv_files.remove(mkv_file)
-                    print(f"Deleted {os.path.basename(mkv_file)} (duration: {duration:.2f}s)")
-            except subprocess.CalledProcessError as e:
-                print(f"Error checking duration of {os.path.basename(mkv_file)}: {e}")
-        
+                
         # Merge remaining MKV files
         if mkv_files:
             merged_output = os.path.join(subfolder, f"{os.path.basename(root)}.mkv")

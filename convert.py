@@ -101,10 +101,8 @@ def convert_folder(source_folder, destination_folder=None):
             # Check for VIDEO_TS directory and convert it
             if 'VIDEO_TS' in dirs:
                 video_ts_path = os.path.join(root, 'VIDEO_TS')
-                video_ts_files = [os.path.join(video_ts_path, f) for f in os.listdir(video_ts_path) if os.path.isfile(os.path.join(video_ts_path, f))]
-                total_files += len(video_ts_files)  # Add VIDEO_TS files to the total count
-                convert_to_mkv([video_ts_path], root
-                progress.update(convert_task, advance=len(video_ts_files), current_file='VIDEO_TS')
+                progress.update(convert_task, advance=1, current_file='VIDEO_TS')
+                convert_to_mkv([video_ts_path], root)
 
         # Ensure the progress bar completes
         progress.update(convert_task, completed=total_files)
