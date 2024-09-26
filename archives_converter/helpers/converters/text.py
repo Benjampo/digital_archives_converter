@@ -6,7 +6,7 @@ import logging
 def convert_text(files, root):
     for file in files:
         if file.lower() == 'concat_list.txt':
-            logging.info(f"Skipping concat_list.txt: {file}")
+            print(f"Skipping concat_list.txt: {file}")
             continue
         
         input_path = os.path.join(root, file)
@@ -17,7 +17,7 @@ def convert_text(files, root):
         elif file.lower().endswith(('.txt', '.doc', '.docx', '.rtf', '.odt')):
             convert_to_pdf(input_path, output_path)
         else:
-            logging.info(f"Skipping unsupported file: {file}")
+            print(f"Skipping unsupported file: {file}")
 
 
 def convert_to_pdf(input_path, output_path):

@@ -16,7 +16,7 @@ def convert_images(files, root):
         if img_file.lower().endswith(('.tif')):
             try:
                 os.rename(input_path, output_path)
-                logging.info(f"Renamed {img_file} to {os.path.basename(output_path)}")
+                print(f"Renamed {img_file} to {os.path.basename(output_path)}")
             except OSError as e:
                 logging.error(f"Error renaming {img_file}: {str(e)}")
             continue
