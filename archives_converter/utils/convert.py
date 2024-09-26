@@ -13,7 +13,7 @@ from helpers.converters.text import convert_text
 from helpers.delete_empty_folders import delete_empty_folders
 from helpers.folders import count_files_and_folders
 from utils.clone import clone_folder
-from utils.rename import rename_files
+from utils.rename import rename_files_and_folders
 
 console = Console()
 
@@ -26,14 +26,15 @@ def process_file(file, root, progress, task):
         progress.update(task, advance=1, current_file=file)
         return
 
+    progress.update(task, current_file=f"Converting {file}")
+
     convert_images([file], root)
     convert_audio([file], root)
     convert_videos([file], root)
     convert_text([file], root)
     print(f"[bold green]Converted file:[/bold green] {file_path}")
 
-
-    progress.update(task, advance=1, current_file=file)
+    progress.update(task, advance=1, current_file=f"Completed {file}")
 
 def convert_files(folder):
     print("[bold cyan]Starting conversion[/bold cyan] :gear:")
@@ -44,7 +45,7 @@ def convert_files(folder):
         BarColumn(),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
         TextColumn("[progress.files] {task.completed}/{task.total} :file_folder:"),
-        TextColumn("[progress.current_file] {task.fields[current_file]}")
+        TextColumn("{task.fields[current_file]}")
     ) as progress:
         total_files, _ = count_files_and_folders(folder)
         convert_task = progress.add_task("[bold blue]Converting files...[/bold blue]", total=total_files, current_file="")
@@ -62,10 +63,12 @@ def convert_files(folder):
                 ]
 
                 if 'VIDEO_TS' in dirs:
-                    video_ts_path = os.path.join(root, 'VIDEO_TS')
-                    thread_safe_update(convert_task, advance=1, current_file='VIDEO_TS')
-                    convert_to_mkv([video_ts_path], root)
-                    print(f"[bold green]Converted VIDEO_TS:[/bold green] {video_ts_path}")
+                    video_ts_parent = os.path.dirname(root)
+                    thread_safe_update(convert_task, current_file=f"Converting VIDEO_TS: {video_ts_parent}")
+                    convert_to_mkv([video_ts_parent], video_ts_parent)
+                    print(f"[bold green]Converted VIDEO_TS:[/bold green] {video_ts_parent}")
+                    thread_safe_update(convert_task, advance=1, current_file=f"Completed VIDEO_TS: {video_ts_parent}")
+
                 concurrent.futures.wait(file_tasks)
 
         progress.update(convert_task, completed=total_files)
@@ -77,6 +80,6 @@ def convert_files(folder):
 
 def convert_folder(source_folder, destination_folder=None):
     destination_folder = clone_folder(source_folder, destination_folder)
-    rename_files(destination_folder)
+    rename_files_and_folders(destination_folder)
     convert_files(destination_folder)
 

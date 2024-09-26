@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import filedialog
 from utils.convert import convert_folder
 from utils.clone import clone_folder
-from utils.rename import rename_files
+from utils.rename import rename_files_and_folders
 
 def select_folder():
     root = tk.Tk()
@@ -64,7 +64,7 @@ def main():
             clone_folder(source_folder)
             break
         elif action == 'Rename directory':
-            rename_files(source_folder)
+            rename_files_and_folders(source_folder)
             break
 
     print("[bold green]Thank you for using Archive Converter![/bold green]")

@@ -4,8 +4,8 @@ from helpers.folders import count_files_and_folders
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, SpinnerColumn
 from rich import print
 
-def rename_files(folder):
-    print("[bold cyan]Starting renaming[/bold cyan] :pencil2:")
+def rename_files_and_folders(folder):
+    print("[bold cyan]Starting renaming files and folders[/bold cyan] :pencil2:")
 
     with Progress(
         SpinnerColumn(spinner_name='clock'),
@@ -14,10 +14,12 @@ def rename_files(folder):
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
         TimeRemainingColumn()
     ) as progress:
-        total_files, _ = count_files_and_folders(folder)
-        rename_task = progress.add_task("[bold blue]Renaming files...[/bold blue]", total=total_files)
+        total_files, total_folders = count_files_and_folders(folder)
+        total_items = total_files + total_folders
+        rename_task = progress.add_task("[bold blue]Renaming items...[/bold blue]", total=total_items)
 
-        for root, dirs, files in os.walk(folder):
+        for root, dirs, files in os.walk(folder, topdown=False):
+            # Rename files
             for file in files:
                 if file == '.DS_Store':  # Skip .DS_Store files
                     continue
@@ -25,4 +27,13 @@ def rename_files(folder):
                 os.rename(os.path.join(root, file), os.path.join(root, new_name))
                 progress.advance(rename_task)
 
-        progress.update(rename_task, completed=total_files)
+            # Rename folders
+            for dir in dirs:
+                if dir == 'VIDEO_TS':  # Skip VIDEO_TS folders
+                    progress.advance(rename_task)
+                    continue
+                new_name = to_snake_case(dir)
+                os.rename(os.path.join(root, dir), os.path.join(root, new_name))
+                progress.advance(rename_task)
+
+        progress.update(rename_task, completed=total_items)
