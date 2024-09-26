@@ -79,8 +79,13 @@ def convert_to_mkv(video_ts_paths, output_folder):
             if mkv_files:
                 merged_output = os.path.join(subfolder, f"{os.path.basename(output_folder)}.mkv")
                 concat_file = os.path.join(subfolder, 'concat_list.txt')
+
+                def safe_sort_key(x):
+                    match = re.search(r'VTS_(\d+)_', x)
+                    return int(match.group(1)) if match else 0
+
                 with open(concat_file, 'w') as f:
-                    for mkv_file in sorted(mkv_files, key=lambda x: int(re.search(r'VTS_(\d+)_', x).group(1))):
+                    for mkv_file in sorted(mkv_files, key=safe_sort_key):
                         f.write(f"file '{mkv_file}'\n")
                 
                 merge_command = [
