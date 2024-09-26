@@ -12,7 +12,15 @@ def convert_images(files, root):
             logging.warning(f"Skipping {img_file}: File not found")
             continue
         
-    
+        # If the file is already a TIFF, just rename it
+        if img_file.lower().endswith(('.tif')):
+            try:
+                os.rename(input_path, output_path)
+                logging.info(f"Renamed {img_file} to {os.path.basename(output_path)}")
+            except OSError as e:
+                logging.error(f"Error renaming {img_file}: {str(e)}")
+            continue
+        
         try:
             with Image.open(input_path) as img:
                 img.save(output_path, 'TIFF')

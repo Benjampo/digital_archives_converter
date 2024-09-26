@@ -1,13 +1,12 @@
 import os
 import subprocess
-import logging
+
 
 def convert_videos(files, root):
     video_files = [f for f in files if f.lower().endswith(('.mp4', '.avi', '.mov', '.flv'))]
     for file in files:
         input_path = os.path.join(root, file)
         if not os.path.exists(input_path):
-            print(f"Warning: File not found: {input_path}")
             continue
 
         # Skip files that are already converted

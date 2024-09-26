@@ -38,7 +38,6 @@ This tool converts various media files (images, audio, video) to archival format
    ```
    brew install libreoffice
    ```
-
 ## Setup
 
 1. Create a virtual environment:

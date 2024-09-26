@@ -6,4 +6,5 @@ unoconv
 setuptools
 tqdm
 rich
+ghostscript
 

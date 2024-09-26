@@ -1,11 +1,9 @@
 import os
-import subprocess
-import shutil
-from PIL import Image
-import logging
 from rich import print
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeRemainingColumn
 from rich.console import Console
+import concurrent.futures
+import threading
 
 console = Console()
 
@@ -17,9 +15,25 @@ from helpers.converters.mkv import convert_to_mkv
 from helpers.delete_empty_folders import delete_empty_folders
 from helpers.to_snake_case import to_snake_case
 from helpers.folders import count_files_and_folders, copy_folder_with_progress
+from functools import partial
 
 
 
+def process_file(file, root, progress, task):
+    if file == '.DS_Store':  # Skip .DS_Store files
+        return
+
+    file_path = os.path.join(root, file)
+    if not os.path.exists(file_path):
+        progress.update(task, advance=1, current_file=file)
+        return
+
+    convert_images([file], root)
+    convert_audio([file], root)
+    convert_videos([file], root)
+    convert_text([file], root)
+
+    progress.update(task, advance=1, current_file=file)
 
 def convert_folder(source_folder, destination_folder=None):
     print("[bold cyan]Starting conversion[/bold cyan] :cd:")
@@ -84,25 +98,29 @@ def convert_folder(source_folder, destination_folder=None):
         total_files, _ = count_files_and_folders(destination_folder)
         convert_task = progress.add_task("[bold blue]Converting files...[/bold blue]", total=total_files, current_file="")
 
-        for root, dirs, files in os.walk(destination_folder):
-            for file in files:
-                if file == '.DS_Store':  # Skip .DS_Store files
-                    continue
+        # Create a thread-safe version of the progress.update method
+        update_lock = threading.Lock()
+        def thread_safe_update(*args, **kwargs):
+            with update_lock:
+                progress.update(*args, **kwargs)
 
-                progress.update(convert_task, advance=1, current_file=file)
+        # Use a ThreadPoolExecutor for parallel processing
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for root, dirs, files in os.walk(destination_folder):
+                # Process regular files
+                file_tasks = [
+                    executor.submit(process_file, file, root, progress, convert_task)
+                    for file in files if file != '.DS_Store'
+                ]
 
-                file_path = os.path.join(root, file)
-                if os.path.exists(file_path):
-                    convert_images([file], root)
-                    convert_audio([file], root)
-                    convert_videos([file], root)
-                    convert_text([file], root)
+                # Check for VIDEO_TS directory and convert it
+                if 'VIDEO_TS' in dirs:
+                    video_ts_path = os.path.join(root, 'VIDEO_TS')
+                    executor.submit(convert_to_mkv, [video_ts_path], root)
+                    thread_safe_update(convert_task, advance=1, current_file='VIDEO_TS')
 
-            # Check for VIDEO_TS directory and convert it
-            if 'VIDEO_TS' in dirs:
-                video_ts_path = os.path.join(root, 'VIDEO_TS')
-                progress.update(convert_task, advance=1, current_file='VIDEO_TS')
-                convert_to_mkv([video_ts_path], root)
+                # Wait for all tasks to complete
+                concurrent.futures.wait(file_tasks)
 
         # Ensure the progress bar completes
         progress.update(convert_task, completed=total_files)
@@ -114,4 +132,4 @@ def convert_folder(source_folder, destination_folder=None):
     console.print("[bold cyan]Conversion completed![/bold cyan] :sparkles:")
 
 # Example usage
-convert_folder('/Users/benjaminporchet/Desktop/sample')
+convert_folder('/Users/civiliste/Desktop/sample')
