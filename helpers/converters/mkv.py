@@ -7,19 +7,18 @@ import re
 
 def convert_to_mkv(video_ts_paths, output_folder):
     for video_ts_path in video_ts_paths:
-        video_ts_path = os.path.join(output_folder, 'VIDEO_TS')
         # Sort VOB files numerically
         vob_files = sorted([f for f in os.listdir(video_ts_path) if f.lower().endswith('.vob')],
-                           key=lambda x: int(re.search(r'VTS_(\d+)_', x).group(1)))
+                           key=lambda x: int(re.search(r'VTS_(\d+)_', x).group(1)) if re.search(r'VTS_(\d+)_', x) else 0)
         
         # Create a subfolder for intermediate and final outputs
         subfolder = os.path.join(output_folder, 'converted_videos')
         os.makedirs(subfolder, exist_ok=True)
-        
+                
         if vob_files:
             mkv_files = []
             
-            def process_vob(vob_file):
+            for vob_file in vob_files:
                 input_file = os.path.join(video_ts_path, vob_file)
                 output_file = os.path.join(subfolder, f"{os.path.splitext(vob_file)[0]}.mkv")
                 
@@ -29,46 +28,43 @@ def convert_to_mkv(video_ts_paths, output_folder):
                 
                 if duration_output == 'N/A':
                     print(f"Warning: Unable to determine duration for {input_file}. Skipping conversion.")
-                    return None
+                    continue
                 
                 try:
                     duration = float(duration_output)
                 except ValueError:
                     print(f"Warning: Invalid duration value '{duration_output}' for {input_file}. Skipping conversion.")
-                    return None
+                    continue
                 
                 if duration < 5:
                     print(f"Skipping {vob_file} (duration: {duration:.2f}s)")
-                    return None
+                    continue
                 
                 # FFmpeg command to convert each VOB file to MKV
                 ffmpeg_command = [
-                    'ffmpeg',
-                    '-i', input_file,
-                    '-c:v', 'ffv1',
-                    '-crf', '23',
-                    '-c:a', 'aac',
-                    '-c:s', 'copy',
-                    '-err_detect', 'ignore_err',
+                                'ffmpeg',
+            '-i', input_file,
+            '-c:v', 'ffv1',
+                    '-level', '3',
+                    '-coder', '1',
+                    '-context', '1',
+                    '-g', '1',
+                    '-slices', '24',
+                    '-slicecrc', '1',
+                    '-threads', '0',
+            '-c:a', 'copy',
+            '-c:s', 'copy',
+            '-err_detect', 'ignore_err',
                     '-fflags', '+genpts',
-                    '-max_interleave_delta', '0',
+                    '-max_interleave_delta', '0',           
                     output_file
                 ]
                 try:
                     subprocess.run(ffmpeg_command, timeout=1200, check=True, stderr=subprocess.PIPE, universal_newlines=True)
-                    return output_file
+                    mkv_files.append(output_file)
                 except subprocess.CalledProcessError as e:
                     print(f"Warning: FFmpeg encountered an error processing {vob_file}: {e.stderr}")
                     print("Attempting to continue processing...")
-                    return None
-
-            # Use ThreadPoolExecutor to process VOB files in parallel
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future_to_vob = {executor.submit(process_vob, vob_file): vob_file for vob_file in vob_files}
-                for future in concurrent.futures.as_completed(future_to_vob):
-                    result = future.result()
-                    if result:
-                        mkv_files.append(result)
 
             # Merge remaining MKV files
             if mkv_files:

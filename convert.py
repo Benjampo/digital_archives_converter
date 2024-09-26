@@ -15,7 +15,6 @@ from helpers.converters.mkv import convert_to_mkv
 from helpers.delete_empty_folders import delete_empty_folders
 from helpers.to_snake_case import to_snake_case
 from helpers.folders import count_files_and_folders, copy_folder_with_progress
-from functools import partial
 
 
 
@@ -32,6 +31,8 @@ def process_file(file, root, progress, task):
     convert_audio([file], root)
     convert_videos([file], root)
     convert_text([file], root)
+    print(f"[bold green]Converted file:[/bold green] {file_path}")
+
 
     progress.update(task, advance=1, current_file=file)
 
@@ -116,10 +117,12 @@ def convert_folder(source_folder, destination_folder=None):
                 # Check for VIDEO_TS directory and convert it
                 if 'VIDEO_TS' in dirs:
                     video_ts_path = os.path.join(root, 'VIDEO_TS')
-                    executor.submit(convert_to_mkv, [video_ts_path], root)
+                    
+                    # Convert VIDEO_TS synchronously
+                    convert_to_mkv([video_ts_path], root)
                     thread_safe_update(convert_task, advance=1, current_file='VIDEO_TS')
 
-                # Wait for all tasks to complete
+                # Wait for all file tasks to complete
                 concurrent.futures.wait(file_tasks)
 
         # Ensure the progress bar completes
