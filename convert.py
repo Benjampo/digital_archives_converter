@@ -134,5 +134,4 @@ def convert_folder(source_folder, destination_folder=None):
     progress.update(delete_task, completed=total_files)
     console.print("[bold cyan]Conversion completed![/bold cyan] :sparkles:")
 
-# Example usage
-convert_folder('/Users/civiliste/Desktop/sample')
+
