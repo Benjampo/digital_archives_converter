@@ -65,7 +65,7 @@ def convert_folder(source_folder, destination_folder=None):
             else:
                 name_count[name] = 0
 
-    # Walk through the cloned folder and rename files with progress bar
+    # Go into the cloned folder and rename files
     with Progress(
         SpinnerColumn(spinner_name='clock'),
         TextColumn("[progress.description]{task.description}"),
@@ -87,7 +87,7 @@ def convert_folder(source_folder, destination_folder=None):
         # Ensure the progress bar completes
         progress.update(rename_task, completed=total_files)
 
-    # Walk through the cloned folder and convert files with progress bar
+    # Go into the cloned folder and convert files 
     with Progress(
         SpinnerColumn(spinner_name='clock'),
         TextColumn("[progress.description]{task.description}"),
