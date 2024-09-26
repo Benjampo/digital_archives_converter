@@ -4,5 +4,6 @@ reportlab
 unoconv
 setuptools
 rich
+inquirer
 ghostscript
 
