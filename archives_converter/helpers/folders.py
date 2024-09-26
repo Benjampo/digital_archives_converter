@@ -2,16 +2,32 @@ import os
 import shutil
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, SpinnerColumn   
 
-def count_files_and_folders(folder):
+def count_files_and_folders(folder, selected_media_types):
     total_files = 0
     total_folders = 0
-    for _, dirs, files in os.walk(folder):
-        total_files += len(files)
+    for root, dirs, files in os.walk(folder):
         total_folders += len(dirs)
+        for file in files:
+            if should_copy_file(file, selected_media_types):
+                total_files += 1
     return total_files, total_folders
 
-def copy_folder_with_progress(source, destination):
-    total_files, total_folders = count_files_and_folders(source)
+def should_copy_file(file, selected_media_types):
+    lower_file = file.lower()
+    if 'dvd' in selected_media_types and lower_file.endswith('.vob'):
+        return True
+    if 'audio' in selected_media_types and lower_file.endswith(('.mp3', '.wav', '.flac', '.aac', '.ogg')):
+        return True
+    if 'video' in selected_media_types and lower_file.endswith(('.mp4', '.avi', '.mov', '.mkv')):
+        return True
+    if 'image' in selected_media_types and lower_file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.tiff')):
+        return True
+    if 'text' in selected_media_types and lower_file.endswith(('.txt', '.pdf', '.doc', '.docx', '.rtf')):
+        return True
+    return False
+
+def copy_folder_with_progress(source, destination, selected_media_types):
+    total_files, total_folders = count_files_and_folders(source, selected_media_types)
     total_items = total_files + total_folders
 
     with Progress(
@@ -33,10 +49,11 @@ def copy_folder_with_progress(source, destination):
 
             # Copy files to the destination folder
             for file in files:
-                src_file = os.path.join(root, file)
-                dst_file = os.path.join(destination, os.path.relpath(src_file, source))
-                try:
-                    shutil.copy2(src_file, dst_file)
-                except PermissionError as e:
-                    print(f"Permission denied: {e.filename}")
-                progress.advance(task)
+                if should_copy_file(file, selected_media_types):
+                    src_file = os.path.join(root, file)
+                    dst_file = os.path.join(destination, os.path.relpath(src_file, source))
+                    try:
+                        shutil.copy2(src_file, dst_file)
+                    except PermissionError as e:
+                        print(f"Permission denied: {e.filename}")
+                    progress.advance(task)

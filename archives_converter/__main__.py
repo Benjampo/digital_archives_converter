@@ -49,18 +49,33 @@ def main():
         if action == 'Exit':
             break
 
-        source_folder = select_folder()
-            
-        if not source_folder:
-            print("[bold red]No folder selected. Please try again.[/bold red]")
-            continue
-       
-        print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
-
         if action == 'Clone and convert directory':
-            convert_folder(source_folder)
+            conversion_options = [
+                inquirer.Checkbox('media_types',
+                                  message="Select media types to convert:",
+                                  choices=[
+                                      ('DVD (VIDEO_TS)', 'dvd'),
+                                      ('Audio files', 'audio'),
+                                      ('Video files', 'video'),
+                                      ('Image files', 'image'),
+                                      ('Text files', 'text')
+                                  ],
+                                  default=['dvd', 'audio', 'video', 'image', 'text'])
+            ]
+            selected_media_types = inquirer.prompt(conversion_options)['media_types']
+            source_folder = select_folder()
+            if not source_folder:
+                print("[bold red]No folder selected. Please try again.[/bold red]")
+                continue
+            print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
+            convert_folder(source_folder, selected_media_types)
             break
         elif action == 'Clone directory':
+            source_folder = select_folder()
+            if not source_folder:
+                print("[bold red]No folder selected. Please try again.[/bold red]")
+                continue
+            print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
             clone_folder(source_folder)
             break
         elif action == 'Rename directory':

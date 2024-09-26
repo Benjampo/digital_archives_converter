@@ -4,7 +4,7 @@ from helpers.folders import count_files_and_folders
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, SpinnerColumn
 from rich import print
 
-def rename_files_and_folders(folder):
+def rename_files_and_folders(folder, selected_media_types):
     print("[bold cyan]Starting renaming files and folders[/bold cyan] :pencil2:")
 
     with Progress(
@@ -14,7 +14,7 @@ def rename_files_and_folders(folder):
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
         TimeRemainingColumn()
     ) as progress:
-        total_files, total_folders = count_files_and_folders(folder)
+        total_files, total_folders = count_files_and_folders(folder, selected_media_types)
         total_items = total_files + total_folders
         rename_task = progress.add_task("[bold blue]Renaming items...[/bold blue]", total=total_items)
 
