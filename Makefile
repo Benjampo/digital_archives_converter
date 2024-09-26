@@ -27,7 +27,7 @@ else
     ifeq ($(shell uname),Darwin)
 		@which python3 > /dev/null || brew install python
 		@which ffmpeg > /dev/null || brew install ffmpeg
-		@which libreoffice > /dev/null || brew install libreoffice
+		@which libreoffice > /dev/null || brew install --cask libreoffice
     else
 		@which python3 > /dev/null || (sudo apt update && sudo apt install -y python3 python3-pip)
 		@which ffmpeg > /dev/null || (sudo apt update && sudo apt install -y ffmpeg)
