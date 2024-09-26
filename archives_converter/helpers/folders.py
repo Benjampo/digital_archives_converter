@@ -14,15 +14,15 @@ def count_files_and_folders(folder, selected_media_types):
 
 def should_copy_file(file, selected_media_types):
     lower_file = file.lower()
-    if 'dvd' in selected_media_types and lower_file.endswith('.vob'):
+    if 'dvd' in selected_media_types and lower_file.endswith(('.vob', '.ifo', '.bup')):
         return True
-    if 'audio' in selected_media_types and lower_file.endswith(('.mp3', '.wav', '.flac', '.aac', '.ogg')):
+    if 'audio' in selected_media_types and lower_file.endswith(('.mp3', '.aac', '.m4a', '.m4p', '.flac', '.ogg', '.aif', '.aiff', '.wav', '.wma', '.alac')):
         return True
-    if 'video' in selected_media_types and lower_file.endswith(('.mp4', '.avi', '.mov', '.mkv')):
+    if 'video' in selected_media_types and lower_file.endswith(('.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv', '.webm', '.mpeg', '.mpg', '.m4v', '.3gp', '.3g2')):
         return True
-    if 'image' in selected_media_types and lower_file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.tiff')):
+    if 'image' in selected_media_types and lower_file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.tiff', '.bmp', '.webp', '.psd', '.svg', '.heic', '.raw', '.cr2', '.nef', '.orf', '.sr2')):
         return True
-    if 'text' in selected_media_types and lower_file.endswith(('.txt', '.pdf', '.doc', '.docx', '.rtf')):
+    if 'text' in selected_media_types and lower_file.endswith(('.txt', '.pdf', '.doc', '.docx', '.rtf', '.odt', '.tex', '.wpd')):
         return True
     return False
 
