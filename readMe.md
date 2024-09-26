@@ -28,11 +28,10 @@ make
 
 ## Usage
 
-1. Run the script:
-   ```
-   make run
-   ```
-   
+```
+make run
+```
+
 ## Manual installation
 
 #### macOS
