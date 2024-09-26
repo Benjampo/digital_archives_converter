@@ -5,6 +5,10 @@ import logging
 
 def convert_text(files, root):
     for file in files:
+        if file.lower() == 'concat_list.txt':
+            logging.info(f"Skipping concat_list.txt: {file}")
+            continue
+        
         input_path = os.path.join(root, file)
         output_path = os.path.splitext(input_path)[0] + '_pdfa.pdf'
         
