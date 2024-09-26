@@ -13,9 +13,9 @@ This tool converts various media files (images, audio, video) to archival format
 
 ## Requirements
 
-- Python 3.6+: The script is written in Python and uses features available in Python 3.6 and later.
-- FFmpeg: Used for audio and video conversion tasks.
-- LibreOffice: Required for document conversion to PDF/A2-b format.
+- [Python 3.6+](https://www.python.org/): The script is written in Python and uses features available in Python 3.6 and later.
+- [FFmpeg](https://www.ffmpeg.org/): Used for audio and video conversion tasks.
+- [LibreOffice](https://www.libreoffice.org/): Required for document conversion to PDF/A2-b format.
 
 ## Installation
 
