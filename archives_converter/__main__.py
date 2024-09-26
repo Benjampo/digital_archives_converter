@@ -71,12 +71,25 @@ def main():
             convert_folder(source_folder, selected_media_types)
             break
         elif action == 'Clone directory':
+            conversion_options = [
+                inquirer.Checkbox('media_types',
+                                  message="Select media types to clone:",
+                                  choices=[
+                                      ('DVD (VIDEO_TS)', 'dvd'),
+                                      ('Audio files', 'audio'),
+                                      ('Video files', 'video'),
+                                      ('Image files', 'image'),
+                                      ('Text files', 'text')
+                                  ],
+                                  default=['dvd', 'audio', 'video', 'image', 'text'])
+            ]
+            selected_media_types = inquirer.prompt(conversion_options)['media_types']
             source_folder = select_folder()
             if not source_folder:
                 print("[bold red]No folder selected. Please try again.[/bold red]")
                 continue
             print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
-            clone_folder(source_folder)
+            clone_folder(source_folder, selected_media_types)
             break
         elif action == 'Rename directory':
             rename_files_and_folders(source_folder)
