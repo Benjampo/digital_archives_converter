@@ -15,7 +15,27 @@ def select_folder():
     return folder
 
 def main():
-    print("[bold green]Welcome to Archive Converter![/bold green]")
+    welcome_message = """
+    [bold cyan]
+     ██████╗██╗     ███████╗██████╗ 
+    ██╔════╝██║     ██╔════╝██╔══██╗
+    ██║     ██║     ███████╗██████╔╝
+    ██║     ██║     ╚════██║██╔══██╗
+    ╚██████╗███████╗███████║██║  ██║
+     ╚═════╝╚══════╝╚══════╝╚═╝  ╚═╝
+    [/bold cyan]
+    [bold green]
+    ╔═══════════════════════════════════╗
+    ║    WELCOME TO ARCHIVE CONVERTER   ║
+    ╚═══════════════════════════════════╝
+    [/bold green]
+    [yellow]
+    This program is designed to convert video files from VOB to MKV format.
+    It utilizes the power of FFmpeg for efficient conversion and offers
+    options to clone, rename, or convert directories.
+    [/yellow]
+    """
+    print(welcome_message)
     
     while True:
         questions = [

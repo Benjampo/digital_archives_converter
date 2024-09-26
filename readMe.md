@@ -17,49 +17,71 @@ This tool converts various media files (images, audio, video) to archival format
 - Pillow
 - tqdm
 - FFmpeg (must be installed separately and available in system PATH)
+- LibreOffice (for document conversion)
 
 ## Installation
+
+### macOS
 
 1. Install Homebrew:
    ```
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
 
-2. Install Python:
+2. Install Python, FFmpeg, and LibreOffice:
    ```
-   brew install python
+   brew install python ffmpeg libreoffice
    ```
 
-3. Install FFmpeg:
+### Linux (Ubuntu/Debian)
+
+1. Update package list and install Python, FFmpeg, and LibreOffice:
    ```
-   brew install ffmpeg
+   sudo apt update
+   sudo apt install python3 python3-pip ffmpeg libreoffice
    ```
-4. Install libreoffice:
-   ```
-   brew install libreoffice
-   ```
+
+### Windows
+
+1. Install Python from the [official website](https://www.python.org/downloads/).
+2. Install FFmpeg:
+   - Download from [ffmpeg.org](https://ffmpeg.org/download.html)
+   - Add FFmpeg to your system PATH
+3. Install LibreOffice from the [official website](https://www.libreoffice.org/download/download/).
+
 ## Setup
 
-1. Create a virtual environment:
+1. Clone the repository or download the source code.
+
+2. Create a virtual environment:
    ```
-   python -m venv venv
+   python3 -m venv venv  # On macOS and Linux
+   python -m venv venv   # On Windows
    ```
 
-2. Activate the virtual environment:
-   ```
-   source venv/bin/activate
-   ```
+3. Activate the virtual environment:
+   - macOS and Linux:
+     ```
+     source venv/bin/activate
+     ```
+   - Windows:
+     ```
+     venv\Scripts\activate
+     ```
 
-3. Install the required packages:
+4. Install the required packages:
    ```
    pip install -r requirements.txt
    ```
 
+## Usage
+
+1. Activate the virtual environment (if not already activated).
+
 2. Run the script:
    ```
-   python convert.py
+   python archives_converter
    ```
-
 
 3. The script will process the files in the specified source folder and output the converted files to the destination folder.
 
