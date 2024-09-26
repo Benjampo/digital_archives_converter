@@ -3,6 +3,7 @@ import concurrent.futures
 import threading
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.console import Console
+from rich import print
 
 from helpers.converters.mkv import convert_to_mkv
 from helpers.converters.images import convert_images
@@ -65,9 +66,9 @@ def convert_files(folder):
 
                 if 'VIDEO_TS' in dirs:
                     video_ts_path = os.path.join(root, 'VIDEO_TS')
-                    convert_to_mkv([video_ts_path], root)
                     thread_safe_update(convert_task, advance=1, current_file='VIDEO_TS')
-
+                    convert_to_mkv([video_ts_path], root)
+                    print(f"[bold green]Converted VIDEO_TS:[/bold green] {video_ts_path}")
                 concurrent.futures.wait(file_tasks)
 
         progress.update(convert_task, completed=total_files)
@@ -81,3 +82,4 @@ def convert_folder(source_folder, destination_folder=None):
     destination_folder = clone_folder(source_folder, destination_folder)
     rename_files(destination_folder)
     convert_files(destination_folder)
+

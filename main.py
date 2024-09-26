@@ -7,35 +7,47 @@ from utils.convert import convert_folder
 from utils.clone import clone_folder
 from utils.rename import rename_files
 
+def select_folder():
+    root = tk.Tk()
+    root.withdraw()
+    folder = filedialog.askdirectory(title="Select Source Folder")
+    root.destroy()
+    return folder
 
 def main():
     print("[bold green]Welcome to Archive Converter![/bold green]")
     
-    questions = [
-        inquirer.List('action',
-                      message="What do you want to do today?",
-                      choices=['Clone and convert directory', 'Clone directory', 'Rename directory'],
-                      default=['Clone and convert directory']),
-    ]
-    action = inquirer.prompt(questions)['action']
+    while True:
+        questions = [
+            inquirer.List('action',
+                          message="What do you want to do today?",
+                          choices=['Clone and convert directory', 'Clone directory', 'Rename directory', 'Exit'],
+                          default=['Clone and convert directory']),
+        ]
+        action = inquirer.prompt(questions)['action']
 
-    root = tk.Tk()
-    root.withdraw()  # Hide the main window
+        if action == 'Exit':
+            break
 
-    source_folder = filedialog.askdirectory(title="Select Source Folder")
-        
-    if not source_folder:
-        print("[bold red]No folder selected. Exiting.[/bold red]")
-        return
-   
-    print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
+        source_folder = select_folder()
+            
+        if not source_folder:
+            print("[bold red]No folder selected. Please try again.[/bold red]")
+            continue
+       
+        print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
 
-    if action == 'Clone and convert directory':
-        convert_folder(source_folder)
-    elif action == 'Clone directory':
-        clone_folder(source_folder)
-    elif action == 'Rename directory':
-        rename_files(source_folder)
+        if action == 'Clone and convert directory':
+            convert_folder(source_folder)
+            break
+        elif action == 'Clone directory':
+            clone_folder(source_folder)
+            break
+        elif action == 'Rename directory':
+            rename_files(source_folder)
+            break
+
+    print("[bold green]Thank you for using Archive Converter![/bold green]")
 
 if __name__ == "__main__":
     main()

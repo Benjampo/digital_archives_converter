@@ -2,6 +2,7 @@ import os
 from helpers.to_snake_case import to_snake_case
 from helpers.folders import count_files_and_folders
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, SpinnerColumn
+from rich import print
 
 def rename_files(folder):
     print("[bold cyan]Starting renaming[/bold cyan] :pencil2:")

@@ -1,5 +1,6 @@
 import os
 from helpers.folders import copy_folder_with_progress
+from rich import print
 
 def clone_folder(source_folder, destination_folder=None):
     print("[bold cyan]Starting cloning[/bold cyan] :cd:")

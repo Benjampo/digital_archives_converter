@@ -4,6 +4,7 @@ import shutil
 import logging
 import concurrent.futures
 import re
+from rich import print
 
 def convert_vob_to_mkv(input_file, output_file):
     # Check the duration of the VOB file
