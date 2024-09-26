@@ -60,7 +60,7 @@ def convert_to_mkv(video_ts_paths, output_folder):
                            key=lambda x: int(re.search(r'VTS_(\d+)_', x).group(1)) if re.search(r'VTS_(\d+)_', x) else 0)
         
         # Create a subfolder for intermediate and final outputs
-        subfolder = os.path.join(output_folder, 'converted_videos')
+        subfolder = os.path.join(output_folder, 'converting_videos')
         os.makedirs(subfolder, exist_ok=True)
                 
         if vob_files:
@@ -75,53 +75,61 @@ def convert_to_mkv(video_ts_paths, output_folder):
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 mkv_files = list(filter(None, executor.map(lambda x: convert_vob_to_mkv(*x), conversion_tasks)))
 
-            # Merge remaining MKV files
             if mkv_files:
-                merged_output = os.path.join(subfolder, f"{os.path.basename(output_folder)}.mkv")
-                concat_file = os.path.join(subfolder, 'concat_list.txt')
-
-                def safe_sort_key(x):
-                    match = re.search(r'VTS_(\d+)_', x)
-                    return int(match.group(1)) if match else 0
-
-                with open(concat_file, 'w') as f:
-                    for mkv_file in sorted(mkv_files, key=safe_sort_key):
-                        f.write(f"file '{mkv_file}'\n")
-                
-                merge_command = [
-                    'ffmpeg',
-                    '-f', 'concat',
-                    '-safe', '0',
-                    '-i', concat_file,
-                    '-c', 'copy',
-                    merged_output
-                ]
-                
-                try:
-                    subprocess.run(merge_command, check=True, stderr=subprocess.PIPE, universal_newlines=True)
-                    
-                    # Move the merged MKV file to the root folder
+                if len(mkv_files) == 1:
+                    # If there's only one MKV file, rename and move it
+                    single_mkv = mkv_files[0]
                     final_output = os.path.join(output_folder, f"{os.path.basename(output_folder)}.mkv")
-                    shutil.move(merged_output, final_output)
-                    
-                    # Delete individual MKV files and concat list
-                    for mkv_file in mkv_files:
-                        os.remove(mkv_file)
-                    os.remove(concat_file)
-                    
-                    # Delete subfolder after successful merge
+                    shutil.move(single_mkv, final_output)
                     shutil.rmtree(subfolder)
+                    print(f"[bold green]Moved single MKV:[/bold green] {final_output}")
+                else:
+                    # Merge multiple MKV files
+                    merged_output = os.path.join(subfolder, f"{os.path.basename(output_folder)}.mkv")
+                    concat_file = os.path.join(subfolder, 'concat_list.txt')
+
+                    def safe_sort_key(x):
+                        match = re.search(r'VTS_(\d+)_', x)
+                        return int(match.group(1)) if match else 0
+
+                    with open(concat_file, 'w') as f:
+                        for mkv_file in sorted(mkv_files, key=safe_sort_key):
+                            f.write(f"file '{mkv_file}'\n")
                     
-                    # Delete VIDEO_TS folder after successful merge
+                    merge_command = [
+                        'ffmpeg',
+                        '-f', 'concat',
+                        '-safe', '0',
+                        '-i', concat_file,
+                        '-c', 'copy',
+                        merged_output
+                    ]
+                    
                     try:
-                        shutil.rmtree(video_ts_path)
-                    except PermissionError:
-                        logging.warning(f"Unable to delete {video_ts_path} due to permission error. Skipping.")
-                    except Exception as e:
-                        logging.error(f"Error deleting {video_ts_path}: {str(e)}")
-                
-                except subprocess.CalledProcessError as e:
-                    print(f"Error merging MKV files: {e.stderr}")
+                        subprocess.run(merge_command, check=True, stderr=subprocess.PIPE, universal_newlines=True)
+                        
+                        # Move the merged MKV file to the root folder
+                        final_output = os.path.join(output_folder, f"{os.path.basename(output_folder)}.mkv")
+                        shutil.move(merged_output, final_output)
+                        
+                        # Delete individual MKV files and concat list
+                        for mkv_file in mkv_files:
+                            os.remove(mkv_file)
+                        os.remove(concat_file)
+                        
+            # Delete subfolder after successful merge
+            shutil.rmtree(subfolder)
+                        
+            # Delete VIDEO_TS folder after successful merge
+            try:
+                shutil.rmtree(video_ts_path)
+            except PermissionError:
+                logging.warning(f"Unable to delete {video_ts_path} due to permission error. Skipping.")
+            except Exception as e:
+                logging.error(f"Error deleting {video_ts_path}: {str(e)}")
+                    
+                    except subprocess.CalledProcessError as e:
+                        print(f"Error merging MKV files: {e.stderr}")
             else:
                 # If no MKV files were created (e.g., all were too short), still try to delete VIDEO_TS
                 try:

@@ -16,8 +16,6 @@ def convert_text(files, root):
             convert_pdf_to_pdfa(input_path, output_path)
         elif file.lower().endswith(('.txt', '.doc', '.docx', '.rtf', '.odt')):
             convert_to_pdf(input_path, output_path)
-        else:
-            print(f"Skipping unsupported file: {file}")
 
 
 def convert_to_pdf(input_path, output_path):
