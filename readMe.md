@@ -1,23 +1,22 @@
 # Archive Conversion Tool
 
-This tool converts various media files (images, audio, video) to archival formats.
+This tool converts various media files (images, audio, video) to archival formats. It also clones and renames directories.
 
 ## Features
 
 - Converts images to TIFF format
 - Converts audio files to WAV format
 - Converts video files to FFV1 format
+- Converts documents to PDF/A2-b
 - Handles DVD (VIDEO_TS) conversion
 - Deletes empty folders after conversion (it will delete menus and stuff)
 - Provides logging and progress bar for better visibility of the conversion process
 
 ## Requirements
 
-- Python 3.6+
-- Pillow
-- tqdm
-- FFmpeg (must be installed separately and available in system PATH)
-- LibreOffice (for document conversion)
+- Python 3.6+: The script is written in Python and uses features available in Python 3.6 and later.
+- FFmpeg: Used for audio and video conversion tasks.
+- LibreOffice: Required for document conversion to PDF/A2-b format.
 
 ## Installation
 
@@ -27,7 +26,14 @@ This tool converts various media files (images, audio, video) to archival format
 make
 ```
 
-### Manual installation
+## Usage
+
+1. Run the script:
+   ```
+   make run
+   ```
+   
+## Manual installation
 
 #### macOS
 
@@ -82,9 +88,6 @@ make
    pip install -r requirements.txt
    ```
 
-## Usage
+## License
 
-1. Run the script:
-   ```
-   make run
-   ```
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
