@@ -17,9 +17,6 @@ from utils.rename import rename_files
 
 console = Console()
 
-
-
-
 def process_file(file, root, progress, task):
     if file == '.DS_Store':  # Skip .DS_Store files
         return
