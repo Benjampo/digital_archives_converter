@@ -10,7 +10,6 @@ This tool converts various media files (images, audio, video) to archival format
 - Converts documents to PDF/A2-b
 - Handles DVD (VIDEO_TS) conversion
 - Deletes empty folders after conversion (it will delete menus and stuff)
-- Provides logging and progress bar for better visibility of the conversion process
 
 ## Requirements
 
