@@ -12,17 +12,17 @@ def convert_vob_to_mkv(input_file, output_file):
     duration_output = subprocess.check_output(duration_command).decode('utf-8').strip()
     
     if duration_output == 'N/A':
-        print(f"Warning: Unable to determine duration for {input_file}. Skipping conversion.")
+        print(f"[bold orange]Warning:[/bold orange] Unable to determine duration for {input_file}. Skipping conversion.")
         return None
     
     try:
         duration = float(duration_output)
     except ValueError:
-        print(f"Warning: Invalid duration value '{duration_output}' for {input_file}. Skipping conversion.")
+        print(f"[bold orange]Warning:[/bold orange] Invalid duration value '{duration_output}' for {input_file}. Skipping conversion.")
         return None
     
     if duration < 5:
-        print(f"Skipping {os.path.basename(input_file)} (duration: {duration:.2f}s)")
+        print(f"[bold orange]Skipping:[/bold orange] {os.path.basename(input_file)} (duration: {duration:.2f}s)")
         return None
     
     # FFmpeg command to convert each VOB file to MKV
@@ -49,8 +49,8 @@ def convert_vob_to_mkv(input_file, output_file):
         print(f"[bold green]Converted file:[/bold green] {input_file}")
         return output_file
     except subprocess.CalledProcessError as e:
-        print(f"Warning: FFmpeg encountered an error processing {os.path.basename(input_file)}: {e.stderr}")
-        print("Attempting to continue processing...")
+        print(f"[bold orange]Warning:[/bold orange] FFmpeg encountered an error processing {os.path.basename(input_file)}: {e.stderr}")
+        print("[bold yellow]Attempting to continue processing...[/bold yellow]")
         return None
 
 def convert_to_mkv(video_ts_paths, output_folder):
@@ -83,6 +83,16 @@ def convert_to_mkv(video_ts_paths, output_folder):
                     shutil.move(single_mkv, final_output)
                     shutil.rmtree(subfolder)
                     print(f"[bold green]Moved single MKV:[/bold green] {final_output}")
+                    
+                    # Add this block to delete VIDEO_TS folder after single file conversion
+                    try:
+                        shutil.rmtree(video_ts_path)
+                        print(f"[bold red]Deleted VIDEO_TS folder:[/bold red] {video_ts_path}")
+                    except PermissionError:
+                        print(f"[bold orange]Warning:[/bold orange] Unable to delete {video_ts_path} due to permission error. Skipping.")
+                    except Exception as e:
+                        print(f"[bold red]Error:[/bold red] Failed to delete {video_ts_path}: {str(e)}")
+
                 else:
                     # Merge multiple MKV files
                     merged_output = os.path.join(subfolder, f"{os.path.basename(output_folder)}.mkv")
@@ -117,16 +127,16 @@ def convert_to_mkv(video_ts_paths, output_folder):
                             os.remove(mkv_file)
                         os.remove(concat_file)
                         
-            # Delete subfolder after successful merge
-            shutil.rmtree(subfolder)
+                        # Delete subfolder after successful merge
+                        shutil.rmtree(subfolder)
                         
-            # Delete VIDEO_TS folder after successful merge
-            try:
-                shutil.rmtree(video_ts_path)
-            except PermissionError:
-                logging.warning(f"Unable to delete {video_ts_path} due to permission error. Skipping.")
-            except Exception as e:
-                logging.error(f"Error deleting {video_ts_path}: {str(e)}")
+                        # Delete VIDEO_TS folder after successful merge
+                        try:
+                            shutil.rmtree(video_ts_path)
+                        except PermissionError:
+                            logging.warning(f"Unable to delete {video_ts_path} due to permission error. Skipping.")
+                        except Exception as e:
+                            logging.error(f"Error deleting {video_ts_path}: {str(e)}")
                     
                     except subprocess.CalledProcessError as e:
                         print(f"Error merging MKV files: {e.stderr}")
@@ -134,8 +144,8 @@ def convert_to_mkv(video_ts_paths, output_folder):
                 # If no MKV files were created (e.g., all were too short), still try to delete VIDEO_TS
                 try:
                     shutil.rmtree(video_ts_path)
-                    logging.info(f"Deleted VIDEO_TS folder: {video_ts_path}")
+                    print(f"[bold green]Deleted VIDEO_TS folder:[/bold green] {video_ts_path}")
                 except PermissionError:
-                    logging.warning(f"Unable to delete {video_ts_path} due to permission error. Skipping.")
+                    print(f"[bold yellow]Warning:[/bold yellow] Unable to delete {video_ts_path} due to permission error. Skipping.")
                 except Exception as e:
-                    logging.error(f"Error deleting {video_ts_path}: {str(e)}")
+                    print(f"[bold red]Error:[/bold red] Failed to delete {video_ts_path}: {str(e)}")
