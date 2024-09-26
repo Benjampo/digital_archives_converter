@@ -25,10 +25,13 @@ ifeq ($(OS),Windows_NT)
 	@echo "Please install Python, FFmpeg, and LibreOffice manually on Windows."
 else
     ifeq ($(shell uname),Darwin)
-		brew install python ffmpeg libreoffice
+		@which python3 > /dev/null || brew install python
+		@which ffmpeg > /dev/null || brew install ffmpeg
+		@which libreoffice > /dev/null || brew install libreoffice
     else
-		sudo apt update
-		sudo apt install -y python3 python3-pip ffmpeg libreoffice
+		@which python3 > /dev/null || (sudo apt update && sudo apt install -y python3 python3-pip)
+		@which ffmpeg > /dev/null || (sudo apt update && sudo apt install -y ffmpeg)
+		@which libreoffice > /dev/null || (sudo apt update && sudo apt install -y libreoffice)
     endif
 endif
 
@@ -39,7 +42,7 @@ install: venv
 	$(VENV_ACTIVATE) && pip install -r requirements.txt
 
 run: venv
-	$(VENV_ACTIVATE) && $(PYTHON) archives_converter.py
+	$(VENV_ACTIVATE) && $(PYTHON) archives_converter
 
 clean:
 	rm -rf $(VENV)

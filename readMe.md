@@ -21,7 +21,15 @@ This tool converts various media files (images, audio, video) to archival format
 
 ## Installation
 
-### macOS
+### With Makefile (recommended)
+
+```
+make
+```
+
+### Manual installation
+
+#### macOS
 
 1. Install Homebrew:
    ```
@@ -33,7 +41,7 @@ This tool converts various media files (images, audio, video) to archival format
    brew install python ffmpeg libreoffice
    ```
 
-### Linux (Ubuntu/Debian)
+#### Linux (Ubuntu/Debian)
 
 1. Update package list and install Python, FFmpeg, and LibreOffice:
    ```
@@ -41,7 +49,7 @@ This tool converts various media files (images, audio, video) to archival format
    sudo apt install python3 python3-pip ffmpeg libreoffice
    ```
 
-### Windows
+#### Windows
 
 1. Install Python from the [official website](https://www.python.org/downloads/).
 2. Install FFmpeg:
@@ -49,7 +57,7 @@ This tool converts various media files (images, audio, video) to archival format
    - Add FFmpeg to your system PATH
 3. Install LibreOffice from the [official website](https://www.libreoffice.org/download/download/).
 
-## Setup
+#### Setup
 
 1. Clone the repository or download the source code.
 
@@ -76,13 +84,7 @@ This tool converts various media files (images, audio, video) to archival format
 
 ## Usage
 
-1. Activate the virtual environment (if not already activated).
-
-2. Run the script:
+1. Run the script:
    ```
-   python archives_converter
+   make run
    ```
-
-3. The script will process the files in the specified source folder and output the converted files to the destination folder.
-
-4. Progress will be displayed in the console, along with logging information.
