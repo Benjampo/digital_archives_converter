@@ -55,10 +55,16 @@ def convert_vob_to_mkv(input_file, output_file):
 
 def convert_to_mkv(video_ts_paths, output_folder):
     for video_ts_path in video_ts_paths:
+        # Ensure we're looking inside the VIDEO_TS folder
+        video_ts_folder = os.path.join(video_ts_path, 'VIDEO_TS')
+        if not os.path.isdir(video_ts_folder):
+            print(f"[bold yellow]Warning:[/bold yellow] VIDEO_TS folder not found in {video_ts_path}")
+            continue
+
         # Sort VOB files numerically
-        vob_files = sorted([f for f in os.listdir(video_ts_path) if f.lower().endswith('.vob')],
+        vob_files = sorted([f for f in os.listdir(video_ts_folder) if f.lower().endswith('.vob')],
                            key=lambda x: int(re.search(r'VTS_(\d+)_', x).group(1)) if re.search(r'VTS_(\d+)_', x) else 0)
-        
+        print(video_ts_folder)
         # Create a subfolder for intermediate and final outputs
         subfolder = os.path.join(output_folder, 'converting_videos')
         os.makedirs(subfolder, exist_ok=True)
@@ -67,8 +73,8 @@ def convert_to_mkv(video_ts_paths, output_folder):
             # Prepare conversion tasks
             conversion_tasks = []
             for vob_file in vob_files:
-                input_file = os.path.join(video_ts_path, vob_file)
-                output_file = os.path.join(subfolder, f"{os.path.splitext(vob_file)[0] + '_dvd'}.mkv")
+                input_file = os.path.join(video_ts_folder, vob_file)
+                output_file = os.path.join(subfolder, f"{os.path.splitext(vob_file)[0]}.mkv")
                 conversion_tasks.append((input_file, output_file))
             
             # Convert VOB files concurrently
@@ -95,7 +101,7 @@ def convert_to_mkv(video_ts_paths, output_folder):
 
                 else:
                     # Merge multiple MKV files
-                    merged_output = os.path.join(subfolder, f"{os.path.basename(output_folder)}.mkv")
+                    merged_output = os.path.join(subfolder, f"{os.path.basename(output_folder)}_ffv1.mkv")
                     concat_file = os.path.join(subfolder, 'concat_list.txt')
 
                     def safe_sort_key(x):

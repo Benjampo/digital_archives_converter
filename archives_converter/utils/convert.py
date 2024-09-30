@@ -28,6 +28,14 @@ def process_file(file, root, progress, task, selected_media_types):
 
     progress.update(task, current_file=f"Converting {file}")
 
+    # Check if file is already converted
+    converted_extensions = ['_pdfa.pdf', '_tiff.tiff', '_wav.wav', '_ffv1.mkv']
+    if any(file.lower().endswith(ext) for ext in converted_extensions):
+        print(f"Skipping already converted file: {file}")
+        progress.update(task, advance=1, current_file=f"Skipped {file}")
+        return
+    
+
     if 'image' in selected_media_types:
         convert_images([file], root)
     if 'audio' in selected_media_types:
@@ -65,13 +73,13 @@ def convert_files(destination_folder, selected_media_types):
                     executor.submit(process_file, file, root, progress, convert_task, selected_media_types)
                     for file in files if file != '.DS_Store'
                 ]
-
-                if 'dvd' in selected_media_types and 'VIDEO_TS' in dirs:
-                    video_ts_parent = os.path.dirname(root)
-                    thread_safe_update(convert_task, current_file=f"Converting VIDEO_TS: {video_ts_parent}")
-                    convert_to_mkv([video_ts_parent], video_ts_parent)
-                    print(f"[bold green]Converted VIDEO_TS:[/bold green] {video_ts_parent}")
-                    thread_safe_update(convert_task, advance=1, current_file=f"Completed VIDEO_TS: {video_ts_parent}")
+                if 'dvd' in selected_media_types:
+                    if 'VIDEO_TS' in dirs:
+                        video_ts_folder = os.path.join(root, 'VIDEO_TS')
+                        thread_safe_update(convert_task, current_file=f"Converting VIDEO_TS: {root}")
+                        convert_to_mkv([root], root)
+                        print(f"[bold green]Converted VIDEO_TS:[/bold green] {root}")
+                        thread_safe_update(convert_task, advance=1, current_file=f"Completed VIDEO_TS: {root}")
 
                 concurrent.futures.wait(file_tasks)
 
