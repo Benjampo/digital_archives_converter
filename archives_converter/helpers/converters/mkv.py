@@ -68,7 +68,7 @@ def convert_to_mkv(video_ts_paths, output_folder):
             conversion_tasks = []
             for vob_file in vob_files:
                 input_file = os.path.join(video_ts_path, vob_file)
-                output_file = os.path.join(subfolder, f"{os.path.splitext(vob_file)[0]}.mkv")
+                output_file = os.path.join(subfolder, f"{os.path.splitext(vob_file)[0] + '_dvd'}.mkv")
                 conversion_tasks.append((input_file, output_file))
             
             # Convert VOB files concurrently

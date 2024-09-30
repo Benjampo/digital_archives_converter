@@ -6,7 +6,7 @@ def convert_audio(files, root):
     audio_files = [f for f in files if f.lower().endswith(('.mp3', '.aac', '.m4a', '.flac', '.ogg', '.aif', '.aiff'))]
     for audio_file in audio_files:
         input_path = os.path.join(root, audio_file)
-        output_path = os.path.splitext(input_path)[0] + '.wav'
+        output_path = os.path.splitext(input_path)[0] + '_wav.wav'
         try:
             ffmpeg_command = [
                 'ffmpeg',

@@ -8,7 +8,7 @@ def to_snake_case(file_name):
 
     # Convert the name part to snake case
     snake_str = unicodedata.normalize('NFKD', name).encode('ASCII', 'ignore').decode('ASCII')
-    snake_str = snake_str.lower()
+    # snake_str = snake_str.lower()
     snake_str = re.sub(r"['\s\-.,;:!?&]+", '_', snake_str)
     snake_str = re.sub(r'^_+|_+$', '', snake_str)
     snake_str = re.sub(r'_+', '_', snake_str)

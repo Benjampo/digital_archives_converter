@@ -6,7 +6,7 @@ def convert_images(files, root):
     image_files = [f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.tif', '.png', '.gif', '.bmp'))]
     for img_file in image_files:
         input_path = os.path.join(root, img_file)
-        output_path = os.path.splitext(input_path)[0] + '.tiff'
+        output_path = os.path.splitext(input_path)[0] + '_tiff.tiff'
         
         if not os.path.exists(input_path):
             logging.warning(f"Skipping {img_file}: File not found")
