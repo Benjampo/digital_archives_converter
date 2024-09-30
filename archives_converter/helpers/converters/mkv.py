@@ -90,14 +90,14 @@ def convert_to_mkv(video_ts_paths, output_folder):
                     shutil.rmtree(subfolder)
                     print(f"[bold green]Moved single MKV:[/bold green] {final_output}")
                     
-                    # Add this block to delete VIDEO_TS folder after single file conversion
+                    # Delete VIDEO_TS folder after single file conversion
                     try:
-                        shutil.rmtree(video_ts_path)
-                        print(f"[bold red]Deleted VIDEO_TS folder:[/bold red] {video_ts_path}")
+                        shutil.rmtree(video_ts_folder)
+                        print(f"[bold red]Deleted VIDEO_TS folder:[/bold red] {video_ts_folder}")
                     except PermissionError:
-                        print(f"[bold orange]Warning:[/bold orange] Unable to delete {video_ts_path} due to permission error. Skipping.")
+                        print(f"[bold orange]Warning:[/bold orange] Unable to delete {video_ts_folder} due to permission error. Skipping.")
                     except Exception as e:
-                        print(f"[bold red]Error:[/bold red] Failed to delete {video_ts_path}: {str(e)}")
+                        print(f"[bold red]Error:[/bold red] Failed to delete {video_ts_folder}: {str(e)}")
 
                 else:
                     # Merge multiple MKV files
@@ -138,11 +138,12 @@ def convert_to_mkv(video_ts_paths, output_folder):
                         
                         # Delete VIDEO_TS folder after successful merge
                         try:
-                            shutil.rmtree(video_ts_path)
+                            shutil.rmtree(video_ts_folder)
+                            print(f"[bold red]Deleted VIDEO_TS folder:[/bold red] {video_ts_folder}")
                         except PermissionError:
-                            logging.warning(f"Unable to delete {video_ts_path} due to permission error. Skipping.")
+                            print(f"[bold orange]Warning:[/bold orange] Unable to delete {video_ts_folder} due to permission error. Skipping.")
                         except Exception as e:
-                            logging.error(f"Error deleting {video_ts_path}: {str(e)}")
+                            print(f"[bold red]Error:[/bold red] Failed to delete {video_ts_folder}: {str(e)}")
                     
                     except subprocess.CalledProcessError as e:
                         print(f"Error merging MKV files: {e.stderr}")

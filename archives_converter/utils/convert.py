@@ -1,6 +1,8 @@
 import os
 import concurrent.futures
 import threading
+import hashlib
+import shutil
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.console import Console
 from rich import print
@@ -14,11 +16,14 @@ from helpers.delete_empty_folders import delete_empty_folders
 from helpers.folders import count_files_and_folders
 from utils.clone import clone_folder
 from utils.rename import rename_files_and_folders
+from helpers.bagit import create_data_folder_and_move_content, create_manifest, create_bagit_txt
+from helpers.metadata import create_metadata_file
 
 console = Console()
 
 def process_file(file, root, progress, task, selected_media_types):
     if file == '.DS_Store':  # Skip .DS_Store files
+        progress.update(task, advance=1)
         return
 
     file_path = os.path.join(root, file)
@@ -28,9 +33,9 @@ def process_file(file, root, progress, task, selected_media_types):
 
     progress.update(task, current_file=f"Converting {file}")
 
-    # Check if file is already converted
-    converted_extensions = ['_pdfa.pdf', '_tiff.tiff', '_wav.wav', '_ffv1.mkv']
-    if any(file.lower().endswith(ext) for ext in converted_extensions):
+    file_name_without_ext = os.path.splitext(file)[0]
+    converted_suffixes = ['_pdfa', '_tiff', '_wav', '_ffv1']
+    if any(file_name_without_ext.lower().endswith(suffix) for suffix in converted_suffixes):
         print(f"Skipping already converted file: {file}")
         progress.update(task, advance=1, current_file=f"Skipped {file}")
         return
@@ -38,15 +43,20 @@ def process_file(file, root, progress, task, selected_media_types):
 
     if 'image' in selected_media_types:
         convert_images([file], root)
+        print(f"[bold green]Converted image:[/bold green] {file_path}")
     if 'audio' in selected_media_types:
         convert_audio([file], root)
+        print(f"[bold green]Converted audio:[/bold green] {file_path}")
     if 'video' in selected_media_types:
         convert_videos([file], root)
+        print(f"[bold green]Converted video:[/bold green] {file_path}")
     if 'text' in selected_media_types:
         convert_text([file], root)
-    print(f"[bold green]Converted file:[/bold green] {file_path}")
+        print(f"[bold green]Converted text:[/bold green] {file_path}")
 
     progress.update(task, advance=1, current_file=f"Completed {file}")
+
+
 
 def convert_files(destination_folder, selected_media_types):
     print("[bold cyan]Starting conversion[/bold cyan] :gear:")
@@ -93,5 +103,18 @@ def convert_files(destination_folder, selected_media_types):
 def convert_folder(source_folder, selected_media_types, destination_folder=None):
     destination_folder = clone_folder(source_folder, selected_media_types, destination_folder)
     rename_files_and_folders(destination_folder, selected_media_types)
+        
     convert_files(destination_folder, selected_media_types)
+
+    print("[bold cyan]Conversion completed. Creating BagIt structure...[/bold cyan]")
+
+    for item in os.listdir(destination_folder):
+        item_path = os.path.join(destination_folder, item)
+        if os.path.isdir(item_path):
+            print(f"[bold blue]Processing {item}[/bold blue]")
+            create_data_folder_and_move_content(item_path)
+            create_manifest(item_path)
+            create_bagit_txt(item_path)
+
+    print("[bold green]BagIt structure created![/bold green]")
 

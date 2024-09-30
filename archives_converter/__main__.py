@@ -54,13 +54,13 @@ def main():
                 inquirer.Checkbox('media_types',
                                   message="Select media types to convert:",
                                   choices=[
-                                      ('DVD (VIDEO_TS)', 'dvd'),
                                       ('Audio files', 'audio'),
                                       ('Video files', 'video'),
                                       ('Image files', 'image'),
-                                      ('Text files', 'text')
+                                      ('Text files', 'text'),
+                                      ('DVD (VIDEO_TS)', 'dvd'),
                                   ],
-                                  default=['dvd', 'audio', 'video', 'image', 'text'])
+                                  default=['audio', 'video', 'image', 'text'])
             ]
             selected_media_types = inquirer.prompt(conversion_options)['media_types']
             source_folder = select_folder()
@@ -81,7 +81,7 @@ def main():
                                       ('Text files', 'text'),
                                       ('DVD (VIDEO_TS)', 'dvd'),
                                   ],
-                                  default=['audio', 'video', 'image', 'text'])
+                                  default=['audio', 'video', 'image', 'text', 'dvd'])
             ]
             selected_media_types = inquirer.prompt(conversion_options)['media_types']
             source_folder = select_folder()
