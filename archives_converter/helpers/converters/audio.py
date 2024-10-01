@@ -8,15 +8,25 @@ def convert_audio(files, root):
         input_path = os.path.join(root, audio_file)
         output_path = os.path.splitext(input_path)[0] + '_wav.wav'
         try:
+            # Get original file's timestamps
+            original_stat = os.stat(input_path)
+            
             ffmpeg_command = [
                 'ffmpeg',
                 '-i', input_path,
+                '-map_metadata', '0',
                 '-acodec', 'pcm_s16le',
                 '-ar', '44100',
                 output_path
             ]
          
             subprocess.run(ffmpeg_command, check=True, timeout=300, stderr=subprocess.PIPE, universal_newlines=True)
+            
+            # Set the new file's timestamps to match the original
+            os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+            
             os.remove(input_path)  # Remove the original audio file
         except subprocess.CalledProcessError as e:
-            logging.error(f"Error converting {audio_file} to WAV: {e.stderr}")  # Use logging for errors
+            logging.error(f"Error converting {audio_file} to WAV: {e.stderr}")
+        except OSError as e:
+            logging.error(f"OS error occurred while processing {audio_file}: {e}")

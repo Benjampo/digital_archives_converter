@@ -6,4 +6,4 @@ setuptools
 rich
 inquirer
 ghostscript
-
+piexif

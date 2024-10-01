@@ -29,6 +29,7 @@ def convert_vob_to_mkv(input_file, output_file):
     ffmpeg_command = [
         'ffmpeg',
         '-i', input_file,
+        '-map_metadata', '0',
         '-c:v', 'ffv1',
         '-level', '3',
         '-coder', '1',
@@ -117,6 +118,7 @@ def convert_to_mkv(video_ts_paths, output_folder):
                         '-f', 'concat',
                         '-safe', '0',
                         '-i', concat_file,
+                        '-map_metadata', '0',
                         '-c', 'copy',
                         merged_output
                     ]

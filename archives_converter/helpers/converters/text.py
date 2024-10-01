@@ -5,7 +5,7 @@ import logging
 
 def convert_text(files, root):
     for file in files:
-        if file.lower() == 'concat_list.txt':
+        if file.lower() == 'concat_list.txt' or file.lower() == 'metadata.txt' or file.lower() == 'manifest-md5.txt' or file.lower() == 'bagit.txt':
             print(f"Skipping concat_list.txt: {file}")
             continue
         
@@ -20,6 +20,9 @@ def convert_text(files, root):
 
 def convert_to_pdf(input_path, output_path):
     try:
+        # Get original file's timestamps
+        original_stat = os.stat(input_path)
+
         unoconv_command = [
             'unoconv',
             '-f', 'pdf',
@@ -29,6 +32,18 @@ def convert_to_pdf(input_path, output_path):
             input_path
         ]
         subprocess.run(unoconv_command, timeout=600, check=True, capture_output=True, text=True)
+        
+        exiftool_command = [
+            'exiftool',
+            '-tagsFromFile', input_path,
+            '-all:all',
+            output_path
+        ]
+        subprocess.run(exiftool_command, timeout=60, check=True, capture_output=True, text=True)
+        
+        # Set original file's timestamps on the new file
+        os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+        
         os.remove(input_path)  # Remove the original text file
     except subprocess.CalledProcessError as e:
         logging.error(f"Error converting {input_path} to PDF/A-2b: {e.stderr}")
@@ -38,6 +53,9 @@ def convert_to_pdf(input_path, output_path):
 
 def convert_pdf_to_pdfa(input_path, output_path):
     try:
+        # Get original file's timestamps
+        original_stat = os.stat(input_path)
+
         gs_command = [
             'gs', '-dPDFA=2', '-dBATCH', '-dNOPAUSE',
             '-sColorConversionStrategy=UseDeviceIndependentColor',
@@ -47,6 +65,18 @@ def convert_pdf_to_pdfa(input_path, output_path):
             input_path
         ]
         subprocess.run(gs_command, timeout=600, check=True, capture_output=True, text=True)
+        
+        exiftool_command = [
+            'exiftool',
+            '-tagsFromFile', input_path,
+            '-all:all',
+            output_path
+        ]
+        subprocess.run(exiftool_command, timeout=60, check=True, capture_output=True, text=True)
+        
+        # Set original file's timestamps on the new file
+        os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+        
         os.remove(input_path)  # Remove the original PDF file
     except subprocess.CalledProcessError as e:
         logging.error(f"Error converting {input_path} to PDF/A-2b: {e.stderr}")

@@ -103,7 +103,6 @@ def convert_files(destination_folder, selected_media_types):
 def convert_folder(source_folder, selected_media_types, destination_folder=None):
     destination_folder = clone_folder(source_folder, selected_media_types, destination_folder)
     rename_files_and_folders(destination_folder, selected_media_types)
-    create_metadata_files(source_folder)
     convert_files(destination_folder, selected_media_types)
 
     print("[bold cyan]Conversion completed. Creating BagIt structure...[/bold cyan]")
@@ -115,6 +114,6 @@ def convert_folder(source_folder, selected_media_types, destination_folder=None)
             create_data_folder_and_move_content(item_path)
             create_manifest(item_path)
             create_bagit_txt(item_path)
-
+            create_metadata_files(source_folder, destination_folder)
     print("[bold green]BagIt structure created![/bold green]")
 

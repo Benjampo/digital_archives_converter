@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shutil
 
 
 def convert_videos(files, root):
@@ -18,9 +19,13 @@ def convert_videos(files, root):
             if video_file == file:
                 output_path = os.path.splitext(input_path)[0] + '_ffv1.mkv'
                 try:
+                    # Store original file metadata
+                    original_stat = os.stat(input_path)
+
                     ffmpeg_command = [
                         'ffmpeg',
                         '-i', input_path,
+                        '-map_metadata', '0',
                         '-c:v', 'ffv1',
                         '-level', '3',
                         '-c:a', 'copy',
@@ -28,6 +33,13 @@ def convert_videos(files, root):
                         output_path
                     ]
                     subprocess.run(ffmpeg_command, timeout=600, check=True, stderr=subprocess.PIPE, universal_newlines=True, errors='ignore')
+                    
+                    # Copy metadata to the new file
+                    shutil.copystat(input_path, output_path)
+                    
+                    # Manually set creation and modification times
+                    os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+
                     try:
                         os.remove(input_path)  # Remove the original video file
                     except FileNotFoundError:
