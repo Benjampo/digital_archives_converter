@@ -5,6 +5,7 @@ from utils.rename import rename_files_and_folders
 from helpers.metadata import create_metadata_files
 import tkinter as tk
 from tkinter import filedialog
+from rich import print
 
 def select_folder():
     root = tk.Tk()
