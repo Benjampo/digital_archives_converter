@@ -143,7 +143,7 @@ def convert_to_mkv(video_ts_paths, output_folder):
                             shutil.rmtree(video_ts_folder)
                             print(f"[bold red]Deleted VIDEO_TS folder:[/bold red] {video_ts_folder}")
                         except PermissionError:
-                            print(f"[bold orange]Warning:[/bold orange] Unable to delete {video_ts_folder} due to permission error. Skipping.")
+                            print(f"[bold yellow]Warning:[/bold yellow] Unable to delete {video_ts_folder} due to permission error. Skipping.")
                         except Exception as e:
                             print(f"[bold red]Error:[/bold red] Failed to delete {video_ts_folder}: {str(e)}")
                     

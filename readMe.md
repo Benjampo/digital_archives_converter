@@ -16,6 +16,7 @@ This tool converts various media files (images, audio, video) to archival format
 - [Python 3.6+](https://www.python.org/): The script is written in Python and uses features available in Python 3.6 and later.
 - [FFmpeg](https://www.ffmpeg.org/): Used for audio and video conversion tasks.
 - [LibreOffice](https://www.libreoffice.org/): Required for document conversion to PDF/A2-b format.
+- [ExifTool](https://exiftool.org/): Required for metadata extraction and embedding.
 
 ## Installation
 
@@ -42,7 +43,7 @@ make run
 
 2. Install Python, FFmpeg, and LibreOffice:
    ```
-   brew install python ffmpeg libreoffice
+   brew install python ffmpeg libreoffice exiftool
    ```
 
 #### Linux (Ubuntu/Debian)
@@ -50,7 +51,7 @@ make run
 1. Update package list and install Python, FFmpeg, and LibreOffice:
    ```
    sudo apt update
-   sudo apt install python3 python3-pip ffmpeg libreoffice
+   sudo apt install python3 python3-pip ffmpeg libreoffice libimage-exiftool-perl
    ```
 
 #### Windows
@@ -60,6 +61,9 @@ make run
    - Download from [ffmpeg.org](https://ffmpeg.org/download.html)
    - Add FFmpeg to your system PATH
 3. Install LibreOffice from the [official website](https://www.libreoffice.org/download/download/).
+4. Install ExifTool:
+   - Download from [exiftool.org](https://exiftool.org/install.html)
+   - Add ExifTool to your system PATH
 
 #### Setup
 

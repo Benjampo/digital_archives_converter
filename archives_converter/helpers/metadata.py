@@ -1,11 +1,14 @@
 import os
+import stat
+import pwd
+import grp
 from datetime import datetime
 from rich import print
 from rich.prompt import Confirm
 
 
 def create_metadata_files(source_folder, destination_folder):
-    # Find the Master_ folder
+
     source_folder_name = os.path.basename(source_folder)
     master_folder_name = f"Master_{source_folder_name}"
     parent_dir = os.path.dirname(source_folder)
@@ -34,11 +37,21 @@ def create_metadata_files(source_folder, destination_folder):
                     file_path = os.path.join(root, file)
                     file_stat = os.stat(file_path)
                     relative_path = os.path.relpath(file_path, dest_item_path)
+                    
+
                     file_metadata = {
                         "name": os.path.join(item, relative_path),
                         "size": file_stat.st_size,
                         "created": datetime.fromtimestamp(file_stat.st_ctime).isoformat(),
-                        "modified": datetime.fromtimestamp(file_stat.st_mtime).isoformat()
+                        "modified": datetime.fromtimestamp(file_stat.st_mtime).isoformat(),
+                        "accessed": datetime.fromtimestamp(file_stat.st_atime).isoformat(),
+                        "mode": stat.filemode(file_stat.st_mode),
+                        "uid": file_stat.st_uid,
+                        "user": pwd.getpwuid(file_stat.st_uid).pw_name,
+                        "gid": file_stat.st_gid,
+                        "group": grp.getgrgid(file_stat.st_gid).gr_name,
+                        "inode": file_stat.st_ino,
+                        "links": file_stat.st_nlink,
                     }
                     folder_metadata.append(file_metadata)
 
@@ -51,6 +64,12 @@ def create_metadata_files(source_folder, destination_folder):
                     metadata_file.write(f"  Size: {item['size']} bytes\n")
                     metadata_file.write(f"  Created: {item['created']}\n")
                     metadata_file.write(f"  Modified: {item['modified']}\n")
+                    metadata_file.write(f"  Accessed: {item['accessed']}\n")
+                    metadata_file.write(f"  Mode: {item['mode']}\n")
+                    metadata_file.write(f"  UID: {item['uid']} ({item['user']})\n")
+                    metadata_file.write(f"  GID: {item['gid']} ({item['group']})\n")
+                    metadata_file.write(f"  Inode: {item['inode']}\n")
+                    metadata_file.write(f"  Hard Links: {item['links']}\n")
                     metadata_file.write("\n")
 
             print(f"Metadata file created: {metadata_file_path}")

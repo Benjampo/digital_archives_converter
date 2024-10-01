@@ -36,7 +36,7 @@ def process_file(file, root, progress, task, selected_media_types):
     file_name_without_ext = os.path.splitext(file)[0]
     converted_suffixes = ['_pdfa', '_tiff', '_wav', '_ffv1']
     if any(file_name_without_ext.lower().endswith(suffix) for suffix in converted_suffixes):
-        print(f"Skipping already converted file: {file}")
+        print(f"[bold orange]Skipping:[/bold orange] {file}")
         progress.update(task, advance=1, current_file=f"Skipped {file}")
         return
     

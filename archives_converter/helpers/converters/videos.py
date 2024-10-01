@@ -12,7 +12,7 @@ def convert_videos(files, root):
 
         # Skip files that are already converted
         if file.lower().endswith('_ffv1.mkv'):
-            print(f"Skipping already converted file: {file}")
+            print(f"[bold orange]Skipping:[/bold orange] {file}")
             continue
 
         for video_file in video_files:

@@ -28,10 +28,12 @@ else
 		@which python3 > /dev/null || brew install python
 		@which ffmpeg > /dev/null || brew install ffmpeg
 		@which libreoffice > /dev/null || brew install --cask libreoffice
+		@which exiftool > /dev/null || brew install exiftool
     else
 		@which python3 > /dev/null || (sudo apt update && sudo apt install -y python3 python3-pip)
 		@which ffmpeg > /dev/null || (sudo apt update && sudo apt install -y ffmpeg)
 		@which libreoffice > /dev/null || (sudo apt update && sudo apt install -y libreoffice)
+		@which exiftool > /dev/null || (sudo apt update && sudo apt install -y libimage-exiftool-perl)
     endif
 endif
 

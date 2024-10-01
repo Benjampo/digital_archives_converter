@@ -6,7 +6,7 @@ import logging
 def convert_text(files, root):
     for file in files:
         if file.lower() == 'concat_list.txt' or file.lower() == 'metadata.txt' or file.lower() == 'manifest-md5.txt' or file.lower() == 'bagit.txt':
-            print(f"Skipping concat_list.txt: {file}")
+            print(f"[bold orange]Skipping:[/bold orange] {file}")
             continue
         
         input_path = os.path.join(root, file)
