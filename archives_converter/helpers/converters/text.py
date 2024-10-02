@@ -117,7 +117,7 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
         os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
         
         # Append metadata to the metadata.txt file
-        append_metadata(metadata, metadata_file, input_path)
+        append_metadata(metadata, metadata_file, output_path)
         
         print(f"Attempting to remove original PDF file: {input_path}")
         os.remove(input_path)

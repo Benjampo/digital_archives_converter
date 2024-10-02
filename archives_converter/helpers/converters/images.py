@@ -41,7 +41,7 @@ def convert_images(files, root):
             os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
             
             # Append metadata to the metadata.txt file
-            append_metadata(metadata, metadata_file, input_path)
+            append_metadata(metadata, metadata_file, output_path)
             
             os.remove(input_path)  # Remove the original image file
         except Exception as e:
