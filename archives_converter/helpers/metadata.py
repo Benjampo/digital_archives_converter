@@ -41,25 +41,30 @@ def extract_metadata(file_path):
 
 def append_metadata(metadata, metadata_file, original_file_path):
     try:
-        # Load existing YAML data
-        with open(metadata_file, 'r') as f:
-            existing_data = yaml.safe_load(f) or {}
 
-        # Convert metadata string to dictionary
+        os.makedirs(os.path.dirname(metadata_file), exist_ok=True)
+
+
+        if os.path.exists(metadata_file):
+            with open(metadata_file, 'r') as f:
+                existing_data = yaml.safe_load(f) or {}
+        else:
+            existing_data = {}
+
+
         metadata_dict = {}
         for line in metadata.split('\n'):
             if ':' in line:
                 key, value = line.split(':', 1)
                 metadata_dict[key.strip()] = value.strip()
 
-        # Add new metadata to existing data
         file_key = os.path.basename(original_file_path)
         existing_data[file_key] = {
             'metadata': metadata_dict,
             'timestamp': datetime.now().isoformat()
         }
 
-        # Write updated YAML data
+
         with open(metadata_file, 'w') as f:
             yaml.dump(existing_data, f, default_flow_style=False, sort_keys=False)
 

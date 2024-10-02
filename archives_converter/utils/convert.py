@@ -1,8 +1,6 @@
 import os
 import concurrent.futures
 import threading
-import hashlib
-import shutil
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.console import Console
 from rich import print
@@ -104,7 +102,7 @@ def convert_folder(source_folder, selected_media_types, destination_folder=None)
     create_metadata_files(destination_folder)
     convert_files(destination_folder, selected_media_types)
 
-    print("[bold cyan]Conversion completed. Creating BagIt structure...[/bold cyan]")
+    print("[bold cyan]Creating BagIt structure...[/bold cyan]")
 
     for item in os.listdir(destination_folder):
         item_path = os.path.join(destination_folder, item)
