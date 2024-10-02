@@ -6,7 +6,8 @@ from helpers.metadata import create_metadata_files
 import tkinter as tk
 from tkinter import filedialog
 from rich import print
-from helpers.metadata import metadata_to_html_table
+from helpers.metadata_html import create_metadata_html_table
+
 def select_folder():
     root = tk.Tk()
     root.withdraw()
@@ -48,7 +49,7 @@ def dialog():
         questions = [
             inquirer.List('action',
                           message="What do you want to do today?",
-                          choices=['Clone and convert directory', 'Clone directory', 'Rename directory', 'visualize metadata', 'Exit'],
+                          choices=['Clone and convert directory', 'Clone directory', 'Rename directory', 'Exit'],
                           default=['Clone and convert directory']),
         ]
         action = inquirer.prompt(questions)['action']
@@ -100,14 +101,6 @@ def dialog():
             break
         elif action == 'Rename directory':
             rename_files_and_folders(source_folder)
-            break
-        elif action == 'visualize metadata':
-            metadata_file_path = select_metadata_file()
-            if not metadata_file_path:
-                print("[bold red]No file selected. Please try again.[/bold red]")
-                continue
-            print(f"Selected metadata file: [cyan]{metadata_file_path}[/cyan]")
-            metadata_to_html_table(metadata_file_path)
             break
 
     print("[bold green]Thank you for using Archive Converter![/bold green]")
