@@ -1,4 +1,3 @@
-from rich import print
 from utils.dialog import dialog
 
 def main():

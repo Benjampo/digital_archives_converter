@@ -23,6 +23,10 @@ def create_metadata_files(destination_folder):
             print(f"Empty metadata file created: {metadata_file_path}")
 
 def extract_metadata(file_path):
+
+    if os.path.basename(file_path) == "metadata.txt":
+        return ""
+
     try:
         exiftool_command = [
             'exiftool',

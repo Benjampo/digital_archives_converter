@@ -41,7 +41,7 @@ def dialog():
         questions = [
             inquirer.List('action',
                           message="What do you want to do today?",
-                          choices=['Clone and convert directory', 'Clone directory', 'Rename directory', 'Generate metadata', 'Exit'],
+                          choices=['Clone and convert directory', 'Clone directory', 'Rename directory', 'Exit'],
                           default=['Clone and convert directory']),
         ]
         action = inquirer.prompt(questions)['action']
@@ -93,14 +93,6 @@ def dialog():
             break
         elif action == 'Rename directory':
             rename_files_and_folders(source_folder)
-            break
-        elif action == 'Generate metadata':
-            source_folder = select_folder()
-            if not source_folder:
-                print("[bold red]No folder selected. Please try again.[/bold red]")
-                continue
-            print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
-            create_metadata_files(source_folder)
             break
 
     print("[bold green]Thank you for using Archive Converter![/bold green]")
