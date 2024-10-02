@@ -80,13 +80,12 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
             f'-sOutputFile={output_path}',
             input_path
         ]
-        print(f"Running Ghostscript command for {input_path}")
         
         start_time = time.time()
         process = subprocess.Popen(gs_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         
       
-        timeout = 100
+        timeout = 300
         while process.poll() is None:
             if time.time() - start_time > timeout:
                 process.kill()
@@ -98,7 +97,6 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
         if process.returncode != 0:
             raise subprocess.CalledProcessError(process.returncode, gs_command, stdout, stderr)
 
-        print(f"Ghostscript command completed for {input_path}")
 
         exiftool_command = [
             'exiftool',
@@ -107,7 +105,7 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
             output_path
         ]
         print(f"Running ExifTool command for {output_path}")
-        subprocess.run(exiftool_command, timeout=60, check=True, capture_output=True, text=True)
+        subprocess.run(exiftool_command, timeout=300, check=True, capture_output=True, text=True)
         
 
         shutil.chown(output_path, original_stat.st_uid, original_stat.st_gid)

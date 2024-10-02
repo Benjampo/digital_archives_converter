@@ -113,7 +113,12 @@ def convert_folder(source_folder, selected_media_types, destination_folder=None)
             create_bagit_txt(item_path)
             merge_metadata_files(item_path)
     
-    create_metadata_html_table(destination_folder)
-    
     print("[bold green]BagIt structure created![/bold green]")
+
+    print("[bold cyan]Creating metadata HTML table...[/bold cyan]")
+
+    create_metadata_html_table(destination_folder)
+
+    print("[bold green]Metadata HTML table created![/bold green]")
+  
 
