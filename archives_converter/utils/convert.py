@@ -17,7 +17,7 @@ from helpers.folders import count_files_and_folders
 from utils.clone import clone_folder
 from utils.rename import rename_files_and_folders
 from helpers.bagit import create_data_folder_and_move_content, create_manifest, create_bagit_txt
-from helpers.metadata import create_metadata_files
+from helpers.metadata import create_metadata_files, merge_metadata_files
 
 console = Console()
 
@@ -113,6 +113,7 @@ def convert_folder(source_folder, selected_media_types, destination_folder=None)
             create_data_folder_and_move_content(item_path)
             create_manifest(item_path)
             create_bagit_txt(item_path)
+            merge_metadata_files(item_path)
     
     
     print("[bold green]BagIt structure created![/bold green]")

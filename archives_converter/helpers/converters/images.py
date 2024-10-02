@@ -46,3 +46,4 @@ def convert_images(files, root):
             os.remove(input_path)  # Remove the original image file
         except Exception as e:
             logging.error(f"Error converting {img_file} to TIFF: {str(e)}")
+

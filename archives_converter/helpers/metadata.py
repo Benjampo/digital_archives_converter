@@ -43,3 +43,25 @@ def append_metadata(metadata, metadata_file, original_file_path):
             f.write("\n")
     except Exception as e:
         logging.error(f"Error appending metadata for {original_file_path} to {metadata_file}: {str(e)}")
+
+def merge_metadata_files(destination_folder):
+    root_metadata_file = os.path.join(destination_folder, "metadata.txt")
+    
+    try:
+        with open(root_metadata_file, 'w') as root_file:
+            for root, dirs, files in os.walk(destination_folder):
+                if "metadata.txt" in files:
+                    metadata_file_path = os.path.join(root, "metadata.txt")
+                    if metadata_file_path != root_metadata_file:
+                        with open(metadata_file_path, 'r') as sub_file:
+                            content = sub_file.read()
+                            root_file.write(f"\n--- Metadata from {metadata_file_path} ---\n")
+                            root_file.write(content)
+                            root_file.write("\n")
+                        
+                        os.remove(metadata_file_path)
+                        print(f"Removed: {metadata_file_path}")
+        
+        print(f"Merged metadata files into: {root_metadata_file}")
+    except Exception as e:
+        logging.error(f"Error merging metadata files: {str(e)}")
