@@ -3,7 +3,7 @@ import subprocess
 import logging
 import time
 import shutil
-from metadata import extract_metadata, append_metadata
+from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_text(files, root):

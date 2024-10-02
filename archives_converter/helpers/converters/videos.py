@@ -1,7 +1,7 @@
 import os
 import subprocess
 import shutil
-from metadata import extract_metadata, append_metadata
+from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_videos(files, root):

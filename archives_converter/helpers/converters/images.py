@@ -2,7 +2,7 @@ from PIL import Image
 import os
 import logging
 import shutil
-from metadata import extract_metadata, append_metadata
+from helpers.metadata import extract_metadata, append_metadata
 
 def convert_images(files, root):
     metadata_file = os.path.join(root, 'metadata.txt')

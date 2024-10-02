@@ -9,14 +9,18 @@ import logging
 
 
 def create_metadata_files(destination_folder):
-    metadata_file_name = "metadata.txt"
-    metadata_file_path = os.path.join(destination_folder, metadata_file_name)
 
-    # Create an empty metadata file
-    with open(metadata_file_path, "w") as metadata_file:
-        pass  # This creates an empty file
+    for item in os.listdir(destination_folder):
+        item_path = os.path.join(destination_folder, item)
+        if os.path.isdir(item_path):
+            metadata_file_name = "metadata.txt"
+            metadata_file_path = os.path.join(item_path, metadata_file_name)
 
-    print(f"Empty metadata file created: {metadata_file_path}")
+  
+            with open(metadata_file_path, "w") as metadata_file:
+                pass
+
+            print(f"Empty metadata file created: {metadata_file_path}")
 
 def extract_metadata(file_path):
     try:

@@ -1,7 +1,7 @@
 import os
 import subprocess
 import logging
-from metadata import extract_metadata, append_metadata
+from helpers.metadata import extract_metadata, append_metadata
 
 def convert_audio(files, root):
     metadata_file = os.path.join(root, 'metadata.txt')

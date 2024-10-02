@@ -1,7 +1,6 @@
 import os
 import subprocess
 import shutil
-import logging
 import concurrent.futures
 import re
 from rich import print
