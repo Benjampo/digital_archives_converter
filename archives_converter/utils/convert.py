@@ -27,6 +27,7 @@ def process_file(file, root, progress, task, selected_media_types):
         return
 
     file_path = os.path.join(root, file)
+    parent_folder = os.path.dirname(file_path)
     if not os.path.exists(file_path):
         progress.update(task, advance=1, current_file=file)
         return
@@ -43,18 +44,15 @@ def process_file(file, root, progress, task, selected_media_types):
 
     if 'image' in selected_media_types:
         convert_images([file], root)
-        print(f"[bold green]Converted image:[/bold green] {file_path}")
     if 'audio' in selected_media_types:
         convert_audio([file], root)
-        print(f"[bold green]Converted audio:[/bold green] {file_path}")
     if 'video' in selected_media_types:
         convert_videos([file], root)
-        print(f"[bold green]Converted video:[/bold green] {file_path}")
     if 'text' in selected_media_types:
         convert_text([file], root)
-        print(f"[bold green]Converted text:[/bold green] {file_path}")
-
-    progress.update(task, advance=1, current_file=f"Completed {file}")
+       
+    print(f"[bold green]Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]")
+    progress.update(task, advance=1, current_file=f"Completed [link=file://{parent_folder}]{file}[/link]")
 
 
 
@@ -114,6 +112,9 @@ def convert_folder(source_folder, selected_media_types, destination_folder=None)
             create_data_folder_and_move_content(item_path)
             create_manifest(item_path)
             create_bagit_txt(item_path)
-            create_metadata_files(source_folder, destination_folder)
+    
+    # Move this line outside the loop
+    create_metadata_files(source_folder, destination_folder)
+    
     print("[bold green]BagIt structure created![/bold green]")
 

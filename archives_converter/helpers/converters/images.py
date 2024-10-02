@@ -2,8 +2,10 @@ from PIL import Image
 import os
 import logging
 import shutil
+from metadata import extract_metadata, append_metadata
 
 def convert_images(files, root):
+    metadata_file = os.path.join(root, 'metadata.txt')
     image_files = [f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.tif', '.png', '.gif', '.bmp'))]
     for img_file in image_files:
         input_path = os.path.join(root, img_file)
@@ -15,6 +17,9 @@ def convert_images(files, root):
         
         # Get original file metadata
         original_stat = os.stat(input_path)
+        
+        # Extract metadata before conversion
+        metadata = extract_metadata(input_path)
         
         # If the file is already a TIFF, just rename it
         if img_file.lower().endswith(('.tif')):
@@ -34,6 +39,9 @@ def convert_images(files, root):
             
             # Preserve original file's metadata
             os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+            
+            # Append metadata to the metadata.txt file
+            append_metadata(metadata, metadata_file, input_path)
             
             os.remove(input_path)  # Remove the original image file
         except Exception as e:

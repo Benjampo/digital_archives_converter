@@ -1,9 +1,11 @@
 import os
 import subprocess
 import shutil
+from metadata import extract_metadata, append_metadata
 
 
 def convert_videos(files, root):
+    metadata_file = os.path.join(root, 'metadata.txt')
     video_files = [f for f in files if f.lower().endswith(('.mp4', '.avi', '.mov', '.flv'))]
     for file in files:
         input_path = os.path.join(root, file)
@@ -22,6 +24,9 @@ def convert_videos(files, root):
                     # Store original file metadata
                     original_stat = os.stat(input_path)
 
+                    # Extract metadata before conversion
+                    metadata = extract_metadata(input_path)
+
                     ffmpeg_command = [
                         'ffmpeg',
                         '-i', input_path,
@@ -39,6 +44,9 @@ def convert_videos(files, root):
                     
                     # Manually set creation and modification times
                     os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+
+                    # Append metadata to the metadata.txt file
+                    append_metadata(metadata, metadata_file, input_path)
 
                     try:
                         os.remove(input_path)  # Remove the original video file
