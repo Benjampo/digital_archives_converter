@@ -1,18 +1,18 @@
 import os
-import yaml
+import json
 import logging
 
 def merge_metadata_files(destination_folder):
-    root_metadata_file = os.path.join(destination_folder, "metadata.yaml")
+    root_metadata_file = os.path.join(destination_folder, "metadata.json")
     
     try:
         merged_data = {}
         for root, dirs, files in os.walk(destination_folder):
-            if "metadata.yaml" in files:
-                metadata_file_path = os.path.join(root, "metadata.yaml")
+            if "metadata.json" in files:
+                metadata_file_path = os.path.join(root, "metadata.json")
                 if metadata_file_path != root_metadata_file:
                     with open(metadata_file_path, 'r') as sub_file:
-                        sub_data = yaml.safe_load(sub_file)
+                        sub_data = json.load(sub_file)
                         if sub_data:
                             merged_data.update(sub_data)
                     
@@ -20,7 +20,7 @@ def merge_metadata_files(destination_folder):
                     print(f"Removed: {metadata_file_path}")
         
         with open(root_metadata_file, 'w') as root_file:
-            yaml.dump(merged_data, root_file, default_flow_style=False, sort_keys=False)
+            json.dump(merged_data, root_file, indent=2)
         
         print(f"Merged metadata files into: {root_metadata_file}")
     except Exception as e:
@@ -30,10 +30,10 @@ def create_metadata_html_table(destination_folder):
     try:
         merged_metadata = {}
         for root, dirs, files in os.walk(destination_folder):
-            if 'metadata.yaml' in files:
-                metadata_file_path = os.path.join(root, 'metadata.yaml')
+            if 'metadata.json' in files:
+                metadata_file_path = os.path.join(root, 'metadata.json')
                 with open(metadata_file_path, 'r') as f:
-                    metadata = yaml.safe_load(f)
+                    metadata = json.load(f)
                     if metadata:
                         merged_metadata.update(metadata)
         

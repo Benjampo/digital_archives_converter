@@ -7,4 +7,4 @@ rich
 inquirer
 ghostscript
 piexif
-PyYAML
+

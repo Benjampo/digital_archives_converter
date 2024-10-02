@@ -5,7 +5,7 @@ import shutil
 from helpers.metadata import extract_metadata, append_metadata
 
 def convert_images(files, root):
-    metadata_file = os.path.join(root, 'metadata.yaml')
+    metadata_file = os.path.join(root, 'metadata.json')
     image_files = [f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.tif', '.png', '.gif', '.bmp'))]
     for img_file in image_files:
         input_path = os.path.join(root, img_file)

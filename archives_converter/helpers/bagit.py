@@ -8,7 +8,7 @@ def create_data_folder_and_move_content(folder):
     os.makedirs(data_folder, exist_ok=True)
     
     for item in os.listdir(folder):
-        if item not in ["data", "metadata.yaml"]:
+        if item not in ["data", "metadata.json"]:
             item_path = os.path.join(folder, item)
             shutil.move(item_path, data_folder)
 

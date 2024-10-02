@@ -4,7 +4,7 @@ import logging
 from helpers.metadata import extract_metadata, append_metadata
 
 def convert_audio(files, root):
-    metadata_file = os.path.join(root, 'metadata.yaml')
+    metadata_file = os.path.join(root, 'metadata.json')
     audio_files = [f for f in files if f.lower().endswith(('.mp3', '.aac', '.m4a', '.flac', '.ogg', '.aif', '.aiff'))]
     for audio_file in audio_files:
         input_path = os.path.join(root, audio_file)

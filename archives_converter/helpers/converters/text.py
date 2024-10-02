@@ -7,9 +7,9 @@ from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_text(files, root):
-    metadata_file = os.path.join(root, 'metadata.yaml')
+    metadata_file = os.path.join(root, 'metadata.json')
     for file in files:
-        if file.lower() in ['concat_list.txt', 'metadata.yaml', 'manifest-md5.txt', 'bagit.txt']:
+        if file.lower() in ['concat_list.txt', 'metadata.json', 'manifest-md5.txt', 'bagit.txt']:
             print(f"[bold orange]Skipping:[/bold orange] {file}")
             continue
         

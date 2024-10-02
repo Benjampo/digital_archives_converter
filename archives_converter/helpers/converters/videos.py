@@ -5,7 +5,7 @@ from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_videos(files, root):
-    metadata_file = os.path.join(root, 'metadata.yaml')
+    metadata_file = os.path.join(root, 'metadata.json')
     video_files = [f for f in files if f.lower().endswith(('.mp4', '.avi', '.mov', '.flv'))]
     for file in files:
         input_path = os.path.join(root, file)
