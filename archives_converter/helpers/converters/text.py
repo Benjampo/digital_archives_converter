@@ -7,9 +7,9 @@ from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_text(files, root):
-    metadata_file = os.path.join(root, 'metadata.txt')
+    metadata_file = os.path.join(root, 'metadata.yaml')
     for file in files:
-        if file.lower() in ['concat_list.txt', 'metadata.txt', 'manifest-md5.txt', 'bagit.txt']:
+        if file.lower() in ['concat_list.txt', 'metadata.yaml', 'manifest-md5.txt', 'bagit.txt']:
             print(f"[bold orange]Skipping:[/bold orange] {file}")
             continue
         
@@ -54,7 +54,7 @@ def convert_to_pdf(input_path, output_path, metadata_file):
         # Set original file's timestamps on the new file
         os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
         
-        # Append metadata to the metadata.txt file
+     
         append_metadata(metadata, metadata_file, input_path)
         
         os.remove(input_path)  # Remove the original text file
@@ -116,7 +116,7 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
         # Set original file's timestamps on the new file
         os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
         
-        # Append metadata to the metadata.txt file
+ 
         append_metadata(metadata, metadata_file, output_path)
         
         print(f"Attempting to remove original PDF file: {input_path}")

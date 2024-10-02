@@ -4,7 +4,7 @@ import logging
 from helpers.metadata import extract_metadata, append_metadata
 
 def convert_audio(files, root):
-    metadata_file = os.path.join(root, 'metadata.txt')
+    metadata_file = os.path.join(root, 'metadata.yaml')
     audio_files = [f for f in files if f.lower().endswith(('.mp3', '.aac', '.m4a', '.flac', '.ogg', '.aif', '.aiff'))]
     for audio_file in audio_files:
         input_path = os.path.join(root, audio_file)
@@ -30,7 +30,7 @@ def convert_audio(files, root):
             # Set the new file's timestamps to match the original
             os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
             
-            # Append metadata to the metadata.txt file
+      
             append_metadata(metadata, metadata_file, output_path)
             
             os.remove(input_path)  # Remove the original audio file
