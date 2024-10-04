@@ -7,17 +7,14 @@ from rich import print
 
 
 def create_metadata_files(destination_folder):
-    for item in os.listdir(destination_folder):
-        item_path = os.path.join(destination_folder, item)
-        if os.path.isdir(item_path):
-            metadata_file_path = os.path.join(item_path, "metadata.json")
-            
-            try:
-                with open(metadata_file_path, "w") as metadata_file:
-                    json.dump({}, metadata_file)
-                print(f"Empty metadata file created: {metadata_file_path}")
-            except IOError as e:
-                logging.error(f"Error creating metadata file {metadata_file_path}: {str(e)}")
+    for root, dirs, files in os.walk(destination_folder):
+        metadata_file_path = os.path.join(root, "metadata.json")
+        try:
+            with open(metadata_file_path, "w") as metadata_file:
+                json.dump({}, metadata_file)
+            print(f"Empty metadata file created: {metadata_file_path}")
+        except IOError as e:
+            logging.error(f"Error creating metadata file {metadata_file_path}: {str(e)}")
 
 
 def extract_metadata(file_path):
@@ -34,29 +31,36 @@ def extract_metadata(file_path):
         logging.error(f"Error extracting metadata from {file_path}: {str(e)}")
     return ""
 
-def append_metadata(metadata, metadata_file, original_file_path):
+
+def append_metadata(metadata, metadata_file, file_path):
     try:
-        os.makedirs(os.path.dirname(metadata_file), exist_ok=True)
+        with open(metadata_file, 'r+') as f:
+            try:
+                existing_metadata = json.load(f)
+            except json.JSONDecodeError:
+                existing_metadata = {}
+            
+            # Parse the metadata string into a JSON object
+            try:
+                parsed_metadata = json.loads(metadata)
+                if isinstance(parsed_metadata, list) and len(parsed_metadata) > 0:
+                    parsed_metadata = parsed_metadata[0]  # Take the first item if it's a list
+            except json.JSONDecodeError:
+                logging.error(f"Failed to parse metadata for {file_path}")
+                parsed_metadata = {"error": "Failed to parse metadata"}
 
-        existing_data = {}
-        if os.path.exists(metadata_file):
-            with open(metadata_file, 'r') as f:
-                existing_data = json.load(f)
+            # Get the relative path from the data folder
+            data_folder = os.path.dirname(metadata_file)
+            relative_path = os.path.relpath(file_path, data_folder)
 
-        metadata_dict = json.loads(metadata)[0] if metadata else {}
-
-        file_key = os.path.basename(original_file_path)
-        existing_data[file_key] = {
-            'metadata': metadata_dict,
-            'timestamp': datetime.now().isoformat()
-        }
-
-        with open(metadata_file, 'w') as f:
-            json.dump(existing_data, f, indent=2)
-
-    except json.JSONDecodeError as e:
-        logging.error(f"JSON error while appending metadata for {original_file_path}: {str(e)}")
-    except IOError as e:
-        logging.error(f"I/O error while appending metadata for {original_file_path}: {str(e)}")
+            # Append new metadata using the relative path as the key
+            existing_metadata[relative_path] = parsed_metadata
+            
+            # Move file pointer to the beginning and truncate the file
+            f.seek(0)
+            f.truncate()
+            
+            # Write updated metadata
+            json.dump(existing_metadata, f, indent=2)
     except Exception as e:
-        logging.error(f"Unexpected error while appending metadata for {original_file_path}: {str(e)}")
+        logging.error(f"Error appending metadata for {file_path}: {str(e)}")

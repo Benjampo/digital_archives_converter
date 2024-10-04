@@ -46,7 +46,7 @@ def process_file(file, root, progress, task, selected_media_types):
         convert_audio([file], root)
     if 'video' in selected_media_types:
         convert_videos([file], root)
-    if 'text' in selected_media_types:
+    if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'manifest-md5.txt', 'metadata.json']:
         convert_text([file], root)
        
     print(f"[bold green]Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]")
@@ -89,7 +89,9 @@ def convert_files(destination_folder, selected_media_types):
 
                 concurrent.futures.wait(file_tasks)
 
-        progress.update(convert_task, completed=total_files)
+        # After processing all files, update the total to match the completed count
+        final_completed = progress.tasks[convert_task].completed
+        progress.update(convert_task, total=final_completed, completed=final_completed)
 
     delete_task = progress.add_task("[bold red]Deleting empty folders...[/bold red]", total=total_files)
     delete_empty_folders(destination_folder)

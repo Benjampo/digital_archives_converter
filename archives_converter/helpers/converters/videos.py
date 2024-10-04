@@ -9,6 +9,7 @@ def convert_videos(files, root):
     video_files = [f for f in files if f.lower().endswith(('.mp4', '.avi', '.mov', '.flv'))]
     for file in files:
         input_path = os.path.join(root, file)
+        metadata_file = os.path.join(os.path.dirname(input_path), 'metadata.json')
         if not os.path.exists(input_path):
             continue
 

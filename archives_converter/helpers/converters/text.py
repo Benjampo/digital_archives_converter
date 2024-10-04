@@ -65,7 +65,7 @@ def convert_to_pdf(input_path, output_path, metadata_file):
 
 
 def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
-    print(f"Starting conversion of {input_path}")
+
     try:
         original_stat = os.stat(input_path)
         
@@ -117,9 +117,9 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
  
         append_metadata(metadata, metadata_file, output_path)
         
-        print(f"Attempting to remove original PDF file: {input_path}")
+
         os.remove(input_path)
-        print(f"Successfully removed original PDF file: {input_path}")
+
     except subprocess.TimeoutExpired:
         logging.error(f"Ghostscript command timed out after {timeout} seconds for {input_path}")
     except subprocess.CalledProcessError as e:

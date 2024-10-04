@@ -10,6 +10,7 @@ def convert_images(files, root):
     for img_file in image_files:
         input_path = os.path.join(root, img_file)
         output_path = os.path.splitext(input_path)[0] + '_tiff.tiff'
+        metadata_file = os.path.join(os.path.dirname(input_path), 'metadata.json')
         
         if not os.path.exists(input_path):
             logging.warning(f"Skipping {img_file}: File not found")
@@ -40,7 +41,6 @@ def convert_images(files, root):
             # Preserve original file's metadata
             os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
             
-         
             append_metadata(metadata, metadata_file, output_path)
             
             os.remove(input_path)  # Remove the original image file

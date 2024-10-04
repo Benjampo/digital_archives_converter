@@ -9,6 +9,7 @@ def convert_audio(files, root):
     for audio_file in audio_files:
         input_path = os.path.join(root, audio_file)
         output_path = os.path.splitext(input_path)[0] + '_wav.wav'
+        metadata_file = os.path.join(os.path.dirname(input_path), 'metadata.json')
         try:
             # Get original file's timestamps
             original_stat = os.stat(input_path)

@@ -7,36 +7,74 @@ def merge_metadata_files(destination_folder):
     
     try:
         merged_data = {}
+        files_merged = False
         for root, dirs, files in os.walk(destination_folder):
             if "metadata.json" in files:
                 metadata_file_path = os.path.join(root, "metadata.json")
                 if metadata_file_path != root_metadata_file:
-                    with open(metadata_file_path, 'r') as sub_file:
-                        sub_data = json.load(sub_file)
-                        if sub_data:
-                            merged_data.update(sub_data)
+                    try:
+                        with open(metadata_file_path, 'r', encoding='utf-8') as sub_file:
+                            file_content = sub_file.read()
+                            cleaned_content = ''.join(char for char in file_content if ord(char) >= 32 or char in '\n\r\t')
+                            sub_data = json.loads(cleaned_content)
+                            if sub_data:
+                                relative_path = os.path.relpath(root, destination_folder)
+                                merged_data[relative_path] = sub_data
+                                files_merged = True
+                                print(f"Added data from {relative_path}")
                     
-                    os.remove(metadata_file_path)
-                    print(f"Removed: {metadata_file_path}")
+
+                    except json.JSONDecodeError as json_err:
+                        logging.warning(f"JSON error in {metadata_file_path}: {str(json_err)}. Skipping this file.")
+                    except Exception as e:
+                        logging.error(f"Error processing {metadata_file_path}: {str(e)}")
         
-        with open(root_metadata_file, 'w') as root_file:
-            json.dump(merged_data, root_file, indent=2)
-        
-        print(f"Merged metadata files into: {root_metadata_file}")
+        if files_merged:
+            with open(root_metadata_file, 'w', encoding='utf-8') as root_file:
+                json.dump(merged_data, root_file, indent=2)
+        else:
+            print("No metadata files found to merge.")
+            if os.path.exists(root_metadata_file):
+                os.remove(root_metadata_file)
+                print(f"Removed empty root metadata file: {root_metadata_file}")
     except Exception as e:
         logging.error(f"Error merging metadata files: {str(e)}")
 
 def create_metadata_html_table(destination_folder):
     try:
-        merged_metadata = {}
-        for root, dirs, files in os.walk(destination_folder):
-            if 'metadata.json' in files:
-                metadata_file_path = os.path.join(root, 'metadata.json')
-                with open(metadata_file_path, 'r') as f:
-                    metadata = json.load(f)
-                    if metadata:
-                        merged_metadata.update(metadata)
+        metadata_file_path = os.path.join(destination_folder, "metadata.json")
+        print(f"Metadata file path: {metadata_file_path}")
         
+        merged_metadata = {}
+    
+        for root, dirs, files in os.walk(destination_folder):
+            if "metadata.json" in files:
+                sub_metadata_path = os.path.join(root, "metadata.json")
+                try:
+                    with open(sub_metadata_path, 'r', encoding='utf-8') as f:
+                        sub_metadata = json.load(f)
+                    relative_path = os.path.relpath(root, destination_folder)
+                    merged_metadata[relative_path] = sub_metadata
+                except json.JSONDecodeError:
+                    logging.warning(f"Invalid JSON in {sub_metadata_path}. Skipping this file.")
+                except Exception as e:
+                    logging.error(f"Error reading {sub_metadata_path}: {str(e)}")
+
+        # If the main metadata.json exists and is not empty, merge it with the collected data
+        if os.path.exists(metadata_file_path) and os.path.getsize(metadata_file_path) > 0:
+            try:
+                with open(metadata_file_path, 'r', encoding='utf-8') as f:
+                    main_metadata = json.load(f)
+                merged_metadata.update(main_metadata)
+                print(f"Main metadata: {main_metadata}")
+            except json.JSONDecodeError:
+                logging.warning(f"Invalid JSON in main metadata file {metadata_file_path}. Skipping this file.")
+            except Exception as e:
+                logging.error(f"Error reading main metadata file {metadata_file_path}: {str(e)}")
+
+        if not merged_metadata:
+            logging.warning("No metadata found. Creating an empty HTML file.")
+
         html = """
         <html>
         <head>
@@ -69,6 +107,10 @@ def create_metadata_html_table(destination_folder):
                     border: 1px solid #ddd;
                     padding: 12px;
                     text-align: left;
+                    max-width: 300px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                 }
                 th {
                     background-color: #3498db;
@@ -94,6 +136,11 @@ def create_metadata_html_table(destination_folder):
                     margin-bottom: 20px;
                     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
                 }
+                td:hover {
+                    overflow: visible;
+                    white-space: normal;
+                    word-break: break-word;
+                }
             </style>
         </head>
         <body>
@@ -103,25 +150,32 @@ def create_metadata_html_table(destination_folder):
         html += "<input type='text' id='searchInput' onkeyup='searchMetadata()' placeholder='Search metadata...'>"
         
         html += "<div id='metadataContent'>"
-        for file_name, file_data in merged_metadata.items():
-            file_metadata = file_data.get('metadata', {})
-            timestamp = file_data.get('timestamp', '')
-            
-            html += f"<div class='metadataEntry'>"
-            html += f"<h2>{file_name}</h2>"
-            html += f"<p>Timestamp: {timestamp}</p>"
-            html += "<table>"
-            html += "<tr><th>Metadata Key</th><th>Metadata Value</th></tr>"
-            
-            for key, value in file_metadata.items():
-                html += f"<tr><td>{key}</td><td>{value}</td></tr>"
-            
-            html += "</table>"
-            html += "</div>"
+        for folder, files in merged_metadata.items():
+            for filename, file_metadata in files.items():
+                html += f"<div class='metadataEntry'>"
+                html += f"<h2>{os.path.basename(filename)}</h2>"
+                html += f"<p>Folder: {folder}</p>"
+                
+                html += "<table>"
+                html += "<tr><th>Metadata Key</th><th>Metadata Value</th></tr>"
+                
+                def render_metadata(metadata, prefix=''):
+                    table_rows = ""
+                    for key, value in metadata.items():
+                        full_key = f"{key}"
+                        if isinstance(value, dict):
+                            table_rows += render_metadata(value, f"{full_key}.")
+                        elif not isinstance(value, (list, dict)):
+                            table_rows += f"<tr><td>{full_key}</td><td>{value}</td></tr>"
+                    return table_rows
+                
+                html += render_metadata(file_metadata)
+                
+                html += "</table>"
+                html += "</div>"
         
         html += "</div>"
 
-        # Add JavaScript for search functionality
         html += """
         <script>
         function searchMetadata() {
@@ -142,11 +196,10 @@ def create_metadata_html_table(destination_folder):
         }
         </script>
         """
-
         html += "</body></html>"
         
         output_path = os.path.join(destination_folder, "all_metadata.html")
-        with open(output_path, 'w') as f:
+        with open(output_path, 'w', encoding='utf-8') as f:
             f.write(html)
         
         print(f"HTML table with all metadata created: {output_path}")
