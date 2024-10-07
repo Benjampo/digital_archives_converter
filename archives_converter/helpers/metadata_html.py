@@ -219,7 +219,15 @@ def create_metadata_html_table(destination_folder):
         output_path = os.path.join(destination_folder, "all_metadata.html")
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(html)
-        
+
+        root_metadata_file = os.path.join(destination_folder, "metadata.json")
+        if os.path.exists(root_metadata_file):
+            try:
+                os.remove(root_metadata_file)
+                print(f"Deleted root metadata file: {root_metadata_file}")
+            except Exception as e:
+                logging.error(f"Error deleting root metadata file {root_metadata_file}: {str(e)}")
+
         print(f"HTML table with all metadata created: {output_path}")
     except Exception as e:
         logging.error(f"Error creating HTML table from metadata: {str(e)}")
