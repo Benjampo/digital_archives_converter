@@ -10,7 +10,7 @@ def convert_text(files, root):
     metadata_file = os.path.join(root, 'metadata.json')
     for file in files:
         if file.lower() in ['concat_list.txt', 'metadata.json', 'manifest-md5.txt', 'bagit.txt']:
-            print(f"[bold orange]Skipping:[/bold orange] {file}")
+            print(f"[bold yellow]Skipping:[/bold yellow] {file}")
             continue
         
         input_path = os.path.join(root, file)
@@ -22,7 +22,6 @@ def convert_text(files, root):
             convert_to_pdf(input_path, output_path, metadata_file)
         
         original_file = output_path.replace('.pdf', '.pdf_original')
-        print(f"Removing {original_file}, input_path: {input_path}")
         if os.path.exists(original_file):
             os.remove(original_file)
         
@@ -111,7 +110,6 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
             '-all:all',
             output_path
         ]
-        print(f"Running ExifTool command for {output_path}")
         subprocess.run(exiftool_command, timeout=300, check=True, capture_output=True, text=True)
         
 
