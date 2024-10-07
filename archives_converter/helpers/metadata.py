@@ -1,9 +1,8 @@
 import os
-from datetime import datetime
 import subprocess
 import logging
 import json
-from rich import print
+
 
 
 def create_metadata_files(destination_folder):
@@ -12,7 +11,6 @@ def create_metadata_files(destination_folder):
         try:
             with open(metadata_file_path, "w") as metadata_file:
                 json.dump({}, metadata_file)
-            print(f"Empty metadata file created: {metadata_file_path}")
         except IOError as e:
             logging.error(f"Error creating metadata file {metadata_file_path}: {str(e)}")
 
@@ -40,23 +38,23 @@ def append_metadata(metadata, metadata_file, file_path):
             except json.JSONDecodeError:
                 existing_metadata = {}
             
-            # Parse the metadata string into a JSON object
+
             try:
                 parsed_metadata = json.loads(metadata)
                 if isinstance(parsed_metadata, list) and len(parsed_metadata) > 0:
-                    parsed_metadata = parsed_metadata[0]  # Take the first item if it's a list
+                    parsed_metadata = parsed_metadata[0] 
             except json.JSONDecodeError:
                 logging.error(f"Failed to parse metadata for {file_path}")
                 parsed_metadata = {"error": "Failed to parse metadata"}
 
-            # Get the relative path from the data folder
+
             data_folder = os.path.dirname(metadata_file)
             relative_path = os.path.relpath(file_path, data_folder)
 
-            # Append new metadata using the relative path as the key
+
             existing_metadata[relative_path] = parsed_metadata
             
-            # Move file pointer to the beginning and truncate the file
+
             f.seek(0)
             f.truncate()
             

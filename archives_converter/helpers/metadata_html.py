@@ -31,7 +31,6 @@ def merge_metadata_files(destination_folder):
                                 current_level = current_level[part]
                             current_level.update(sub_data)
                             files_merged = True
-                            print(f"Added data from {relative_path}")
                     
                     # Mark files in deeper levels for deletion
                     if depth > 1:
@@ -50,18 +49,15 @@ def merge_metadata_files(destination_folder):
         for file_path in files_to_delete:
             try:
                 os.remove(file_path)
-                print(f"Deleted metadata file: {file_path}")
             except Exception as e:
                 logging.error(f"Error deleting {file_path}: {str(e)}")
         
-        print("Metadata files in deeper levels have been merged and deleted.")
     except Exception as e:
         logging.error(f"Error merging and deleting metadata files: {str(e)}")
 
 def create_metadata_html_table(destination_folder):
     try:
         metadata_file_path = os.path.join(destination_folder, "metadata.json")
-        print(f"Metadata file path: {metadata_file_path}")
         
         merged_metadata = {}
     

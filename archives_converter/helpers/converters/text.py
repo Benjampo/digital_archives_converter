@@ -20,6 +20,13 @@ def convert_text(files, root):
             convert_pdf_to_pdfa(input_path, output_path, metadata_file)
         elif file.lower().endswith(('.txt', '.doc', '.docx', '.rtf', '.odt')):
             convert_to_pdf(input_path, output_path, metadata_file)
+        
+        original_file = input_path.replace('.pdf', '.pdf_original')
+        print(f"Removing {original_file}, input_path: {input_path}")
+        if os.path.exists(original_file):
+            os.remove(original_file)
+        
+
 
 
 def convert_to_pdf(input_path, output_path, metadata_file):
@@ -65,7 +72,6 @@ def convert_to_pdf(input_path, output_path, metadata_file):
 
 
 def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
-
     try:
         original_stat = os.stat(input_path)
         
@@ -77,6 +83,7 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
             '-sColorConversionStrategy=UseDeviceIndependentColor',
             '-sProcessColorModel=DeviceCMYK', '-sDEVICE=pdfwrite',
             '-dPDFACompatibilityPolicy=1',
+            '-dOverwritePDFMark=true',
             f'-sOutputFile={output_path}',
             input_path
         ]
@@ -115,10 +122,10 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
         os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
         
  
-        append_metadata(metadata, metadata_file, output_path)
-        
-
-        os.remove(input_path)
+        append_metadata(metadata, metadata_file, output_path)        
+        # Also check for the input file itself
+        if os.path.exists(input_path):
+            os.remove(input_path)
 
     except subprocess.TimeoutExpired:
         logging.error(f"Ghostscript command timed out after {timeout} seconds for {input_path}")
@@ -126,7 +133,6 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
         logging.error(f"Error in Ghostscript command for {input_path}: {e.stderr}")
     except Exception as e:
         logging.error(f"Unexpected error converting {input_path}: {str(e)}")
-    print(f"Finished processing {input_path}")
 
 
 
