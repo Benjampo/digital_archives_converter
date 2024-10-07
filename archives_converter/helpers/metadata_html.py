@@ -8,37 +8,55 @@ def merge_metadata_files(destination_folder):
     try:
         merged_data = {}
         files_merged = False
+        files_to_delete = []
+        
         for root, dirs, files in os.walk(destination_folder):
             if "metadata.json" in files:
                 metadata_file_path = os.path.join(root, "metadata.json")
-                if metadata_file_path != root_metadata_file:
-                    try:
-                        with open(metadata_file_path, 'r', encoding='utf-8') as sub_file:
-                            file_content = sub_file.read()
-                            cleaned_content = ''.join(char for char in file_content if ord(char) >= 32 or char in '\n\r\t')
-                            sub_data = json.loads(cleaned_content)
-                            if sub_data:
-                                relative_path = os.path.relpath(root, destination_folder)
-                                merged_data[relative_path] = sub_data
-                                files_merged = True
-                                print(f"Added data from {relative_path}")
+                relative_path = os.path.relpath(root, destination_folder)
+                depth = len(relative_path.split(os.sep))
+                
+                try:
+                    with open(metadata_file_path, 'r', encoding='utf-8') as sub_file:
+                        file_content = sub_file.read()
+                        cleaned_content = ''.join(char for char in file_content if ord(char) >= 32 or char in '\n\r\t')
+                        sub_data = json.loads(cleaned_content)
+                        if sub_data:
+                            # Merge data into the appropriate level
+                            current_level = merged_data
+                            path_parts = relative_path.split(os.sep)
+                            for part in path_parts[:-1]:
+                                if part not in current_level:
+                                    current_level[part] = {}
+                                current_level = current_level[part]
+                            current_level.update(sub_data)
+                            files_merged = True
+                            print(f"Added data from {relative_path}")
                     
-
-                    except json.JSONDecodeError as json_err:
-                        logging.warning(f"JSON error in {metadata_file_path}: {str(json_err)}. Skipping this file.")
-                    except Exception as e:
-                        logging.error(f"Error processing {metadata_file_path}: {str(e)}")
+                    # Mark files in deeper levels for deletion
+                    if depth > 1:
+                        files_to_delete.append(metadata_file_path)
+                
+                except json.JSONDecodeError as json_err:
+                    logging.warning(f"JSON error in {metadata_file_path}: {str(json_err)}. Skipping this file.")
+                except Exception as e:
+                    logging.error(f"Error processing {metadata_file_path}: {str(e)}")
         
         if files_merged:
             with open(root_metadata_file, 'w', encoding='utf-8') as root_file:
                 json.dump(merged_data, root_file, indent=2)
-        else:
-            print("No metadata files found to merge.")
-            if os.path.exists(root_metadata_file):
-                os.remove(root_metadata_file)
-                print(f"Removed empty root metadata file: {root_metadata_file}")
+        
+        # Delete metadata files in deeper levels
+        for file_path in files_to_delete:
+            try:
+                os.remove(file_path)
+                print(f"Deleted metadata file: {file_path}")
+            except Exception as e:
+                logging.error(f"Error deleting {file_path}: {str(e)}")
+        
+        print("Metadata files in deeper levels have been merged and deleted.")
     except Exception as e:
-        logging.error(f"Error merging metadata files: {str(e)}")
+        logging.error(f"Error merging and deleting metadata files: {str(e)}")
 
 def create_metadata_html_table(destination_folder):
     try:
