@@ -220,10 +220,7 @@ def create_metadata_html_table(destination_folder):
         if os.path.exists(root_metadata_file):
             try:
                 os.remove(root_metadata_file)
-                print(f"Deleted root metadata file: {root_metadata_file}")
             except Exception as e:
                 logging.error(f"Error deleting root metadata file {root_metadata_file}: {str(e)}")
-
-        print(f"HTML table with all metadata created: {output_path}")
     except Exception as e:
         logging.error(f"Error creating HTML table from metadata: {str(e)}")
