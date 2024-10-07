@@ -21,7 +21,7 @@ def convert_text(files, root):
         elif file.lower().endswith(('.txt', '.doc', '.docx', '.rtf', '.odt')):
             convert_to_pdf(input_path, output_path, metadata_file)
         
-        original_file = input_path.replace('.pdf', '.pdf_original')
+        original_file = output_path.replace('.pdf', '.pdf_original')
         print(f"Removing {original_file}, input_path: {input_path}")
         if os.path.exists(original_file):
             os.remove(original_file)
