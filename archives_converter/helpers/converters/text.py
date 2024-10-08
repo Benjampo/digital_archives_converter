@@ -43,7 +43,7 @@ def convert_to_pdf(input_path, output_path, metadata_file):
             '-o', output_path,
             input_path
         ]
-        subprocess.run(unoconv_command, timeout=600, check=True, capture_output=True, text=True)
+        subprocess.run(unoconv_command, timeout=60, check=True, capture_output=True, text=True)
         
         exiftool_command = [
             'exiftool',
