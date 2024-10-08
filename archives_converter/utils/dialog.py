@@ -38,9 +38,8 @@ def dialog():
     ╚═══════════════════════════════════╝
     [/bold green]
     [yellow]
-    This program is designed to convert video files from VOB to MKV format.
-    It utilizes the power of FFmpeg for efficient conversion and offers
-    options to clone, rename, or convert directories.
+    This script is designed to convert media files from various formats to a standardized format.
+    It can clone, rename, or convert directories.
     [/yellow]
     """
     print(welcome_message)

@@ -105,7 +105,11 @@ def convert_folder(source_folder, selected_media_types, destination_folder=None)
     print("[bold yellow]Creating BagIt structure...[/bold yellow]")
 
     items = [item for item in os.listdir(destination_folder) if os.path.isdir(os.path.join(destination_folder, item))]
-    with Progress() as progress:
+    with Progress( SpinnerColumn(spinner_name='clock'),
+        TextColumn("[progress.description]{task.description}"),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+    ) as progress:
         task = progress.add_task("[bold blue]Creating BagIt structure...", total=len(items))
         for item in items:
             item_path = os.path.join(destination_folder, item)

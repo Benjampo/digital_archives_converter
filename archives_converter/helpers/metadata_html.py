@@ -74,7 +74,7 @@ def create_metadata_html_table(destination_folder):
                 except Exception as e:
                     logging.error(f"Error reading {sub_metadata_path}: {str(e)}")
 
-        # If the main metadata.json exists and is not empty, merge it with the collected data
+
         if os.path.exists(metadata_file_path) and os.path.getsize(metadata_file_path) > 0:
             try:
                 with open(metadata_file_path, 'r', encoding='utf-8') as f:
@@ -186,9 +186,6 @@ def create_metadata_html_table(destination_folder):
 
                 flatten_metadata(file_metadata)
                 file_metadata = flattened_metadata
-                print(f"Flattened metadata:")
-                for key, value in file_metadata.items():
-                    print(f"    {key}: {value}")
                 html += f"<div class='metadataEntry'>"
                 html += f"<h2>{os.path.basename(filename)}</h2>"
                 
