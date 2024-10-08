@@ -49,8 +49,6 @@ def process_file(file, root, progress, task, selected_media_types):
     if conversion_performed:
         print(f"[bold green]:heavy_check_mark: Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]")
         progress.update(task, advance=1, current_file=f"Completed [link=file://{parent_folder}]{file}[/link]")
-    else:
-        print(f"[bold yellow]File skipped:[/bold yellow] {file}")
 
 
 

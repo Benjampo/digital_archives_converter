@@ -118,9 +118,7 @@ def dialog():
     ╚═════════════════════════════════════════════╝
     [/bold green]
     [yellow]
-    We hope you found this tool useful for your archiving needs.
-    Your digital memories are now preserved and easily accessible.
-    Have a great day, and see you next time!
+    Re-launch the script to convert another folder.
     [/yellow]
     """
     print(thank_you_message)

@@ -175,20 +175,21 @@ def create_metadata_html_table(destination_folder):
         for _, files in merged_metadata.items():
             for filename, file_metadata in files.items():
 
+                flattened_metadata = {}
                 def flatten_metadata(metadata, prefix=''):
-                    flattened = {}
                     for key, value in metadata.items():
                         full_key = f"{prefix}{key}"
                         if isinstance(value, dict):
-                            flattened.update(flatten_metadata(value, f"{full_key}."))
+                            flatten_metadata(value, f"{full_key}.")
                         elif not isinstance(value, (list, dict)):
-                            flattened[full_key] = value
-                    return flattened
+                            flattened_metadata[full_key] = value
 
-                flattened_metadata = flatten_metadata(file_metadata)
+                flatten_metadata(file_metadata)
                 file_metadata = flattened_metadata
+                print(f"Flattened metadata:")
                 for key, value in file_metadata.items():
-                    html += f"<div class='metadataEntry'>"
+                    print(f"    {key}: {value}")
+                html += f"<div class='metadataEntry'>"
                 html += f"<h2>{os.path.basename(filename)}</h2>"
                 
 
