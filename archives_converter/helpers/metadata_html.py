@@ -80,7 +80,6 @@ def create_metadata_html_table(destination_folder):
                 with open(metadata_file_path, 'r', encoding='utf-8') as f:
                     main_metadata = json.load(f)
                 merged_metadata.update(main_metadata)
-                print(f"Main metadata: {main_metadata}")
             except json.JSONDecodeError:
                 logging.warning(f"Invalid JSON in main metadata file {metadata_file_path}. Skipping this file.")
             except Exception as e:
@@ -155,6 +154,15 @@ def create_metadata_html_table(destination_folder):
                     white-space: normal;
                     word-break: break-word;
                 }
+                .objectTable {
+                    margin-bottom: 30px;
+                }
+                .objectTitle {
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    color: #2c3e50;
+                }
             </style>
         </head>
         <body>
@@ -164,30 +172,57 @@ def create_metadata_html_table(destination_folder):
         html += "<input type='text' id='searchInput' onkeyup='searchMetadata()' placeholder='Search metadata...'>"
         
         html += "<div id='metadataContent'>"
-        for folder, files in merged_metadata.items():
+        for _, files in merged_metadata.items():
             for filename, file_metadata in files.items():
+
+                def flatten_metadata(metadata, prefix=''):
+                    flattened = {}
+                    for key, value in metadata.items():
+                        full_key = f"{prefix}{key}"
+                        if isinstance(value, dict):
+                            flattened.update(flatten_metadata(value, f"{full_key}."))
+                        elif not isinstance(value, (list, dict)):
+                            flattened[full_key] = value
+                    return flattened
+
+                flattened_metadata = flatten_metadata(file_metadata)
+                file_metadata = flattened_metadata
+                print(f"Flattened metadata:")
+                for key, value in file_metadata.items():
+                    print(f"    {key}: {value}")
                 html += f"<div class='metadataEntry'>"
                 html += f"<h2>{os.path.basename(filename)}</h2>"
-                html += f"<p>Folder: {folder}</p>"
                 
-                html += "<table>"
-                html += "<tr><th>Metadata Key</th><th>Metadata Value</th></tr>"
-                
-                def render_metadata(metadata, prefix=''):
-                    table_rows = ""
-                    for key, value in metadata.items():
-                        full_key = f"{key}"
-                        if isinstance(value, dict):
-                            table_rows += render_metadata(value, f"{full_key}.")
-                        elif not isinstance(value, (list, dict)):
-                            table_rows += f"<tr><td>{full_key}</td><td>{value}</td></tr>"
-                    return table_rows
-                
-                html += render_metadata(file_metadata)
-                
-                html += "</table>"
+
+                objects = {}
+                for key, value in file_metadata.items():
+                    object_name, attr = key.split('.', 1) if '.' in key else (key, '')
+                    if object_name not in objects:
+                        objects[object_name] = {}
+                    if attr:
+                        objects[object_name][attr] = value
+                    else:
+                        objects[object_name] = value
+
+                for object_name, object_data in objects.items():
+                    html += f"<div class='objectTable'>"
+                    html += f"<div class='objectTitle'>{object_name}</div>"
+                    html += "<table>"
+                    html += "<tr><th>Metadata Key</th><th>Metadata Value</th></tr>"
+                    
+                    if isinstance(object_data, dict):
+                        for key, value in object_data.items():
+                            key_parts = key.split(".")
+                            attrKey = key_parts[-1] if key_parts else key
+                            html += f"<tr><td>{attrKey}</td><td>{value}</td></tr>"
+                    else:
+                        html += f"<tr><td>{object_name}</td><td>{object_data}</td></tr>"
+                    
+                    html += "</table>"
+                    html += "</div>"
+
                 html += "</div>"
-        
+
         html += "</div>"
 
         html += """
@@ -224,3 +259,4 @@ def create_metadata_html_table(destination_folder):
                 logging.error(f"Error deleting root metadata file {root_metadata_file}: {str(e)}")
     except Exception as e:
         logging.error(f"Error creating HTML table from metadata: {str(e)}")
+        logging.exception("Detailed traceback:")
