@@ -47,10 +47,10 @@ def process_file(file, root, progress, task, selected_media_types):
         conversion_performed = convert_text([file], root) or conversion_performed
 
     if conversion_performed:
-        print(f"[bold green]Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]")
+        print(f"[bold green]:heavy_check_mark: Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]")
         progress.update(task, advance=1, current_file=f"Completed [link=file://{parent_folder}]{file}[/link]")
     else:
-        print(f"[bold yellow]Not converted:[/bold yellow] {file}")
+        print(f"[bold yellow]File skipped:[/bold yellow] {file}")
 
 
 
@@ -96,7 +96,7 @@ def convert_files(destination_folder, selected_media_types):
     delete_task = progress.add_task("[bold red]Deleting empty folders...[/bold red]", total=total_files)
     delete_empty_folders(destination_folder)
     progress.update(delete_task, completed=total_files)
-    console.print("[bold cyan]Conversion completed![/bold cyan] :sparkles:")
+    console.print("[bold green]:heavy_check_mark: Conversion completed![/bold green] :sparkles:")
 
 def convert_folder(source_folder, selected_media_types, destination_folder=None):
     destination_folder = clone_folder(source_folder, selected_media_types, destination_folder)
@@ -104,23 +104,26 @@ def convert_folder(source_folder, selected_media_types, destination_folder=None)
     create_metadata_files(destination_folder)
     convert_files(destination_folder, selected_media_types)
 
-    print("[bold cyan]Creating BagIt structure...[/bold cyan]")
+    print("[bold yellow]Creating BagIt structure...[/bold yellow]")
 
-    for item in os.listdir(destination_folder):
-        item_path = os.path.join(destination_folder, item)
-        if os.path.isdir(item_path):
-            print(f"[bold blue]Processing {item}[/bold blue]")
+    items = [item for item in os.listdir(destination_folder) if os.path.isdir(os.path.join(destination_folder, item))]
+    with Progress() as progress:
+        task = progress.add_task("[bold blue]Creating BagIt structure...", total=len(items))
+        for item in items:
+            item_path = os.path.join(destination_folder, item)
+            progress.update(task, description=f"[bold blue]Processing metadatas", current_file=f"Processing {item}")
             create_data_folder_and_move_content(item_path)
             create_manifest(item_path)
             create_bagit_txt(item_path)
             merge_metadata_files(item_path)
+            progress.advance(task)
     
-    print("[bold green]BagIt structure created![/bold green]")
+    print("[bold green]:heavy_check_mark: BagIt structure created![/bold green]")
 
-    print("[bold cyan]Creating metadata HTML table...[/bold cyan]")
+    print("[bold yellow]Creating metadata HTML table...[/bold yellow]")
 
     create_metadata_html_table(destination_folder)
 
-    print("[bold green]Metadata HTML table created![/bold green]")
+    print("[bold green]:heavy_check_mark: Metadata HTML table created![/bold green]")
   
 

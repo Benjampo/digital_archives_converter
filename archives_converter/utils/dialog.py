@@ -103,4 +103,24 @@ def dialog():
             rename_files_and_folders(source_folder)
             break
 
-    print("[bold green]Thank you for using Archive Converter![/bold green]")
+    thank_you_message = """
+    [bold cyan]
+     ████████╗██╗  ██╗ █████╗ ███╗   ██╗██╗  ██╗███████╗
+    ╚══██╔══╝██║  ██║██╔══██╗████╗  ██║██║ ██╔╝██╔════╝
+       ██║   ███████║███████║██╔██╗ ██║█████╔╝ ███████╗
+       ██║   ██╔══██║██╔══██║██║╚██╗██║██╔═██╗ ╚════██║
+       ██║   ██║  ██║██║  ██║██║ ╚████║██║  ██╗███████║
+       ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
+    [/bold cyan]
+    [bold green]
+    ╔═════════════════════════════════════════════╗
+    ║ THANK YOU FOR USING THE ARCHIVE CONVERTER!  ║
+    ╚═════════════════════════════════════════════╝
+    [/bold green]
+    [yellow]
+    We hope you found this tool useful for your archiving needs.
+    Your digital memories are now preserved and easily accessible.
+    Have a great day, and see you next time!
+    [/yellow]
+    """
+    print(thank_you_message)
