@@ -21,36 +21,36 @@ console = Console()
 
 def process_file(file, root, progress, task, selected_media_types):
     if file == '.DS_Store':  # Skip .DS_Store files
-        progress.update(task, advance=1)
         return
 
     file_path = os.path.join(root, file)
     parent_folder = os.path.dirname(file_path)
     if not os.path.exists(file_path):
-        progress.update(task, advance=1, current_file=file)
         return
-
-    progress.update(task, current_file=f"Converting {file}")
 
     file_name_without_ext = os.path.splitext(file)[0]
     converted_suffixes = ['_pdfa', '_tiff', '_wav', '_ffv1']
     if any(file_name_without_ext.lower().endswith(suffix) for suffix in converted_suffixes):
         print(f"[bold orange]Skipping:[/bold orange] {file}")
-        progress.update(task, advance=1, current_file=f"Skipped {file}")
         return
-    
 
+    progress.update(task, current_file=f"Converting {file}")
+
+    conversion_performed = False
     if 'image' in selected_media_types:
-        convert_images([file], root)
+        conversion_performed = convert_images([file], root) or conversion_performed
     if 'audio' in selected_media_types:
-        convert_audio([file], root)
+        conversion_performed = convert_audio([file], root) or conversion_performed
     if 'video' in selected_media_types:
-        convert_videos([file], root)
+        conversion_performed = convert_videos([file], root) or conversion_performed
     if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'manifest-md5.txt', 'metadata.json']:
-        convert_text([file], root)
-       
-    print(f"[bold green]Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]")
-    progress.update(task, advance=1, current_file=f"Completed [link=file://{parent_folder}]{file}[/link]")
+        conversion_performed = convert_text([file], root) or conversion_performed
+
+    if conversion_performed:
+        print(f"[bold green]Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]")
+        progress.update(task, advance=1, current_file=f"Completed [link=file://{parent_folder}]{file}[/link]")
+    else:
+        print(f"[bold yellow]Not converted:[/bold yellow] {file}")
 
 
 

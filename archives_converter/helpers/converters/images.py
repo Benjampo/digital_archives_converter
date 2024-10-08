@@ -7,6 +7,7 @@ from helpers.metadata import extract_metadata, append_metadata
 def convert_images(files, root):
     metadata_file = os.path.join(root, 'metadata.json')
     image_files = [f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.tif', '.png', '.gif', '.bmp'))]
+    conversion_performed = False
     for img_file in image_files:
         input_path = os.path.join(root, img_file)
         output_path = os.path.splitext(input_path)[0] + '_tiff.tiff'
@@ -29,6 +30,7 @@ def convert_images(files, root):
                 os.remove(input_path)  # Remove the original file
                 os.chmod(output_path, 0o644)  # Set permissions to rw-r--r--
                 print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
+                conversion_performed = True
             except OSError as e:
                 logging.error(f"Error renaming {img_file}: {str(e)}")
             continue
@@ -43,7 +45,9 @@ def convert_images(files, root):
             
             append_metadata(metadata, metadata_file, output_path)
             
-            os.remove(input_path)  # Remove the original image file
+            os.remove(input_path)
+            conversion_performed = True
         except Exception as e:
             logging.error(f"Error converting {img_file} to TIFF: {str(e)}")
+    return conversion_performed
 

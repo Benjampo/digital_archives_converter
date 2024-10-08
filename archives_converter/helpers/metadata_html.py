@@ -187,10 +187,8 @@ def create_metadata_html_table(destination_folder):
 
                 flattened_metadata = flatten_metadata(file_metadata)
                 file_metadata = flattened_metadata
-                print(f"Flattened metadata:")
                 for key, value in file_metadata.items():
-                    print(f"    {key}: {value}")
-                html += f"<div class='metadataEntry'>"
+                    html += f"<div class='metadataEntry'>"
                 html += f"<h2>{os.path.basename(filename)}</h2>"
                 
 

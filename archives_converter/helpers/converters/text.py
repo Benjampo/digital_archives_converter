@@ -8,6 +8,7 @@ from helpers.metadata import extract_metadata, append_metadata
 
 def convert_text(files, root):
     metadata_file = os.path.join(root, 'metadata.json')
+    conversion_performed = False
     for file in files:
         if file.lower() in ['concat_list.txt', 'metadata.json', 'manifest-md5.txt', 'bagit.txt']:
             print(f"[bold yellow]Skipping:[/bold yellow] {file}")
@@ -17,16 +18,15 @@ def convert_text(files, root):
         output_path = os.path.splitext(input_path)[0] + '_pdfa.pdf'
         
         if file.lower().endswith('.pdf'):
-            convert_pdf_to_pdfa(input_path, output_path, metadata_file)
+            conversion_performed = convert_pdf_to_pdfa(input_path, output_path, metadata_file) or conversion_performed
         elif file.lower().endswith(('.txt', '.doc', '.docx', '.rtf', '.odt')):
-            convert_to_pdf(input_path, output_path, metadata_file)
+            conversion_performed = convert_to_pdf(input_path, output_path, metadata_file) or conversion_performed
         
         original_file = output_path.replace('.pdf', '.pdf_original')
         if os.path.exists(original_file):
             os.remove(original_file)
-        
-
-
+    
+    return conversion_performed
 
 def convert_to_pdf(input_path, output_path, metadata_file):
     try:
@@ -64,11 +64,12 @@ def convert_to_pdf(input_path, output_path, metadata_file):
         append_metadata(metadata, metadata_file, input_path)
         
         os.remove(input_path)  # Remove the original text file
+        return True
     except subprocess.CalledProcessError as e:
         logging.error(f"Error converting {input_path} to PDF/A-2b: {e.stderr}")
     except Exception as e:
         logging.error(f"Unexpected error converting {input_path}: {str(e)}")
-
+    return False
 
 def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
     try:
@@ -124,6 +125,7 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
         # Also check for the input file itself
         if os.path.exists(input_path):
             os.remove(input_path)
+        return True
 
     except subprocess.TimeoutExpired:
         logging.error(f"Ghostscript command timed out after {timeout} seconds for {input_path}")
@@ -131,7 +133,6 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
         logging.error(f"Error in Ghostscript command for {input_path}: {e.stderr}")
     except Exception as e:
         logging.error(f"Unexpected error converting {input_path}: {str(e)}")
-
-
+    return False
 
 

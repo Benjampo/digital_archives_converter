@@ -54,6 +54,7 @@ def convert_vob_to_mkv(input_file, output_file):
         return None
 
 def convert_to_mkv(video_ts_paths, output_folder):
+    conversion_performed = False
     for video_ts_path in video_ts_paths:
         # Ensure we're looking inside the VIDEO_TS folder
         video_ts_folder = os.path.join(video_ts_path, 'VIDEO_TS')
@@ -148,12 +149,16 @@ def convert_to_mkv(video_ts_paths, output_folder):
                     
                     except subprocess.CalledProcessError as e:
                         print(f"Error merging MKV files: {e.stderr}")
+                    conversion_performed = True
             else:
                 # If no MKV files were created (e.g., all were too short), still try to delete VIDEO_TS
                 try:
                     shutil.rmtree(video_ts_path)
+                    conversion_performed = True
                     print(f"[bold green]Deleted VIDEO_TS folder:[/bold green] {video_ts_path}")
                 except PermissionError:
                     print(f"[bold yellow]Warning:[/bold yellow] Unable to delete {video_ts_path} due to permission error. Skipping.")
                 except Exception as e:
                     print(f"[bold red]Error:[/bold red] Failed to delete {video_ts_path}: {str(e)}")
+                
+    return conversion_performed

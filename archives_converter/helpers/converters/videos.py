@@ -7,6 +7,7 @@ from helpers.metadata import extract_metadata, append_metadata
 def convert_videos(files, root):
     metadata_file = os.path.join(root, 'metadata.json')
     video_files = [f for f in files if f.lower().endswith(('.mp4', '.avi', '.mov', '.flv'))]
+    conversion_performed = False
     for file in files:
         input_path = os.path.join(root, file)
         metadata_file = os.path.join(os.path.dirname(input_path), 'metadata.json')
@@ -51,8 +52,10 @@ def convert_videos(files, root):
 
                     try:
                         os.remove(input_path)  # Remove the original video file
+                        conversion_performed = True
                     except FileNotFoundError:
                         print(f"Warning: Original file not found for removal: {input_path}")
                         continue
                 except subprocess.CalledProcessError as e:
                     print(f"Error converting {video_file} to FFV1: {e.stderr}")
+    return conversion_performed
