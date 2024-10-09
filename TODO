@@ -1,3 +1,2 @@
-- Fix kill to not freeze console
 - Add files integrity check with MD5
 - Check metdata json structure

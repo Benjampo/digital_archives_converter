@@ -16,7 +16,7 @@ else
     VENV_ACTIVATE := . $(VENV)/bin/activate
 endif
 
-.PHONY: all prereq venv install run clean
+.PHONY: all prereq venv install run clean reset
 
 all: prereq venv install
 
@@ -44,9 +44,16 @@ install: venv
 	$(VENV_ACTIVATE) && pip install -r requirements.txt
 
 run: venv
-	$(VENV_ACTIVATE) && $(PYTHON) archives_converter
+	$(VENV_ACTIVATE) && trap 'deactivate' EXIT && $(PYTHON) archives_converter
 
 clean:
 	rm -rf $(VENV)
 	find . -type f -name '*.pyc' -delete
 	find . -type d -name '__pycache__' -delete
+
+reset:
+	@echo "Resetting environment..."
+	@-pkill -f "$(PYTHON) archives_converter" 2>/dev/null || true
+	@-deactivate 2>/dev/null || true
+	@make clean
+	@make all

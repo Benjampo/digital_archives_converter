@@ -2,11 +2,10 @@ import inquirer
 from utils.convert import convert_folder
 from utils.clone import clone_folder
 from utils.rename import rename_files_and_folders
-from helpers.metadata import create_metadata_files
 import tkinter as tk
 from tkinter import filedialog
 from rich import print
-from helpers.metadata_html import create_metadata_html_table
+
 
 def select_folder():
     root = tk.Tk()
@@ -14,13 +13,6 @@ def select_folder():
     folder = filedialog.askdirectory(title="Select Source Folder")
     root.destroy()
     return folder
-
-def select_metadata_file():
-    root = tk.Tk()
-    root.withdraw()
-    file_path = filedialog.askopenfilename(title="Select Metadata file", filetypes=[("YAML files", "*.yaml")])
-    root.destroy()
-    return file_path
 
 def dialog():
     welcome_message = """

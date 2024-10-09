@@ -1,6 +1,5 @@
 import os
 import concurrent.futures
-import threading
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.console import Console
 from rich import print
@@ -89,6 +88,8 @@ def convert_files(destination_folder, selected_media_types):
     delete_empty_folders(destination_folder)
     progress.update(delete_task, completed=total_files)
     console.print("[bold green]:heavy_check_mark: Conversion completed![/bold green] :sparkles:")
+
+
 
 def convert_folder(source_folder, selected_media_types, destination_folder=None):
     destination_folder = clone_folder(source_folder, selected_media_types, destination_folder)
