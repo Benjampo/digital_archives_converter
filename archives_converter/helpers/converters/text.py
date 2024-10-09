@@ -12,7 +12,7 @@ def convert_text(files, root):
     for file in files:
         if file.lower() in ['concat_list.txt', 'metadata.json', 'manifest-md5.txt', 'bagit.txt']:
             print(f"[bold yellow]Skipping:[/bold yellow] {file}")
-            continue
+            return conversion_performed
         
         input_path = os.path.join(root, file)
         output_path = os.path.splitext(input_path)[0] + '_pdfa.pdf'

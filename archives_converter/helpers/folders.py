@@ -31,7 +31,7 @@ def copy_folder_with_progress(source, destination, selected_media_types):
     total_items = total_files + total_folders
 
     with Progress(
-        SpinnerColumn(spinner_name='clock'),
+        SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),

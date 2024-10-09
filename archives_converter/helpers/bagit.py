@@ -23,8 +23,11 @@ def create_manifest(folder):
     manifest_path = os.path.join(folder, "manifest-md5.txt")
     with open(manifest_path, "w") as manifest:
         for root, _, files in os.walk(folder):
+            # Skip hidden folders
+            if any(part.startswith('.') for part in root.split(os.sep)):
+                continue
             for file in files:
-                if file not in ["manifest-md5.txt", "metadata.json"]:
+                if not file.startswith('.') and file not in ["manifest-md5.txt", "metadata.json"]:
                     file_path = os.path.join(root, file)
                     md5_hash = generate_md5(file_path)
                     relative_path = os.path.relpath(file_path, folder)

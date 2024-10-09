@@ -45,6 +45,14 @@ def process_file(file, root, progress, task, selected_media_types):
         conversion_performed = convert_videos([file], root) or conversion_performed
     if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'manifest-md5.txt', 'metadata.json']:
         conversion_performed = convert_text([file], root) or conversion_performed
+    if 'dvd' in selected_media_types and file == 'VIDEO_TS':
+        video_ts_folder = os.path.join(root, 'VIDEO_TS')
+        progress.update(task, current_file=f"VIDEO_TS")
+        convert_to_mkv([root], root)
+        print(f"[bold green]Converted VIDEO_TS:[/bold green] {root}")
+        video_ts_files = len([f for f in os.listdir(video_ts_folder) if f != '.DS_Store'])
+        progress.update(task, advance=video_ts_files, current_file=f"Completed VIDEO_TS: {root}")
+        return
 
     if conversion_performed:
         print(f"[bold green]:heavy_check_mark: Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]")
@@ -56,7 +64,7 @@ def convert_files(destination_folder, selected_media_types):
     print("[bold cyan]Starting conversion[/bold cyan] :gear:")
 
     with Progress(
-        SpinnerColumn(spinner_name='clock'),
+        SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
@@ -66,28 +74,14 @@ def convert_files(destination_folder, selected_media_types):
         total_files, _ = count_files_and_folders(destination_folder, selected_media_types)
         convert_task = progress.add_task("[bold blue]Converting files...[/bold blue]", total=total_files, current_file="")
 
-        update_lock = threading.Lock()
-        def thread_safe_update(*args, **kwargs):
-            with update_lock:
-                progress.update(*args, **kwargs)
-
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for root, dirs, files in os.walk(destination_folder):
                 file_tasks = [
                     executor.submit(process_file, file, root, progress, convert_task, selected_media_types)
-                    for file in files if file != '.DS_Store'
+                    for file in files + dirs if file != '.DS_Store'
                 ]
-                if 'dvd' in selected_media_types:
-                    if 'VIDEO_TS' in dirs:
-                        video_ts_folder = os.path.join(root, 'VIDEO_TS')
-                        thread_safe_update(convert_task, current_file=f"Converting VIDEO_TS: {root}")
-                        convert_to_mkv([root], root)
-                        print(f"[bold green]Converted VIDEO_TS:[/bold green] {root}")
-                        thread_safe_update(convert_task, advance=1, current_file=f"Completed VIDEO_TS: {root}")
-
                 concurrent.futures.wait(file_tasks)
 
-        # After processing all files, update the total to match the completed count
         final_completed = progress.tasks[convert_task].completed
         progress.update(convert_task, total=final_completed, completed=final_completed)
 
@@ -105,7 +99,7 @@ def convert_folder(source_folder, selected_media_types, destination_folder=None)
     print("[bold yellow]Creating BagIt structure...[/bold yellow]")
 
     items = [item for item in os.listdir(destination_folder) if os.path.isdir(os.path.join(destination_folder, item))]
-    with Progress( SpinnerColumn(spinner_name='clock'),
+    with Progress( SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),

@@ -8,7 +8,7 @@ def rename_files_and_folders(folder, selected_media_types):
     print("[bold cyan]Starting renaming files and folders[/bold cyan] :pencil2:")
 
     with Progress(
-        SpinnerColumn(spinner_name='clock'),
+        SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),

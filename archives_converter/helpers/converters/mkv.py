@@ -45,6 +45,7 @@ def convert_vob_to_mkv(input_file, output_file):
         output_file
     ]
     try:
+        print(f"[bold yellow]Converting file:[/bold yellow] {input_file}")
         subprocess.run(ffmpeg_command, timeout=1200, check=True, stderr=subprocess.PIPE, universal_newlines=True)
         print(f"[bold green]Converted file:[/bold green] {input_file}")
         return output_file
