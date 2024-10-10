@@ -168,7 +168,6 @@ def create_metadata_html_table(destination_folder):
         <body>
         """
 
-        # Add search input
         html += "<input type='text' id='searchInput' onkeyup='searchMetadata()' placeholder='Search metadata...'>"
         
         html += "<div id='metadataContent'>"
