@@ -27,6 +27,8 @@ ifeq ($(OS),Windows_NT)
 	@echo "Please install Python, FFmpeg, and LibreOffice manually on Windows."
 else
     ifeq ($(shell uname),Darwin)
+		@echo "Checking for Homebrew..."
+		@which brew > /dev/null || (echo "Installing Homebrew..." && /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
 		@echo "Checking for Python..."
 		@which python3 > /dev/null || (echo "Installing Python..." && brew install python)
 		@echo "Checking for FFmpeg..."
