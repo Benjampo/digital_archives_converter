@@ -1,7 +1,6 @@
 Pillow
 python-docx
 reportlab
-unoconv
 setuptools
 rich
 inquirer

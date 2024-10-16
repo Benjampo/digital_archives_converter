@@ -4,19 +4,22 @@ This tool converts various media files (images, audio, video) to archival format
 
 ## Features
 
-- Converts images to TIFF format
-- Converts audio files to WAV format
-- Converts video files to FFV1 format
+- Converts images to TIFF format (AIP) or JPG format (DIP)
+- Converts audio files to WAV format (AIP) or MP3 format (DIP)
+- Converts video files to FFV1 format (AIP) or MP4 format (DIP)
 - Converts documents to PDF/A2-b
 - Handles DVD (VIDEO_TS) conversion
-- Deletes empty folders after conversion (it will delete menus and stuff)
+- Deletes empty folders after conversion
+- Creates BagIt structure
+- Generates metadata files and HTML summary
 
 ## Requirements
 
-- [Python 3.6+](https://www.python.org/): The script is written in Python and uses features available in Python 3.6 and later.
+- [Python 3.12+](https://www.python.org/): The script is written in Python and uses features available in Python 3.12 and later.
 - [FFmpeg](https://www.ffmpeg.org/): Used for audio and video conversion tasks.
 - [LibreOffice](https://www.libreoffice.org/): Required for document conversion to PDF/A2-b format.
 - [ExifTool](https://exiftool.org/): Required for metadata extraction and embedding.
+- [unoconv](https://github.com/dagwieers/unoconv): Required for converting Microsoft Office files.
 
 ## Installation
 
@@ -34,29 +37,32 @@ make run
 
 ## Manual installation
 
-#### macOS
+### macOS
 
 1. Install Homebrew:
    ```
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
    ```
 
-2. Install Python, FFmpeg, and LibreOffice:
+2. Install required packages:
    ```
-   brew install python ffmpeg libreoffice exiftool
+   brew install python@3.12 python-tk@3.12 ffmpeg libreoffice exiftool unoconv
    ```
 
-#### Linux (Ubuntu/Debian)
+### Linux (Ubuntu/Debian)
 
-1. Update package list and install Python, FFmpeg, and LibreOffice:
+1. Update package list and install required packages:
    ```
    sudo apt update
-   sudo apt install python3 python3-pip ffmpeg libreoffice libimage-exiftool-perl
+   sudo apt install software-properties-common
+   sudo add-apt-repository ppa:deadsnakes/ppa
+   sudo apt update
+   sudo apt install python3.12 python3.12-venv python3.12-dev python3.12-tk ffmpeg libreoffice libimage-exiftool-perl unoconv
    ```
 
-#### Windows
+### Windows
 
-1. Install Python from the [official website](https://www.python.org/downloads/).
+1. Install Python 3.12 from the [official website](https://www.python.org/downloads/).
 2. Install FFmpeg:
    - Download from [ffmpeg.org](https://ffmpeg.org/download.html)
    - Add FFmpeg to your system PATH
@@ -64,14 +70,16 @@ make run
 4. Install ExifTool:
    - Download from [exiftool.org](https://exiftool.org/install.html)
    - Add ExifTool to your system PATH
+5. Install unoconv:
+   - Follow the instructions for Windows installation on the [unoconv GitHub page](https://github.com/unoconv/unoconv)
 
-#### Setup
+### Setup
 
 1. Clone the repository or download the source code.
 
 2. Create a virtual environment:
    ```
-   python3 -m venv venv  # On macOS and Linux
+   python3.12 -m venv venv  # On macOS and Linux
    python -m venv venv   # On Windows
    ```
 

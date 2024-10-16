@@ -173,8 +173,13 @@ def create_metadata_html_table(destination_folder):
         html += "<div id='metadataContent'>"
         for _, files in merged_metadata.items():
             for filename, file_metadata in files.items():
+                if isinstance(file_metadata, str):
+                    logging.warning(f"Unexpected string value for file_metadata: {file_metadata}")
+                    continue
 
                 def flatten_metadata(metadata, prefix=''):
+                    if not isinstance(metadata, dict):
+                        return {prefix.rstrip('.'): metadata}
                     flattened = {}
                     for key, value in metadata.items():
                         full_key = f"{prefix}{key}"
@@ -186,7 +191,7 @@ def create_metadata_html_table(destination_folder):
 
                 flattened_metadata = flatten_metadata(file_metadata)
                 file_metadata = flattened_metadata
-                html += f"<div class='metadataEntry'>"
+                html += "<div class='metadataEntry'>"
           
                 
 
@@ -201,7 +206,7 @@ def create_metadata_html_table(destination_folder):
                         objects[object_name] = value
 
                 for object_name, object_data in objects.items():
-                    html += f"<div class='objectTable'>"
+                    html += "<div class='objectTable'>"
                     html += f"<div class='objectTitle'>{object_name}</div>"
                     html += "<table>"
                     html += "<tr><th>Metadata Key</th><th>Metadata Value</th></tr>"
