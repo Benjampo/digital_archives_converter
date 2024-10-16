@@ -1,7 +1,7 @@
 # Makefile for Archive Conversion Tool
 
 # Python command (use python3 on macOS and Linux, python on Windows)
-PYTHON := python3
+PYTHON := python3.12
 ifeq ($(OS),Windows_NT)
     PYTHON := python
 endif
@@ -30,7 +30,7 @@ else
 		@echo "Checking for Homebrew..."
 		@which brew > /dev/null || (echo "Installing Homebrew..." && /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
 		@echo "Checking for Python..."
-		@which python3 > /dev/null || (echo "Installing Python..." && brew install python)
+		@which python3.12 > /dev/null || (echo "Installing Python..." && brew install python@3.12)
 		@echo "Checking for FFmpeg..."
 		@which ffmpeg > /dev/null || (echo "Installing FFmpeg..." && brew install ffmpeg)
 		@echo "Checking for LibreOffice..."
