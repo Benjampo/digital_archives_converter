@@ -4,10 +4,10 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.console import Console
 from rich import print
 
-from helpers.converters.mkv import convert_to_mkv
+from helpers.converters.mkv import convert_dvd_to_mkv, convert_dvd_to_mp4
 from helpers.converters.images import convert_tiff, convert_jpg
 from helpers.converters.audio import convert_wav, convert_mp3
-from helpers.converters.videos import convert_ffv1
+from helpers.converters.videos import convert_ffv1, convert_mp4
 from helpers.converters.text import convert_pdfa
 from helpers.delete_empty_folders import delete_empty_folders
 from helpers.folders import count_files_and_folders
@@ -28,7 +28,7 @@ def process_file(convert_type, file, root, progress, task, selected_media_types)
         return
 
     file_name_without_ext = os.path.splitext(file)[0]
-    converted_suffixes = ['_pdfa', '_tiff', '_wav', '_ffv1']
+    converted_suffixes = ['_pdfa', '_tiff', '_wav', '_ffv1', '_mp4', '_mp3', '_jpg']
     if any(file_name_without_ext.lower().endswith(suffix) for suffix in converted_suffixes):
         print(f"[bold orange]Skipping:[/bold orange] {file}")
         return
@@ -40,20 +40,26 @@ def process_file(convert_type, file, root, progress, task, selected_media_types)
         if convert_type == "AIP":
             conversion_performed = convert_tiff([file], root) or conversion_performed
         elif convert_type == "DIP":
-            conversion_performed = convert_jpg([file], root, convert_type) or conversion_performed
+            conversion_performed = convert_jpg([file], root) or conversion_performed
     if 'audio' in selected_media_types:
         if convert_type == "AIP":
             conversion_performed = convert_wav([file], root) or conversion_performed
         elif convert_type == "DIP":
             conversion_performed = convert_mp3([file], root) or conversion_performed
     if 'video' in selected_media_types:
-        conversion_performed = convert_ffv1([file], root) or conversion_performed
+        if convert_type == "AIP":
+            conversion_performed = convert_ffv1([file], root) or conversion_performed
+        elif convert_type == "DIP":
+            conversion_performed = convert_mp4([file], root) or conversion_performed
     if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'manifest-md5.txt', 'metadata.json']:
         conversion_performed = convert_pdfa([file], root) or conversion_performed
     if 'dvd' in selected_media_types and file == 'VIDEO_TS':
         video_ts_folder = os.path.join(root, 'VIDEO_TS')
-        progress.update(task, current_file=f"VIDEO_TS")
-        convert_to_mkv([root], root)
+        progress.update(task, current_file="VIDEO_TS")
+        if convert_type == "AIP":
+            convert_dvd_to_mkv([root], root)
+        elif convert_type == "DIP":
+            convert_dvd_to_mp4([root], root)
         print(f"[bold green]Converted VIDEO_TS:[/bold green] {root}")
         video_ts_files = len([f for f in os.listdir(video_ts_folder) if f != '.DS_Store'])
         progress.update(task, advance=video_ts_files, current_file=f"Completed VIDEO_TS: {root}")
@@ -62,7 +68,6 @@ def process_file(convert_type, file, root, progress, task, selected_media_types)
     if conversion_performed:
         print(f"[bold green]:heavy_check_mark: Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]")
         progress.update(task, advance=1, current_file=f"Completed [link=file://{parent_folder}]{file}[/link]")
-
 
 
 def convert_files(destination_folder, convert_type, selected_media_types):
@@ -114,7 +119,7 @@ def convert_folder(source_folder,convert_type, selected_media_types, destination
         task = progress.add_task("[bold blue]Creating BagIt structure...", total=len(items))
         for item in items:
             item_path = os.path.join(destination_folder, item)
-            progress.update(task, description=f"[bold blue]Processing metadatas", current_file=f"Processing {item}")
+            progress.update(task, description="[bold blue]Processing metadatas", current_file=f"Processing {item}")
             create_data_folder_and_move_content(item_path)
             create_manifest(item_path)
             create_bagit_txt(item_path)
@@ -129,4 +134,5 @@ def convert_folder(source_folder,convert_type, selected_media_types, destination
 
     print("[bold green]:heavy_check_mark: Metadata HTML table created![/bold green]")
   
+
 

@@ -23,8 +23,8 @@ def clone_folder(source_folder, clone_type, selected_media_types, destination_fo
     if os.path.exists(destination_folder):
         print(f"[bold green]Using existing destination folder:[/bold green] [italic]{destination_folder}[/italic]")
     else:
-        print(f"[bold yellow]Cloning source folder...[/bold yellow]")
+        print("[bold yellow]Cloning source folder...[/bold yellow]")
         copy_folder_with_progress(source_folder, destination_folder, selected_media_types)
-        print(f"[bold green]Cloned source folder[/bold green]")
+        print("[bold green]Cloned source folder[/bold green]")
 
     return destination_folder
