@@ -4,7 +4,7 @@ import shutil
 from helpers.metadata import extract_metadata, append_metadata
 
 
-def convert_videos(files, root):
+def convert_ffv1(files, root):
     metadata_file = os.path.join(root, 'metadata.json')
     video_files = [f for f in files if f.lower().endswith(('.mp4', '.avi', '.mov', '.flv'))]
     conversion_performed = False

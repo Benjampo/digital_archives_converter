@@ -3,7 +3,7 @@ import subprocess
 import logging
 from helpers.metadata import extract_metadata, append_metadata
 
-def convert_audio(files, root):
+def convert_wav(files, root):
     metadata_file = os.path.join(root, 'metadata.json')
     audio_files = [f for f in files if f.lower().endswith(('.mp3', '.aac', '.m4a', '.flac', '.ogg', '.aif', '.aiff'))]
     conversion_performed = False

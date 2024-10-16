@@ -6,7 +6,7 @@ import shutil
 from helpers.metadata import extract_metadata, append_metadata
 
 
-def convert_text(files, root):
+def convert_pdfa(files, root):
     metadata_file = os.path.join(root, 'metadata.json')
     conversion_performed = False
     for file in files:

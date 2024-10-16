@@ -4,7 +4,7 @@ import logging
 import shutil
 from helpers.metadata import extract_metadata, append_metadata
 
-def convert_images(files, root):
+def convert_tiff(files, root):
     metadata_file = os.path.join(root, 'metadata.json')
     image_files = [f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.tif', '.png', '.gif', '.bmp'))]
     conversion_performed = False

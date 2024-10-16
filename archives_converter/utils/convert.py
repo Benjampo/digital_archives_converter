@@ -5,10 +5,10 @@ from rich.console import Console
 from rich import print
 
 from helpers.converters.mkv import convert_to_mkv
-from helpers.converters.images import convert_images
-from helpers.converters.audio import convert_audio
-from helpers.converters.videos import convert_videos
-from helpers.converters.text import convert_text
+from helpers.converters.images import convert_tiff
+from helpers.converters.audio import convert_wav
+from helpers.converters.videos import convert_ffv1
+from helpers.converters.text import convert_pdfa
 from helpers.delete_empty_folders import delete_empty_folders
 from helpers.folders import count_files_and_folders
 from utils.clone import clone_folder
@@ -18,7 +18,7 @@ from helpers.metadata import create_metadata_files
 from helpers.metadata_html import create_metadata_html_table, merge_metadata_files
 console = Console()
 
-def process_file(file, root, progress, task, selected_media_types):
+def process_file(convert_type, file, root, progress, task, selected_media_types):
     if file == '.DS_Store':  # Skip .DS_Store files
         return
 
@@ -37,13 +37,13 @@ def process_file(file, root, progress, task, selected_media_types):
 
     conversion_performed = False
     if 'image' in selected_media_types:
-        conversion_performed = convert_images([file], root) or conversion_performed
+        conversion_performed = convert_tiff([file], root) or conversion_performed
     if 'audio' in selected_media_types:
-        conversion_performed = convert_audio([file], root) or conversion_performed
+        conversion_performed = convert_wav([file], root) or conversion_performed
     if 'video' in selected_media_types:
-        conversion_performed = convert_videos([file], root) or conversion_performed
+        conversion_performed = convert_ffv1([file], root) or conversion_performed
     if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'manifest-md5.txt', 'metadata.json']:
-        conversion_performed = convert_text([file], root) or conversion_performed
+        conversion_performed = convert_pdfa([file], root) or conversion_performed
     if 'dvd' in selected_media_types and file == 'VIDEO_TS':
         video_ts_folder = os.path.join(root, 'VIDEO_TS')
         progress.update(task, current_file=f"VIDEO_TS")
@@ -59,7 +59,7 @@ def process_file(file, root, progress, task, selected_media_types):
 
 
 
-def convert_files(destination_folder, selected_media_types):
+def convert_files(destination_folder, convert_type, selected_media_types):
     print("[bold cyan]Starting conversion[/bold cyan] :gear:")
 
     with Progress(
@@ -76,7 +76,7 @@ def convert_files(destination_folder, selected_media_types):
         with concurrent.futures.ThreadPoolExecutor() as executor:
             for root, dirs, files in os.walk(destination_folder):
                 file_tasks = [
-                    executor.submit(process_file, file, root, progress, convert_task, selected_media_types)
+                    executor.submit(process_file,convert_type, file, root, progress, convert_task, selected_media_types)
                     for file in files + dirs if file != '.DS_Store'
                 ]
                 concurrent.futures.wait(file_tasks)
@@ -91,11 +91,11 @@ def convert_files(destination_folder, selected_media_types):
 
 
 
-def convert_folder(source_folder, selected_media_types, destination_folder=None):
-    destination_folder = clone_folder(source_folder, selected_media_types, destination_folder)
+def convert_folder(source_folder,convert_type, selected_media_types, destination_folder=None):
+    destination_folder = clone_folder(source_folder, convert_type, selected_media_types, destination_folder)
     rename_files_and_folders(destination_folder, selected_media_types)
     create_metadata_files(destination_folder)
-    convert_files(destination_folder, selected_media_types)
+    convert_files(destination_folder, convert_type, selected_media_types)
 
     print("[bold yellow]Creating BagIt structure...[/bold yellow]")
 

@@ -49,6 +49,13 @@ def dialog():
             break
 
         if action == 'Clone and convert directory':
+            convert_type_options =[
+                inquirer.List('convert_type',
+                              message="Select convert type:",
+                              choices=['AIP', 'DIP'],
+                              default='AIP')
+            ]
+            convert_type = inquirer.prompt(convert_type_options)['convert_type']
             conversion_options = [
                 inquirer.Checkbox('media_types',
                                   message="Select media types to convert:",
@@ -67,7 +74,7 @@ def dialog():
                 print("[bold red]No folder selected. Please try again.[/bold red]")
                 continue
             print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
-            convert_folder(source_folder, selected_media_types)
+            convert_folder(source_folder, convert_type, selected_media_types)
             break
         elif action == 'Clone directory':
             conversion_options = [
@@ -88,7 +95,7 @@ def dialog():
                 print("[bold red]No folder selected. Please try again.[/bold red]")
                 continue
             print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
-            clone_folder(source_folder, selected_media_types)
+            clone_folder(source_folder, "clone", selected_media_types)
             break
         elif action == 'Rename directory':
             rename_files_and_folders(source_folder)
