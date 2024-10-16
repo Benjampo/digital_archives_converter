@@ -31,6 +31,8 @@ else
 		@which brew > /dev/null || (echo "Installing Homebrew..." && /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
 		@echo "Checking for Python..."
 		@which python3.12 > /dev/null || (echo "Installing Python..." && brew install python@3.12)
+		@echo "Checking for tkinter..."
+		@which python3.12-tk > /dev/null || (echo "Installing tkinter..." && brew install python-tk@3.12)
 		@echo "Checking for FFmpeg..."
 		@which ffmpeg > /dev/null || (echo "Installing FFmpeg..." && brew install ffmpeg)
 		@echo "Checking for LibreOffice..."
@@ -38,14 +40,16 @@ else
 		@echo "Checking for ExifTool..."
 		@which exiftool > /dev/null || (echo "Installing ExifTool..." && brew install exiftool)
     else
-		@echo "Checking for Python..."
-		@which python3 > /dev/null || (echo "Installing Python..." && sudo apt update && sudo apt install -y python3 python3-pip)
+		@echo "Checking for Python 3.12..."
+		@which python3.12 > /dev/null || (echo "Installing Python 3.12..." && sudo apt-get update && sudo apt-get install -y software-properties-common && sudo add-apt-repository -y ppa:deadsnakes/ppa && sudo apt-get update && sudo apt-get install -y python3.12 python3.12-venv python3.12-dev)
+		@echo "Checking for Python 3.12 tkinter..."
+		@dpkg -l | grep -q python3.12-tk || (echo "Installing Python 3.12 tkinter..." && sudo apt-get update && sudo apt-get install -y python3.12-tk)
 		@echo "Checking for FFmpeg..."
-		@which ffmpeg > /dev/null || (echo "Installing FFmpeg..." && sudo apt update && sudo apt install -y ffmpeg)
+		@which ffmpeg > /dev/null || (echo "Installing FFmpeg..." && sudo apt-get update && sudo apt-get install -y ffmpeg)
 		@echo "Checking for LibreOffice..."
-		@which libreoffice > /dev/null || (echo "Installing LibreOffice..." && sudo apt update && sudo apt install -y libreoffice)
+		@which libreoffice > /dev/null || (echo "Installing LibreOffice..." && sudo apt-get update && sudo apt-get install -y libreoffice)
 		@echo "Checking for ExifTool..."
-		@which exiftool > /dev/null || (echo "Installing ExifTool..." && sudo apt update && sudo apt install -y libimage-exiftool-perl)
+		@which exiftool > /dev/null || (echo "Installing ExifTool..." && sudo apt-get update && sudo apt-get install -y libimage-exiftool-perl)
     endif
 endif
 	@echo "Prerequisites check complete."
