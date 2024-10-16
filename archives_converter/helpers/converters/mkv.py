@@ -40,11 +40,12 @@ def convert_vob_to_output(input_file, output_file, output_format):
     elif output_format == 'mp4':
         ffmpeg_command.extend([
             '-c:v', 'libx264',
-            '-preset', 'medium',
+            '-preset', 'faster',
             '-crf', '23',
             '-c:a', 'aac',
             '-b:a', '128k',
-            '-c:s', 'mov_text'
+            '-c:s', 'mov_text',
+            '-threads', '0'
         ])
     
     ffmpeg_command.append(output_file)
@@ -85,7 +86,7 @@ def convert_dvd_to_format(video_ts_paths, output_folder, output_format):
                 conversion_tasks.append((input_file, output_file, output_format))
             
             # Convert VOB files concurrently
-            with concurrent.futures.ThreadPoolExecutor() as executor:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=os.cpu_count() - 1) as executor:
                 converted_files = list(filter(None, executor.map(lambda x: convert_vob_to_output(*x), conversion_tasks)))
 
             if converted_files:
@@ -116,6 +117,7 @@ def convert_dvd_to_format(video_ts_paths, output_folder, output_format):
                         '-i', concat_file,
                         '-map_metadata', '0',
                         '-c', 'copy',
+                        '-threads', '0',
                         merged_output
                     ]
                     

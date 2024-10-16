@@ -34,7 +34,7 @@ def convert_image(files, root, output_format, quality=None):
                 shutil.copy2(input_path, output_path)
                 os.remove(input_path)
                 print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
-            elif output_format == 'jpg' and img_file.lower().endswith(('.jpeg')):
+            elif output_format == 'jpg' and img_file.lower().endswith(('.jpeg', '.jpg')):
                 if input_path.lower() == output_path.lower():
                     continue
                 output_path = os.path.splitext(input_path)[0] + '.jpg'
@@ -46,9 +46,9 @@ def convert_image(files, root, output_format, quality=None):
                     if output_format == 'jpg':
                         if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
                             img = img.convert('RGB')
-                        img.save(output_path, output_format)
+                        img.save(output_path, 'JPEG')
                     else:
-                        img.save(output_path, output_format)
+                        img.save(output_path, output_format.upper())
 
             os.chmod(output_path, 0o644)
             
@@ -62,6 +62,7 @@ def convert_image(files, root, output_format, quality=None):
             logging.error(f"Error converting {img_file} to {output_format}: {str(e)}")
 
     return conversion_performed
+
 
 
 
