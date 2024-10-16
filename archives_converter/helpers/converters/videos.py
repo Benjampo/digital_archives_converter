@@ -5,23 +5,30 @@ from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_ffv1(files, root):
+    return convert_video(files, root, '_ffv1.mkv', 'ffv1')
+
+
+def convert_mp4(files, root):
+    return convert_video(files, root, '_mp4.mp4', 'libx264')
+
+
+def convert_video(files, root, output_suffix, video_codec):
+    video_files = [f for f in files if f.lower().endswith(('.mp4', '.avi', '.mov', '.flv', '.mkv'))]
     metadata_file = os.path.join(root, 'metadata.json')
-    video_files = [f for f in files if f.lower().endswith(('.mp4', '.avi', '.mov', '.flv'))]
     conversion_performed = False
     for file in files:
         input_path = os.path.join(root, file)
-        metadata_file = os.path.join(os.path.dirname(input_path), 'metadata.json')
         if not os.path.exists(input_path):
             continue
 
         # Skip files that are already converted
-        if file.lower().endswith('_ffv1.mkv'):
+        if file.lower().endswith(output_suffix):
             print(f"[bold orange]Skipping:[/bold orange] {file}")
             continue
 
         for video_file in video_files:
             if video_file == file:
-                output_path = os.path.splitext(input_path)[0] + '_ffv1.mkv'
+                output_path = os.path.splitext(input_path)[0] + output_suffix
                 try:
                     # Store original file metadata
                     original_stat = os.stat(input_path)
@@ -33,21 +40,24 @@ def convert_ffv1(files, root):
                         'ffmpeg',
                         '-i', input_path,
                         '-map_metadata', '0',
-                        '-c:v', 'ffv1',
-                        '-level', '3',
+                        '-c:v', video_codec,
                         '-c:a', 'copy',
                         '-sn',  # Disable subtitle streams
                         output_path
                     ]
+                    
+                    if video_codec == 'ffv1':
+                        ffmpeg_command.insert(-1, '-level')
+                        ffmpeg_command.insert(-1, '3')
+
                     subprocess.run(ffmpeg_command, timeout=600, check=True, stderr=subprocess.PIPE, universal_newlines=True, errors='ignore')
                     
                     # Copy metadata to the new file
                     shutil.copystat(input_path, output_path)
-                    
+                
                     # Manually set creation and modification times
                     os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
 
-           
                     append_metadata(metadata, metadata_file, output_path)
 
                     try:
@@ -57,5 +67,5 @@ def convert_ffv1(files, root):
                         print(f"Warning: Original file not found for removal: {input_path}")
                         continue
                 except subprocess.CalledProcessError as e:
-                    print(f"Error converting {video_file} to FFV1: {e.stderr}")
+                    print(f"Error converting {video_file} to {video_codec}: {e.stderr}")
     return conversion_performed

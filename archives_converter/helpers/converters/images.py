@@ -4,50 +4,65 @@ import logging
 import shutil
 from helpers.metadata import extract_metadata, append_metadata
 
+
 def convert_tiff(files, root):
-    metadata_file = os.path.join(root, 'metadata.json')
-    image_files = [f for f in files if f.lower().endswith(('.jpg', '.jpeg', '.tif', '.png', '.gif', '.bmp'))]
+    return convert_image(files, root, 'TIFF')
+
+def convert_jpg(files, root):
+    return convert_image(files, root, 'JPEG')
+
+def convert_image(files, root, output_format, quality=None):
+    image_extensions = ('.jpg', '.jpeg', '.tif', '.tiff', '.png', '.gif', '.bmp')
+    image_files = [f for f in files if f.lower().endswith(image_extensions)]
     conversion_performed = False
+
     for img_file in image_files:
         input_path = os.path.join(root, img_file)
-        output_path = os.path.splitext(input_path)[0] + '_tiff.tiff'
+        output_ext = '.tiff' if output_format == 'TIFF' else '.jpg'
+        output_path = os.path.splitext(input_path)[0] + output_ext
         metadata_file = os.path.join(os.path.dirname(input_path), 'metadata.json')
-        
+
         if not os.path.exists(input_path):
             logging.warning(f"Skipping {img_file}: File not found")
             continue
-        
-        # Get original file metadata
+
         original_stat = os.stat(input_path)
-        
-        # Extract metadata before conversion
         metadata = extract_metadata(input_path)
-        
-        # If the file is already a TIFF, just rename it
-        if img_file.lower().endswith(('.tif')):
-            try:
-                shutil.copy2(input_path, output_path)  # Copy file with metadata
-                os.remove(input_path)  # Remove the original file
-                os.chmod(output_path, 0o644)  # Set permissions to rw-r--r--
-                print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
-                conversion_performed = True
-            except OSError as e:
-                logging.error(f"Error renaming {img_file}: {str(e)}")
-            continue
-        
+
         try:
-            with Image.open(input_path) as img:
-                img.save(output_path, 'TIFF')
-            os.chmod(output_path, 0o644)  # Set permissions to rw-r--r--
+            if output_format == 'TIFF' and img_file.lower().endswith('.tif'):
+                shutil.copy2(input_path, output_path)
+                os.remove(input_path)
+                print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
+            elif output_format == 'JPEG' and img_file.lower().endswith(('.jpg', '.jpeg')):
+                output_path = os.path.splitext(input_path)[0] + '.jpg'
+                shutil.copy2(input_path, output_path)
+                os.remove(input_path)
+                print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
+            else:
+                with Image.open(input_path) as img:
+                    if output_format == 'JPEG':
+                        if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+                            img = img.convert('RGB')
+                        img.save(output_path, output_format)
+                    else:
+                        img.save(output_path, output_format)
+
+                os.remove(input_path)
+                print(f"Converted {img_file} to {os.path.basename(output_path)}")
+
+            os.chmod(output_path, 0o644)
             
             # Preserve original file's metadata
             os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
-            
             append_metadata(metadata, metadata_file, output_path)
             
             os.remove(input_path)
             conversion_performed = True
+            print(f"Converted {img_file} to {os.path.basename(output_path)}")
         except Exception as e:
-            logging.error(f"Error converting {img_file} to TIFF: {str(e)}")
+            logging.error(f"Error converting {img_file} to {output_format}: {str(e)}")
+
     return conversion_performed
+
 

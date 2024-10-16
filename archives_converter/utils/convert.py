@@ -5,8 +5,8 @@ from rich.console import Console
 from rich import print
 
 from helpers.converters.mkv import convert_to_mkv
-from helpers.converters.images import convert_tiff
-from helpers.converters.audio import convert_wav
+from helpers.converters.images import convert_tiff, convert_jpg
+from helpers.converters.audio import convert_wav, convert_mp3
 from helpers.converters.videos import convert_ffv1
 from helpers.converters.text import convert_pdfa
 from helpers.delete_empty_folders import delete_empty_folders
@@ -37,9 +37,15 @@ def process_file(convert_type, file, root, progress, task, selected_media_types)
 
     conversion_performed = False
     if 'image' in selected_media_types:
-        conversion_performed = convert_tiff([file], root) or conversion_performed
+        if convert_type == "AIP":
+            conversion_performed = convert_tiff([file], root) or conversion_performed
+        elif convert_type == "DIP":
+            conversion_performed = convert_jpg([file], root, convert_type) or conversion_performed
     if 'audio' in selected_media_types:
-        conversion_performed = convert_wav([file], root) or conversion_performed
+        if convert_type == "AIP":
+            conversion_performed = convert_wav([file], root) or conversion_performed
+        elif convert_type == "DIP":
+            conversion_performed = convert_mp3([file], root) or conversion_performed
     if 'video' in selected_media_types:
         conversion_performed = convert_ffv1([file], root) or conversion_performed
     if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'manifest-md5.txt', 'metadata.json']:

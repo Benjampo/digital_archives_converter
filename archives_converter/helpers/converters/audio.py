@@ -4,12 +4,18 @@ import logging
 from helpers.metadata import extract_metadata, append_metadata
 
 def convert_wav(files, root):
+    return convert_audio(files, root, 'wav', 'pcm_s16le', 44100)
+
+def convert_mp3(files, root):
+    return convert_audio(files, root, 'mp3', 'libmp3lame', 44100)
+
+def convert_audio(files, root, target_format, codec, sample_rate):
     metadata_file = os.path.join(root, 'metadata.json')
-    audio_files = [f for f in files if f.lower().endswith(('.mp3', '.aac', '.m4a', '.flac', '.ogg', '.aif', '.aiff'))]
+    audio_files = [f for f in files if f.lower().endswith(('.wav', '.aac', '.m4a', '.flac', '.ogg', '.aif', '.aiff'))]
     conversion_performed = False
     for audio_file in audio_files:
         input_path = os.path.join(root, audio_file)
-        output_path = os.path.splitext(input_path)[0] + '_wav.wav'
+        output_path = os.path.splitext(input_path)[0] + f'_{target_format}.{target_format}'
         metadata_file = os.path.join(os.path.dirname(input_path), 'metadata.json')
         try:
             # Get original file's timestamps
@@ -22,8 +28,8 @@ def convert_wav(files, root):
                 'ffmpeg',
                 '-i', input_path,
                 '-map_metadata', '0',
-                '-acodec', 'pcm_s16le',
-                '-ar', '44100',
+                '-acodec', codec,
+                '-ar', str(sample_rate),
                 output_path
             ]
          
@@ -37,7 +43,9 @@ def convert_wav(files, root):
             os.remove(input_path)  # Remove the original audio file
             conversion_performed = True
         except subprocess.CalledProcessError as e:
-            logging.error(f"Error converting {audio_file} to WAV: {e.stderr}")
+            logging.error(f"Error converting {audio_file} to {target_format.upper()}: {e.stderr}")
         except OSError as e:
             logging.error(f"OS error occurred while processing {audio_file}: {e}")
     return conversion_performed
+
+
