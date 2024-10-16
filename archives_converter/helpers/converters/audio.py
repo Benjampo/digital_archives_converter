@@ -11,7 +11,7 @@ def convert_mp3(files, root):
 
 def convert_audio(files, root, target_format, codec, sample_rate):
     metadata_file = os.path.join(root, 'metadata.json')
-    audio_files = [f for f in files if f.lower().endswith(('.wav', '.aac', '.m4a', '.flac', '.ogg', '.aif', '.aiff'))]
+    audio_files = [f for f in files if f.lower().endswith(('.wav', '.mp3', '.aac', '.m4a', '.flac', '.ogg', '.aif', '.aiff'))]
     conversion_performed = False
     for audio_file in audio_files:
         input_path = os.path.join(root, audio_file)

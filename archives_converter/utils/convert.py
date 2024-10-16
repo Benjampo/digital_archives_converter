@@ -95,10 +95,7 @@ def convert_files(destination_folder, convert_type, selected_media_types):
         final_completed = progress.tasks[convert_task].completed
         progress.update(convert_task, total=final_completed, completed=final_completed)
 
-    delete_task = progress.add_task("[bold red]Deleting empty folders...[/bold red]", total=total_files)
-    delete_empty_folders(destination_folder)
-    progress.update(delete_task, completed=total_files)
-    console.print("[bold green]:heavy_check_mark: Conversion completed![/bold green] :sparkles:")
+   
 
 
 
@@ -131,6 +128,12 @@ def convert_folder(source_folder,convert_type, selected_media_types, destination
     print("[bold yellow]Creating metadata HTML table...[/bold yellow]")
 
     create_metadata_html_table(destination_folder)
+    total_files, _ = count_files_and_folders(destination_folder, selected_media_types)
+
+    delete_task = progress.add_task("[bold red]Deleting empty folders...[/bold red]", total=total_files)
+    delete_empty_folders(destination_folder)
+    progress.update(delete_task, completed=total_files)
+    console.print("[bold green]:heavy_check_mark: Conversion completed![/bold green] :sparkles:")
 
     print("[bold green]:heavy_check_mark: Metadata HTML table created![/bold green]")
   
