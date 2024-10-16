@@ -6,12 +6,17 @@ def clone_folder(source_folder, clone_type, selected_media_types, destination_fo
     print("[bold cyan]Starting cloning[/bold cyan] :cd:")
 
     if destination_folder is None:
+        base_name = os.path.basename(source_folder)
+
+        if base_name.startswith("SIP_"):
+            base_name = base_name[4:]
+        
         if clone_type == "AIP":
-            destination_folder = os.path.join(os.path.dirname(source_folder), f"AIP_{os.path.basename(source_folder)}")
+            destination_folder = os.path.join(os.path.dirname(source_folder), f"AIP_{base_name}")
         elif clone_type == "DIP":
-            destination_folder = os.path.join(os.path.dirname(source_folder), f"DIP_{os.path.basename(source_folder)}")
+            destination_folder = os.path.join(os.path.dirname(source_folder), f"DIP_{base_name}")
         elif clone_type == "clone":
-            destination_folder = os.path.join(os.path.dirname(source_folder), f"CLONE_{os.path.basename(source_folder)}")
+            destination_folder = os.path.join(os.path.dirname(source_folder), f"CLONE_{base_name}")
         else:
             raise ValueError(f"Invalid clone type: {clone_type}")
     
