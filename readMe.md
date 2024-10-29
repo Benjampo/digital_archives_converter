@@ -101,3 +101,8 @@ make run
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+## Tips
+
+- If you have issues running the script 2 times in a row (keyboard stuck). Go to action menu `cmd + shift + p` and select `Terminal: Focus on terminal`
