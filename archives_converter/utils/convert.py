@@ -52,7 +52,10 @@ def process_file(convert_type, file, root, progress, task, selected_media_types)
         elif convert_type == "DIP":
             conversion_performed = convert_mp4([file], root) or conversion_performed
     if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'manifest-md5.txt', 'metadata.json']:
-        conversion_performed = convert_pdfa([file], root) or conversion_performed
+        if convert_type == "AIP":
+            conversion_performed = convert_pdfa([file], root) or conversion_performed
+        elif convert_type == "DIP":
+            conversion_performed = convert_pdfa([file], root) or conversion_performed
     if 'dvd' in selected_media_types and file == 'VIDEO_TS':
         video_ts_folder = os.path.join(root, 'VIDEO_TS')
         progress.update(task, current_file="VIDEO_TS")
