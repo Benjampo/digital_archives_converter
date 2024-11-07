@@ -57,7 +57,7 @@ make run
    sudo apt install software-properties-common
    sudo add-apt-repository ppa:deadsnakes/ppa
    sudo apt update
-   sudo apt install python3.12 python3.12-venv python3.12-dev python3.12-tk ffmpeg libreoffice libimage-exiftool-perl
+   sudo apt install python3.12 python3.12-venv python3.12-dev python3.12-tk ffmpeg libreoffice libimage-exiftool-perl unoconv ghostscript python3-opencv
    ```
 
 ### Windows
@@ -70,7 +70,14 @@ make run
 4. Install ExifTool:
    - Download from [exiftool.org](https://exiftool.org/install.html)
    - Add ExifTool to your system PATH
-5. Install unoconv:
+5. Install GhostScript:
+   - Download from [ghostscript.com](https://www.ghostscript.com/releases/gsdnld.html)
+   - Add GhostScript to your system PATH
+6. Install OpenCV:
+   ```
+   pip install opencv-python
+   ```
+7. Install unoconv:
    - Follow the instructions for Windows installation on the [unoconv GitHub page](https://github.com/unoconv/unoconv)
 
 ### Setup

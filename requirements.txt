@@ -7,3 +7,4 @@ ghostscript
 piexif
 unoconv
 opencv-python
+openpyxl
