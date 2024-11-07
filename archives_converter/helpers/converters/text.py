@@ -95,36 +95,40 @@ def convert_to_pdf(input_path, output_path, metadata_file):
 def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
     try:
         original_stat = os.stat(input_path)
-        
-        # Extract metadata before conversion
         metadata = extract_metadata(input_path)
         
-        gs_command = [
-            'gs', '-dPDFA=2', '-dBATCH', '-dNOPAUSE',
-            '-sColorConversionStrategy=UseDeviceIndependentColor',
-            '-sProcessColorModel=DeviceCMYK', '-sDEVICE=pdfwrite',
-            '-dPDFACompatibilityPolicy=1',
-            '-dOverwritePDFMark=true',
-            f'-sOutputFile={output_path}',
-            input_path
-        ]
-        
-        start_time = time.time()
-        process = subprocess.Popen(gs_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-        
-      
+        # Add retry mechanism for ghostscript conversion
+        max_retries = 3
         timeout = 300
-        while process.poll() is None:
-            if time.time() - start_time > timeout:
-                process.kill()
-                raise subprocess.TimeoutExpired(gs_command, timeout)
-            time.sleep(1)
         
-        stdout, stderr = process.communicate()
-        
-        if process.returncode != 0:
-            raise subprocess.CalledProcessError(process.returncode, gs_command, stdout, stderr)
-
+        for attempt in range(max_retries):
+            try:
+                gs_command = [
+                    'gs', '-dPDFA=2', '-dBATCH', '-dNOPAUSE',
+                    '-sColorConversionStrategy=UseDeviceIndependentColor',
+                    '-sProcessColorModel=DeviceCMYK', '-sDEVICE=pdfwrite',
+                    '-dPDFACompatibilityPolicy=1',
+                    '-dOverwritePDFMark=true',
+                    f'-sOutputFile={output_path}',
+                    input_path
+                ]
+                
+                process = subprocess.run(gs_command, 
+                                      capture_output=True,
+                                      text=True,
+                                      timeout=timeout,
+                                      check=True)
+                break  # If successful, exit retry loop
+                
+            except (subprocess.TimeoutExpired, subprocess.CalledProcessError) as e:
+                logging.warning(f"Attempt {attempt + 1} failed for {input_path}: {str(e)}")
+                if attempt == max_retries - 1:  # Last attempt
+                    raise
+                time.sleep(5)  # Wait before retrying
+                
+                # Clean up partial output file if it exists
+                if os.path.exists(output_path):
+                    os.remove(output_path)
 
         exiftool_command = [
             'exiftool',

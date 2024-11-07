@@ -41,14 +41,26 @@ def convert_video(files, root, output_suffix, video_codec):
                         '-i', input_path,
                         '-map_metadata', '0',
                         '-c:v', video_codec,
-                        '-c:a', 'copy',
-                        '-sn',  # Disable subtitle streams
-                        output_path
+                        '-c:a', 'aac',
+                        '-ar', '44100',
+                        '-pix_fmt', 'yuv420p',
+                        '-movflags', '+faststart',
+                        '-sn',
                     ]
-                    
-                    if video_codec == 'ffv1':
-                        ffmpeg_command.insert(-1, '-level')
-                        ffmpeg_command.insert(-1, '3')
+
+                    if video_codec == 'libx264':
+                        ffmpeg_command.extend([
+                            '-preset', 'medium',
+                            '-crf', '23',
+                            '-profile:v', 'main',
+                            '-level', '3.0'
+                        ])
+                    elif video_codec == 'ffv1':
+                        ffmpeg_command.extend([
+                            '-level', '3'
+                        ])
+
+                    ffmpeg_command.append(output_path)
 
                     subprocess.run(ffmpeg_command, timeout=600, check=True, stderr=subprocess.PIPE, universal_newlines=True, errors='ignore')
                     
