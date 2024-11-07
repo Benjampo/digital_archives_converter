@@ -39,8 +39,6 @@ else
 		@[ -f "/Applications/LibreOffice.app/Contents/MacOS/soffice" ] || (echo "Installing LibreOffice..." && brew install --cask libreoffice)
 		@echo "Checking for ExifTool..."
 		@which exiftool > /dev/null || (echo "Installing ExifTool..." && brew install exiftool)
-		@echo "Checking for unoconv..."
-		@which unoconv > /dev/null || (echo "Installing unoconv..." && brew install unoconv)
     else
 		@echo "Checking for Python 3.12..."
 		@which python3.12 > /dev/null || (echo "Installing Python 3.12..." && sudo apt-get update && sudo apt-get install -y software-properties-common && sudo add-apt-repository -y ppa:deadsnakes/ppa && sudo apt-get update && sudo apt-get install -y python3.12 python3.12-venv python3.12-dev)
@@ -52,8 +50,6 @@ else
 		@which libreoffice > /dev/null || (echo "Installing LibreOffice..." && sudo apt-get update && sudo apt-get install -y libreoffice)
 		@echo "Checking for ExifTool..."
 		@which exiftool > /dev/null || (echo "Installing ExifTool..." && sudo apt-get update && sudo apt-get install -y libimage-exiftool-perl)
-		@echo "Checking for unoconv..."
-		@which unoconv > /dev/null || (echo "Installing unoconv..." && sudo apt-get update && sudo apt-get install -y unoconv)
     endif
 endif
 	@echo "Prerequisites check complete."
