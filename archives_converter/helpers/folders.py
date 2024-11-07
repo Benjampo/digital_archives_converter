@@ -20,7 +20,7 @@ def should_copy_file(file, selected_media_types):
         return True
     if 'video' in selected_media_types and lower_file.endswith(('.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv', '.webm', '.mpeg', '.mpg', '.m4v', '.3gp', '.3g2')):
         return True
-    if 'image' in selected_media_types and lower_file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.tiff', '.bmp', '.webp', '.psd', '.svg', '.heic', '.raw', '.cr2', '.nef', '.orf', '.sr2')):
+    if 'image' in selected_media_types and lower_file.endswith(('.jpg', '.jpeg', '.png', '.gif', '.tiff', '.tif', '.bmp', '.webp', '.psd', '.svg', '.heic', '.raw', '.cr2', '.nef', '.orf', '.sr2')):
         return True
     if 'text' in selected_media_types and lower_file.endswith(('.txt', '.pdf', '.doc', '.docx', '.rtf', '.odt', '.tex', '.wpd')):
         return True

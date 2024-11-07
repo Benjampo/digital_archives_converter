@@ -31,8 +31,17 @@ def convert_image(files, root, output_format, quality=None):
 
         try:
             if output_format == 'tiff' and img_file.lower().endswith('.tif'):
-                shutil.copy2(input_path, output_path)
-                os.remove(input_path)
+                # Copy file first, verify copy succeeded, then remove original
+                try:
+                    shutil.copy2(input_path, output_path)
+                    if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                       os.remove(input_path)
+                    else:
+                        raise Exception("Failed to copy file - destination file missing or empty")
+                except Exception as e:
+                    logging.error(f"Error copying {input_path} to {output_path}: {str(e)}")
+                    if os.path.exists(output_path):
+                       os.remove(output_path)
                 print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
             elif output_format == 'jpg' and img_file.lower().endswith(('.jpeg', '.jpg')):
                 if input_path.lower() == output_path.lower():
@@ -47,7 +56,7 @@ def convert_image(files, root, output_format, quality=None):
                 if img is None:
                     raise Exception(f"Failed to read image: {input_path}")
 
-                # Convert to RGB if needed (OpenCV uses BGR by default)
+                # Convert to RGB if needed
                 if len(img.shape) == 3 and img.shape[2] == 3:
                     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 elif len(img.shape) == 3 and img.shape[2] == 4:
@@ -67,6 +76,7 @@ def convert_image(files, root, output_format, quality=None):
             append_metadata(metadata, metadata_file, output_path)
             if os.path.exists(output_path):
                 os.remove(input_path)
+                
             conversion_performed = True
         except Exception as e:
             logging.error(f"Error converting {img_file} to {output_format}: {str(e)}")
