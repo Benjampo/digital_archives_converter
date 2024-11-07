@@ -1,4 +1,3 @@
-Pillow
 python-docx
 reportlab
 setuptools
@@ -7,4 +6,5 @@ inquirer
 ghostscript
 piexif
 unoconv
+opencv-python
 

@@ -1,4 +1,4 @@
-from PIL import Image
+import cv2
 import os
 import logging
 import shutil
@@ -42,21 +42,31 @@ def convert_image(files, root, output_format, quality=None):
                 os.remove(input_path)
                 print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
             else:
-                with Image.open(input_path) as img:
-                    if output_format == 'jpg':
-                        if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
-                            img = img.convert('RGB')
-                        img.save(output_path, 'JPEG')
-                    else:
-                        img.save(output_path, output_format.upper())
+                # Read image using OpenCV
+                img = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
+                if img is None:
+                    raise Exception(f"Failed to read image: {input_path}")
+
+                # Convert to RGB if needed (OpenCV uses BGR by default)
+                if len(img.shape) == 3 and img.shape[2] == 3:
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                elif len(img.shape) == 3 and img.shape[2] == 4:
+                    img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
+
+                # Save with appropriate parameters
+                if output_format == 'jpg':
+                    params = [cv2.IMWRITE_JPEG_QUALITY, 95] if quality is None else [cv2.IMWRITE_JPEG_QUALITY, quality]
+                    cv2.imwrite(output_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR), params)
+                else:  # tiff
+                    cv2.imwrite(output_path, img)
 
             os.chmod(output_path, 0o644)
             
             # Preserve original file's metadata
             os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
             append_metadata(metadata, metadata_file, output_path)
-            
-            os.remove(input_path)
+            if os.path.exists(output_path):
+                os.remove(input_path)
             conversion_performed = True
         except Exception as e:
             logging.error(f"Error converting {img_file} to {output_format}: {str(e)}")
