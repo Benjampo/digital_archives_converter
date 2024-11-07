@@ -7,4 +7,3 @@ ghostscript
 piexif
 unoconv
 opencv-python
-
