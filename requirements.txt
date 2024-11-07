@@ -6,4 +6,5 @@ rich
 inquirer
 ghostscript
 piexif
+unoconv
 

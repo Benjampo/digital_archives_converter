@@ -30,20 +30,41 @@ def convert_pdfa(files, root):
 
 def convert_to_pdf(input_path, output_path, metadata_file):
     try:
+        # Start a unoconv listener with longer timeout and better error handling
+        try:
+            subprocess.run(['unoconv', '--listener'], 
+                         timeout=30,  # Increased timeout for listener startup
+                         check=False,
+                         capture_output=True)
+            # Increased delay to ensure listener is fully ready
+            time.sleep(5)
+        except subprocess.TimeoutExpired:
+            # If timeout occurs, assume listener is already running
+            pass
+
+        # Add retry mechanism for conversion
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                unoconv_command = [
+                    'unoconv',
+                    '-f', 'pdf',
+                    '-eSelectPdfVersion=2',
+                    '-ePDFACompliance=2',
+                    '-o', output_path,
+                    input_path
+                ]
+                subprocess.run(unoconv_command, timeout=300, check=True, capture_output=True, text=True)
+                break  # If successful, exit the retry loop
+            except subprocess.CalledProcessError as e:
+                if attempt == max_retries - 1:  # Last attempt
+                    raise
+                time.sleep(5)  # Wait before retrying
+                
         original_stat = os.stat(input_path)
         
         # Extract metadata before conversion
         metadata = extract_metadata(input_path)
-        
-        unoconv_command = [
-            'unoconv',
-            '-f', 'pdf',
-            '-eSelectPdfVersion=2',
-            '-ePDFACompliance=2',
-            '-o', output_path,
-            input_path
-        ]
-        subprocess.run(unoconv_command, timeout=60, check=True, capture_output=True, text=True)
         
         exiftool_command = [
             'exiftool',
@@ -122,9 +143,19 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
         
  
         append_metadata(metadata, metadata_file, output_path)        
-        # Also check for the input file itself
-        if os.path.exists(input_path):
-            os.remove(input_path)
+        
+        try:
+            if os.path.exists(input_path):
+                os.remove(input_path)
+            else:
+                logging.warning(f"Original file not found for deletion: {input_path}")
+        except PermissionError:
+            logging.error(f"Permission denied when trying to delete: {input_path}")
+            raise
+        except Exception as e:
+            logging.error(f"Error deleting original file {input_path}: {str(e)}")
+            raise
+            
         return True
 
     except subprocess.TimeoutExpired:
