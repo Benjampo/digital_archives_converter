@@ -15,7 +15,20 @@ def convert_audio(files, root, target_format, codec, sample_rate):
     conversion_performed = False
     for audio_file in audio_files:
         input_path = os.path.join(root, audio_file)
-        output_path = os.path.splitext(input_path)[0] + f'_{target_format}.{target_format}'
+        base_output_path = os.path.splitext(input_path)[0]
+        output_path = f"{base_output_path}.{target_format}"
+        
+        # If input is already in target format, add format suffix
+        if input_path.lower().endswith(f'.{target_format.lower()}'):
+            output_path = f"{base_output_path}_{target_format}.{target_format}"
+        # If output file already exists, add numeric suffix
+        elif os.path.exists(output_path):
+            counter = 0
+            while os.path.exists(output_path):
+                if counter != 0:
+                    output_path = f"{base_output_path}_{counter}_{target_format}.{target_format}"
+                counter += 1
+        
         metadata_file = os.path.join(os.path.dirname(input_path), 'metadata.json')
         try:
             # Get original file's timestamps
