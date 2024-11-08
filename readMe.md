@@ -19,6 +19,7 @@ This tool converts various media files (images, audio, video) to archival format
 - [FFmpeg](https://www.ffmpeg.org/): Used for audio and video conversion tasks.
 - [LibreOffice](https://www.libreoffice.org/): Required for document conversion to PDF/A2-b format.
 - [ExifTool](https://exiftool.org/): Required for metadata extraction and embedding.
+- [GhostScript](https://www.ghostscript.com/): Required for PDF conversion.
 - [unoconv](https://github.com/dagwieers/unoconv): Required for converting Microsoft Office files.
 
 ## Installation
@@ -46,7 +47,7 @@ make run
 
 2. Install required packages:
    ```
-   brew install python@3.12 python-tk@3.12 ffmpeg libreoffice exiftool unoconv
+   brew install python@3.12 python-tk@3.12 ffmpeg libreoffice exiftool unoconv ghostscript
    ```
 
 ### Linux (Ubuntu/Debian)
@@ -57,7 +58,7 @@ make run
    sudo apt install software-properties-common
    sudo add-apt-repository ppa:deadsnakes/ppa
    sudo apt update
-   sudo apt install python3.12 python3.12-venv python3.12-dev python3.12-tk ffmpeg libreoffice libimage-exiftool-perl unoconv ghostscript python3-opencv
+   sudo apt install python3.12 python3.12-venv python3.12-dev python3.12-tk ffmpeg libreoffice libimage-exiftool-perl unoconv ghostscript
    ```
 
 ### Windows
@@ -73,11 +74,7 @@ make run
 5. Install GhostScript:
    - Download from [ghostscript.com](https://www.ghostscript.com/releases/gsdnld.html)
    - Add GhostScript to your system PATH
-6. Install OpenCV:
-   ```
-   pip install opencv-python
-   ```
-7. Install unoconv:
+6. Install unoconv:
    - Follow the instructions for Windows installation on the [unoconv GitHub page](https://github.com/unoconv/unoconv)
 
 ### Setup
