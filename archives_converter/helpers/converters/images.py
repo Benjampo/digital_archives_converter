@@ -35,14 +35,16 @@ def convert_image(files, root, output_format, quality=None):
                 try:
                     shutil.copy2(input_path, output_path)
                     if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
-                       os.remove(input_path)
+                        os.remove(input_path)
+                        conversion_performed = True
+                        print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
                     else:
                         raise Exception("Failed to copy file - destination file missing or empty")
                 except Exception as e:
                     logging.error(f"Error copying {input_path} to {output_path}: {str(e)}")
                     if os.path.exists(output_path):
-                       os.remove(output_path)
-                print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
+                        os.remove(output_path)
+                    continue  # Skip the rest of the processing for this file
             elif output_format == 'jpg' and img_file.lower().endswith(('.jpeg', '.jpg')):
                 if input_path.lower() == output_path.lower():
                     continue

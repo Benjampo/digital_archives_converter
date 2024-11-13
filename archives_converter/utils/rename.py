@@ -21,7 +21,7 @@ def rename_files_and_folders(folder, selected_media_types):
         for root, dirs, files in os.walk(folder, topdown=False):
             # Rename files
             for file in files:
-                if file == '.DS_Store':  # Skip .DS_Store files
+                if file == '.DS_Store' or file.startswith('.'):  # Skip .DS_Store files and hidden files
                     continue
                 new_name = to_snake_case(file)
                 os.rename(os.path.join(root, file), os.path.join(root, new_name))
@@ -29,7 +29,7 @@ def rename_files_and_folders(folder, selected_media_types):
 
             # Rename folders
             for dir in dirs:
-                if dir == 'VIDEO_TS':  # Skip VIDEO_TS folders
+                if dir == 'VIDEO_TS' or file.startswith('.'):  # Skip VIDEO_TS folders
                     progress.advance(rename_task)
                     continue
                 new_name = to_snake_case(dir)
