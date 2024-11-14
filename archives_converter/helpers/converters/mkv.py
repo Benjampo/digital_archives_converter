@@ -34,7 +34,7 @@ def convert_vob_to_output(input_file, output_file, output_format):
             '-slices', '24',
             '-slicecrc', '1',
             '-threads', '0',
-            '-c:a', 'copy',
+            '-c:a', 'flac',
             '-c:s', 'copy'
         ])
     elif output_format == 'mp4':
@@ -125,7 +125,8 @@ def convert_dvd_to_format(video_ts_paths, output_folder, output_format):
                         subprocess.run(merge_command, check=True, stderr=subprocess.PIPE, universal_newlines=True)
                         
                         # Move the merged file to the root folder
-                        final_output = os.path.join(output_folder, f"{os.path.basename(output_folder)}.{output_format}")
+                        output_suffix = 'ffv1' if output_format == 'mkv' else output_format
+                        final_output = os.path.join(output_folder, f"{os.path.basename(output_folder)}_{output_suffix}.{output_format}")
                         shutil.move(merged_output, final_output)
                         
                         # Delete individual MKV files and concat list

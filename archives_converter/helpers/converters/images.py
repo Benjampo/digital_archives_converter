@@ -37,7 +37,6 @@ def convert_image(files, root, output_format, quality=None):
                     if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
                         os.remove(input_path)
                         conversion_performed = True
-                        print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
                     else:
                         raise Exception("Failed to copy file - destination file missing or empty")
                 except Exception as e:
@@ -51,7 +50,7 @@ def convert_image(files, root, output_format, quality=None):
                 output_path = os.path.splitext(input_path)[0] + '.jpg'
                 shutil.copy2(input_path, output_path)
                 os.remove(input_path)
-                print(f"Copied and renamed {img_file} to {os.path.basename(output_path)}")
+                conversion_performed = True
             else:
                 # Read image using OpenCV
                 img = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
@@ -71,15 +70,17 @@ def convert_image(files, root, output_format, quality=None):
                 else:  # tiff
                     cv2.imwrite(output_path, img)
 
-            os.chmod(output_path, 0o644)
-            
-            # Preserve original file's metadata
-            os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
-            append_metadata(metadata, metadata_file, output_path)
-            if os.path.exists(output_path):
-                os.remove(input_path)
+                os.chmod(output_path, 0o644)
                 
-            conversion_performed = True
+                # Preserve original file's metadata
+                os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+                append_metadata(metadata, metadata_file, output_path)
+                
+                # Remove input file after successful conversion
+                if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+                    os.remove(input_path)
+                    conversion_performed = True
+
         except Exception as e:
             logging.error(f"Error converting {img_file} to {output_format}: {str(e)}")
 
