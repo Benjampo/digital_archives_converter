@@ -45,9 +45,7 @@ def convert_image(files, root, output_format, quality=None):
                         os.remove(output_path)
                     continue  # Skip the rest of the processing for this file
             elif output_format == 'jpg' and img_file.lower().endswith(('.jpeg', '.jpg')):
-                if input_path.lower() == output_path.lower():
-                    continue
-                output_path = os.path.splitext(input_path)[0] + '.jpg'
+                output_path = os.path.splitext(input_path)[0] + '_jpg.jpg'
                 shutil.copy2(input_path, output_path)
                 os.remove(input_path)
                 conversion_performed = True
