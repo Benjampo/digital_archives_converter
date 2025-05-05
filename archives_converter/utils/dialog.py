@@ -5,7 +5,7 @@ from utils.rename import rename_files_and_folders
 import tkinter as tk
 from tkinter import filedialog
 from rich import print
-
+from .apply_bag import apply_bag
 
 def select_folder():
     root = tk.Tk()
@@ -41,7 +41,7 @@ def dialog():
             questions = [
                 inquirer.List('action',
                               message="What do you want to do today?",
-                              choices=['Clone and convert directory', 'Clone directory', 'Rename directory', 'Exit'],
+                              choices=['Clone and convert directory', 'apply Bagit format', 'Clone directory', 'Rename directory', 'Exit'],
                               default='Clone and convert directory'),
             ]
             action = inquirer.prompt(questions)['action']
@@ -105,6 +105,14 @@ def dialog():
                     continue
                 rename_files_and_folders(source_folder)
                 break
+            elif action == "apply Bagit format":
+                source_folder = select_folder()
+                if not source_folder:
+                    print("[bold red]No folder selected. Please try again.[/bold red]")
+                    continue
+                apply_bag(source_folder)
+                break
+
     except Exception as e:
         print(f"[bold red]An error occurred: {e}[/bold red]")
     finally:
