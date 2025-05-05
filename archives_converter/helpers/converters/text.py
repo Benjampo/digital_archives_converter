@@ -10,7 +10,7 @@ def convert_pdfa(files, root):
     metadata_file = os.path.join(root, 'metadata.json')
     conversion_performed = False
     for file in files:
-        if file.lower() in ['concat_list.txt', 'metadata.json', 'manifest-md5.txt', 'bagit.txt']:
+        if file.lower() in ['concat_list.txt', 'metadata.json', 'bagit.txt', 'bag-info.txt', 'manifest-sha256.txt', 'tagmanifest-sha256.txt']:
             print(f"[bold yellow]Skipping:[/bold yellow] {file}")
             return conversion_performed
         

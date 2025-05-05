@@ -49,7 +49,7 @@ def process_file(convert_type, file, root, progress, task, selected_media_types)
             conversion_performed = convert_ffv1([file], root) or conversion_performed
         elif convert_type == "DIP":
             conversion_performed = convert_mp4([file], root) or conversion_performed
-    if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'manifest-md5.txt', 'metadata.json']:
+    if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'metadata.json', 'bagit.txt', 'bag-info.txt', 'manifest-sha256.txt', 'tagmanifest-sha256.txt']:
         if convert_type == "AIP":
             conversion_performed = convert_pdfa([file], root) or conversion_performed
         elif convert_type == "DIP":
