@@ -13,9 +13,7 @@ from helpers.delete_empty_folders import delete_empty_folders
 from helpers.folders import count_files_and_folders
 from utils.clone import clone_folder
 from utils.rename import rename_files_and_folders
-from helpers.bagit import create_data_folder_and_move_content, create_manifest, create_bagit_txt
-from helpers.metadata import create_metadata_files
-from helpers.metadata_csv import create_metadata_csv, merge_metadata_files
+
 console = Console()
 
 def process_file(convert_type, file, root, progress, task, selected_media_types):
@@ -105,7 +103,6 @@ def convert_files(destination_folder, convert_type, selected_media_types):
 def convert_folder(source_folder,convert_type, selected_media_types, destination_folder=None):
     destination_folder = clone_folder(source_folder, convert_type, selected_media_types, destination_folder)
     rename_files_and_folders(destination_folder, selected_media_types)
-    create_metadata_files(destination_folder)
     convert_files(destination_folder, convert_type, selected_media_types)
 
 
@@ -120,7 +117,6 @@ def convert_folder(source_folder,convert_type, selected_media_types, destination
             progress.update(task, description="[bold blue]Processing metadatas", current_file=f"Processing {item}")
     print("[bold yellow]Creating metadata HTML table...[/bold yellow]")
 
-    create_metadata_csv(destination_folder)
     total_files, _ = count_files_and_folders(destination_folder, selected_media_types)
 
     delete_task = progress.add_task("[bold red]Deleting empty folders...[/bold red]", total=total_files)

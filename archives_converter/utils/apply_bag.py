@@ -1,8 +1,8 @@
 from rich import print
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 import os
-from helpers.bagit import create_data_folder_and_move_content, create_manifest, create_bagit_txt
-from helpers.metadata_csv import merge_metadata_files
+from helpers.bagit import create_bag_info, create_bagit_txt
+import bagit
 
 def apply_bag(destination_folder):
     print("[bold yellow]Creating BagIt structure...[/bold yellow]")
@@ -17,10 +17,11 @@ def apply_bag(destination_folder):
         for item in items:
             item_path = os.path.join(destination_folder, item)
             progress.update(task, description="[bold blue]Processing metadatas", current_file=f"Processing {item}")
-            create_data_folder_and_move_content(item_path)
-            create_manifest(item_path)
+            bagit.make_bag(item_path, checksums=["sha256"])
+            # create_data_folder_and_move_content(item_path)
+            # create_manifest(item_path)
             create_bagit_txt(item_path)
-            merge_metadata_files(item_path)
+            create_bag_info(item_path)
             progress.advance(task)
     
     print("[bold green]:heavy_check_mark: BagIt structure created![/bold green]")
