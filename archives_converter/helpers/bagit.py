@@ -1,6 +1,4 @@
-import hashlib
 import os
-import shutil
 import pkg_resources
 import mimetypes
 from datetime import datetime
