@@ -5,36 +5,6 @@ import pkg_resources
 import mimetypes
 from datetime import datetime
 
-def create_data_folder_and_move_content(folder):
-    data_folder = os.path.join(folder, "data")
-    os.makedirs(data_folder, exist_ok=True)
-    
-    for item in os.listdir(folder):
-        if item not in ["data", "metadata.json"]:
-            item_path = os.path.join(folder, item)
-            shutil.move(item_path, data_folder)
-
-def generate_md5(file_path):
-    hash_md5 = hashlib.md5()
-    with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(4096), b""):
-            hash_md5.update(chunk)
-    return hash_md5.hexdigest()
-
-def create_manifest(folder):
-    manifest_path = os.path.join(folder, "manifest-md5.txt")
-    with open(manifest_path, "w") as manifest:
-        for root, _, files in os.walk(folder):
-            # Skip hidden folders
-            if any(part.startswith('.') for part in root.split(os.sep)):
-                continue
-            for file in files:
-                if not file.startswith('.') and file not in ["manifest-md5.txt", "metadata.json"]:
-                    file_path = os.path.join(root, file)
-                    md5_hash = generate_md5(file_path)
-                    relative_path = os.path.relpath(file_path, folder)
-                    manifest.write(f"{md5_hash}  {relative_path}\n")
-
 def detect_formats(bag_dir):
     """Détecte les types de formats des fichiers dans un répertoire."""
     formats = set()

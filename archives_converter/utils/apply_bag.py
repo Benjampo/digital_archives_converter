@@ -18,8 +18,6 @@ def apply_bag(destination_folder):
             item_path = os.path.join(destination_folder, item)
             progress.update(task, description="[bold blue]Processing metadatas", current_file=f"Processing {item}")
             bagit.make_bag(item_path, checksums=["sha256"])
-            # create_data_folder_and_move_content(item_path)
-            # create_manifest(item_path)
             create_bagit_txt(item_path)
             create_bag_info(item_path)
             progress.advance(task)
