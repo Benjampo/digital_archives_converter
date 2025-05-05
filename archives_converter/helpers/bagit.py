@@ -29,7 +29,8 @@ def format_bag_size(size_in_bytes):
 def create_bagit_txt(bag_dir):
     """Crée ou met à jour le fichier bagit.txt avec les informations nécessaires."""
     bagit_txt_path = os.path.join(bag_dir, "bagit.txt")
-    bagit_version = pkg_resources.get_distribution("bagit").version # Récupération de la version de BagIt
+    bagit_version = ".".join(pkg_resources.get_distribution("bagit").version.split(".")[:2])  # Récupération de la version de BagIt, only MAJOR.MINOR otherwise it will throw error
+
     bagit_txt_content = f"""BagIt-Version: {bagit_version}
 Version: 1.0 
 Tag-File-Character-Encoding: UTF-8
@@ -51,19 +52,18 @@ def create_bag_info(bag_dir):
     formats = detect_formats(bag_dir)  # Détection des formats
     bagit_version = pkg_resources.get_distribution("bagit").version # Récupération de la version de BagIt
     total_files = sum(1 for root, dirs, files in os.walk(bag_dir) for file in files) # Comptage du nombre de fichiers dans le bag
-
     bag_info_content = f"""Bag-Name: {bag_name}
-Bag-Size: {formatted_bag_size}
-Creation-Date: {creation_date}
-BagIt-Version: {bagit_version}
-Source-Organization: Centre des littératures en Suisse romande de l'Université de Lausanne
-Contact-Email: clsr@unil.ch
-Version: 1.0
-Bagging-Date: {creation_date}
-Format: {formats}
-Number-of-Files: {total_files}
-Checksum-Algorithm: SHA-256
-"""
+        Bag-Size: {formatted_bag_size}
+        Creation-Date: {creation_date}
+        BagIt-Version: {bagit_version}
+        Source-Organization: Centre des littératures en Suisse romande de l'Université de Lausanne
+        Contact-Email: clsr@unil.ch
+        Version: 1.0
+        Bagging-Date: {creation_date}
+        Format: {formats}
+        Number-of-Files: {total_files}
+        Checksum-Algorithm: SHA-256
+    """
 
     try:
         with open(bag_info_path, "w") as f:
