@@ -1,6 +1,9 @@
 import os
 from helpers.folders import copy_folder_with_progress
 from rich import print
+import shutil
+from helpers.to_snake_case import to_snake_case
+from helpers.folders import should_copy_file
 
 def clone_folder(source_folder, clone_type, selected_media_types, destination_folder=None):
     print("[bold cyan]Starting cloning[/bold cyan] :cd:")
@@ -21,10 +24,39 @@ def clone_folder(source_folder, clone_type, selected_media_types, destination_fo
             raise ValueError(f"Invalid clone type: {clone_type}")
     
     if os.path.exists(destination_folder):
-        print(f"[bold green]Using existing destination folder:[/bold green] [italic]{destination_folder}[/italic]")
+        cloning_changes_to_folder(source_folder, destination_folder, selected_media_types)
     else:
         print("[bold yellow]Cloning source folder...[/bold yellow]")
         copy_folder_with_progress(source_folder, destination_folder, selected_media_types)
         print("[bold green]Cloned source folder[/bold green]")
 
     return destination_folder
+
+    
+
+def cloning_changes_to_folder(source_folder, destination_folder, selected_media_types):
+    print(f"[bold yellow]Cloning changes to folder...[/bold yellow]")
+
+    for root, dirs, files in os.walk(destination_folder):
+        if "bagit.txt" in root:
+            destination_folder = os.path.join(root, "data")
+            break
+
+    for root, dirs, files in os.walk(source_folder):
+        for file in files:
+            new_name_file = to_snake_case(file)
+            os.rename(os.path.join(root, file), os.path.join(root, new_name_file))
+            if file == '.DS_Store':
+                continue
+           
+            src_file = os.path.join(root, new_name_file)
+            relative_path = to_snake_case(os.path.relpath(src_file, source_folder))
+            dst_file = os.path.join(destination_folder, relative_path)
+
+            # Check if the file exists in the destination folder
+            if not os.path.exists(dst_file):
+                if should_copy_file(file, selected_media_types):
+                    os.makedirs(os.path.dirname(dst_file), exist_ok=True)
+                    shutil.copy2(src_file, dst_file)
+            else:
+                print(f"File already exists: {relative_path}")

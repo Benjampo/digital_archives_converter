@@ -96,21 +96,22 @@ def convert_files(destination_folder, convert_type, selected_media_types):
         final_completed = progress.tasks[convert_task].completed
         progress.update(convert_task, total=final_completed, completed=final_completed)
 
-   
 
-
-
-def convert_folder(source_folder,convert_type, selected_media_types, destination_folder=None):
+def convert_folder(source_folder, convert_type, selected_media_types, destination_folder=None):
     destination_folder = clone_folder(source_folder, convert_type, selected_media_types, destination_folder)
+
+    # Check if bagit.txt exists and update destination_folder to use the 'data' folder
+    if os.path.exists(os.path.join(destination_folder, 'bagit.txt')):
+        destination_folder = os.path.join(destination_folder, 'data')
+
     rename_files_and_folders(destination_folder, selected_media_types)
     convert_files(destination_folder, convert_type, selected_media_types)
 
-
     items = [item for item in os.listdir(destination_folder) if os.path.isdir(os.path.join(destination_folder, item))]
-    with Progress( SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+    with Progress(SpinnerColumn(),
+                  TextColumn("[progress.description]{task.description}"),
+                  BarColumn(),
+                  TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
     ) as progress:
         task = progress.add_task("[bold blue]Deleting empty folders...", total=len(items))
         for item in items:
@@ -125,6 +126,6 @@ def convert_folder(source_folder,convert_type, selected_media_types, destination
     console.print("[bold green]:heavy_check_mark: Conversion completed![/bold green] :sparkles:")
 
     print("[bold green]:heavy_check_mark: Metadata HTML table created![/bold green]")
-  
+
 
 
