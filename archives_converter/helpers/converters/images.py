@@ -65,8 +65,9 @@ def convert_image(files, root, output_format, quality=None):
                 if output_format == 'jpg':
                     params = [cv2.IMWRITE_JPEG_QUALITY, 95] if quality is None else [cv2.IMWRITE_JPEG_QUALITY, quality]
                     cv2.imwrite(output_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR), params)
-                else:  # tiff
-                    cv2.imwrite(output_path, img)
+                elif output_format == 'tiff':
+                    cv2.imwrite(output_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
+
 
                 os.chmod(output_path, 0o644)
                 

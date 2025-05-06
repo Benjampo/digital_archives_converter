@@ -38,8 +38,9 @@ def cloning_changes_to_folder(source_folder, destination_folder, selected_media_
     print(f"[bold yellow]Cloning changes to folder...[/bold yellow]")
 
     for root, dirs, files in os.walk(destination_folder):
-        if "bagit.txt" in root:
+        if "bagit.txt" in files:
             destination_folder = os.path.join(root, "data")
+            print(destination_folder)
             break
 
     for root, dirs, files in os.walk(source_folder):
@@ -52,7 +53,7 @@ def cloning_changes_to_folder(source_folder, destination_folder, selected_media_
             src_file = os.path.join(root, new_name_file)
             relative_path = to_snake_case(os.path.relpath(src_file, source_folder))
             dst_file = os.path.join(destination_folder, relative_path)
-
+            print(f"Copying {src_file} to {dst_file}")
             # Check if the file exists in the destination folder
             if not os.path.exists(dst_file):
                 if should_copy_file(file, selected_media_types):
