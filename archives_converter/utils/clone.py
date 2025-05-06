@@ -49,10 +49,11 @@ def cloning_changes_to_folder(source_folder, destination_folder, selected_media_
             os.rename(os.path.join(root, file), os.path.join(root, new_name_file))
             if file == '.DS_Store':
                 continue
-           
+            
+
             src_file = os.path.join(root, new_name_file)
             relative_path = to_snake_case(os.path.relpath(src_file, source_folder))
-            dst_file = os.path.join(destination_folder, relative_path)
+            dst_file = os.path.join(destination_folder, new_name_file)
             print(f"Copying {src_file} to {dst_file}")
             # Check if the file exists in the destination folder
             if not os.path.exists(dst_file):

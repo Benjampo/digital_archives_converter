@@ -3,7 +3,7 @@ from helpers.to_snake_case import to_snake_case
 from helpers.folders import count_files_and_folders
 from rich.progress import Progress, BarColumn, TextColumn, TimeRemainingColumn, SpinnerColumn
 from rich import print
-
+from config.ignore import text_files_to_ignore
 def rename_files_and_folders(folder, selected_media_types):
     print("[bold cyan]Starting renaming files and folders[/bold cyan] :pencil2:")
 
@@ -21,7 +21,7 @@ def rename_files_and_folders(folder, selected_media_types):
         for root, dirs, files in os.walk(folder, topdown=False):
             # Rename files
             for file in files:
-                if file == '.DS_Store' or file.startswith('.'):  # Skip .DS_Store files and hidden files
+                if file == '.DS_Store' or file.startswith('.') or file in text_files_to_ignore:  # Skip .DS_Store files and hidden files
                     continue
                 new_name = to_snake_case(file)
                 os.rename(os.path.join(root, file), os.path.join(root, new_name))

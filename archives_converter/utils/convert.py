@@ -13,7 +13,7 @@ from helpers.delete_empty_folders import delete_empty_folders
 from helpers.folders import count_files_and_folders
 from utils.clone import clone_folder
 from utils.rename import rename_files_and_folders
-
+from config.ignore import text_files_to_ignore
 console = Console()
 
 def process_file(convert_type, file, root, progress, task, selected_media_types):
@@ -49,7 +49,7 @@ def process_file(convert_type, file, root, progress, task, selected_media_types)
             conversion_performed = convert_ffv1([file], root) or conversion_performed
         elif convert_type == "DIP":
             conversion_performed = convert_mp4([file], root) or conversion_performed
-    if 'text' in selected_media_types and not file.lower() in ['bagit.txt', 'metadata.json', 'bagit.txt', 'bag-info.txt', 'manifest-sha256.txt', 'tagmanifest-sha256.txt']:
+    if 'text' in selected_media_types and not file.lower() in text_files_to_ignore:
         if convert_type == "AIP":
             conversion_performed = convert_pdfa([file], root) or conversion_performed
         elif convert_type == "DIP":
