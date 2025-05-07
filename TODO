@@ -1,6 +1,5 @@
 FEATURES
-- Add files integrity check with MD5
-- Check metdata json structure
+- Check files integrity with bagit
 BUGFIXES
 - Fix text conversion
 - Fix image conversion
