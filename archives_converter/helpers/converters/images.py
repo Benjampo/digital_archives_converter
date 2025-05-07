@@ -3,7 +3,7 @@ import os
 import logging
 import shutil
 from helpers.metadata import extract_metadata, append_metadata
-
+from PIL import Image
 
 def convert_tiff(files, root):
     return convert_image(files, root, 'tiff')
@@ -50,24 +50,15 @@ def convert_image(files, root, output_format, quality=None):
                 os.remove(input_path)
                 conversion_performed = True
             else:
-                # Read image using OpenCV
-                img = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
-                if img is None:
-                    raise Exception(f"Failed to read image: {input_path}")
-
-                # Convert to RGB if needed
-                if len(img.shape) == 3 and img.shape[2] == 3:
-                    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                elif len(img.shape) == 3 and img.shape[2] == 4:
-                    img = cv2.cvtColor(img, cv2.COLOR_BGRA2RGB)
-
-                # Save with appropriate parameters
-                if output_format == 'jpg':
-                    params = [cv2.IMWRITE_JPEG_QUALITY, 95] if quality is None else [cv2.IMWRITE_JPEG_QUALITY, quality]
-                    cv2.imwrite(output_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR), params)
-                elif output_format == 'tiff':
-                    cv2.imwrite(output_path, cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
-
+                # Open image with Pillow to preserve color profiles
+                with Image.open(input_path) as pil_img:
+                    # Save with appropriate parameters
+                    if output_format == 'jpg':
+                        jpeg_quality = 95 if quality is None else quality
+                        pil_img.save(output_path, format='JPEG', quality=jpeg_quality, icc_profile=pil_img.info.get('icc_profile'))
+                    elif output_format == 'tiff':
+                        # Preserve ICC profile for TIFF files
+                        pil_img.save(output_path, format='TIFF', compression='tiff_lzw', icc_profile=pil_img.info.get('icc_profile'))
 
                 os.chmod(output_path, 0o644)
                 
