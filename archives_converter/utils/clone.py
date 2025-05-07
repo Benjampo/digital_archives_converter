@@ -42,12 +42,13 @@ def cloning_changes_to_folder(source_folder, destination_folder, selected_media_
             data_dir = os.path.join(root, "data")
             if os.path.exists(data_dir):
                 # Add all files from the data directory
-                for data_root, data_dirs, data_files in os.walk(data_dir):
+                for data_root, data_dirs, data_files in os.walk(source_folder):
                     for data_file in data_files:
                         folders_with_data.append({
-                            "file": to_snake_case(data_file),
+                            "file": predict_name_based_on_extension(to_snake_case(data_file), clone_type),
                             "path": data_dir  # Use the actual path, not snake_case
                         })
+                    print(folders_with_data)
 
     for root, dirs, files in os.walk(source_folder):
         for file in files:
@@ -63,6 +64,8 @@ def cloning_changes_to_folder(source_folder, destination_folder, selected_media_
                     if file == '.DS_Store':
                         continue
                     future_name = predict_name_based_on_extension(new_name_file, clone_type)
+                    print(future_name)
+                    print(folders_with_data)
                     if folder["file"] == future_name:  # Exact match
                         target_dir = folder["path"]
                         print(f"[bold yellow]Using specific path: {target_dir}[/bold yellow]")
