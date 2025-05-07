@@ -2,9 +2,6 @@ from config.ignore import image_extensions, video_extensions, audio_extensions, 
 def predict_name_based_on_extension(input_name, convert_type):
    #get file extension
    extension = "." + input_name.split(".")[-1]
-   print(f"Input name: {input_name}")
-   print(f"Extension: {extension}")
-   print(f"Convert type: {convert_type}")
 
    # replace extension based on the conversion
    if extension in image_extensions and convert_type == "AIP":

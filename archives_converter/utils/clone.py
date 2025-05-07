@@ -36,19 +36,16 @@ def clone_folder(source_folder, clone_type, selected_media_types, destination_fo
 
 def cloning_changes_to_folder(source_folder, destination_folder, selected_media_types, clone_type):
     print(f"[bold yellow]Cloning changes to folder...[/bold yellow]")
-    folders_with_data = []
+    destination_files = False
+
     for root, dirs, files in os.walk(destination_folder):
-        if "bagit.txt" in files:
-            data_dir = os.path.join(root, "data")
-            if os.path.exists(data_dir):
-                # Add all files from the data directory
-                for data_root, data_dirs, data_files in os.walk(source_folder):
-                    for data_file in data_files:
-                        folders_with_data.append({
-                            "file": predict_name_based_on_extension(to_snake_case(data_file), clone_type),
-                            "path": data_dir  # Use the actual path, not snake_case
-                        })
-                    print(folders_with_data)
+        for file in files:
+            if file == "bagit.txt":
+                data_dir = os.path.join(root, "data")
+                if os.path.exists(data_dir):
+                    for data_root, data_dirs, data_files in os.walk(data_dir):
+                        for data_file in data_files:
+                            destination_files = True
 
     for root, dirs, files in os.walk(source_folder):
         for file in files:
@@ -56,26 +53,16 @@ def cloning_changes_to_folder(source_folder, destination_folder, selected_media_
             os.rename(os.path.join(root, file), os.path.join(root, new_name_file))
             if file == '.DS_Store':
                 continue
-            # Default target directory
-            target_dir = destination_folder
-            
-            if folders_with_data:
-                for folder in folders_with_data:
-                    if file == '.DS_Store':
-                        continue
-                    future_name = predict_name_based_on_extension(new_name_file, clone_type)
-                    print(future_name)
-                    print(folders_with_data)
-                    if folder["file"] == future_name:  # Exact match
-                        target_dir = folder["path"]
-                        print(f"[bold yellow]Using specific path: {target_dir}[/bold yellow]")
-                        break
-
+                        
             src_file = os.path.join(root, new_name_file)
             relative_path = to_snake_case(os.path.relpath(src_file, source_folder))
-            dst_file = os.path.join(target_dir, new_name_file)
-            print(f"Copying {src_file} to {dst_file}")
-            # Check if the file exists in the destination folder
+
+            dst_dir = os.path.join(destination_folder, os.path.dirname(relative_path))
+            if destination_files:
+                dst_dir = os.path.join(destination_folder, os.path.dirname(relative_path), "data")
+            
+            dst_file = os.path.join(dst_dir, os.path.basename(relative_path))
+
             if not os.path.exists(dst_file):
                 if should_copy_file(file, selected_media_types):
                     os.makedirs(os.path.dirname(dst_file), exist_ok=True)
