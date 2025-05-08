@@ -84,7 +84,6 @@ def cloning_changes_to_folder(
                 predict_name_based_on_extension(dst_file, clone_type)
             ):
                 if should_copy_file(file, selected_media_types):
-                    print("dst_file", dst_file)
                     os.makedirs(os.path.dirname(dst_file), exist_ok=True)
                     shutil.copy2(src_file, dst_file)
             else:

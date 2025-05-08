@@ -28,7 +28,6 @@ def process_file(convert_type, file, root, progress, task, selected_media_types)
         return
 
     file_name_without_ext = os.path.splitext(file)[0]
-    print(file_name_without_ext)
     converted_suffixes = ["_pdfa", "_tiff", "_wav", "_ffv1", "_mp4", "_mp3", "_jpg"]
     if any(
         file_name_without_ext.lower().endswith(suffix) for suffix in converted_suffixes
