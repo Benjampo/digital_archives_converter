@@ -59,7 +59,7 @@ def check_bag_integrity(destination_folder):
     ]
 
     # Prepare CSV file
-    date_str = datetime.now().strftime("%Y-%m-%d")
+    date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     csv_filename = f"bag_integrity_{date_str}.csv"
     csv_filepath = os.path.join(destination_folder, csv_filename)
     with open(csv_filepath, mode="w", newline="", encoding="utf-8") as csvfile:
