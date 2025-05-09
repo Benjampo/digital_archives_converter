@@ -3,25 +3,39 @@ from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 import os
 from helpers.bagit import create_bag_info, create_bagit_txt
 import bagit
+import csv
+from datetime import datetime
+
 
 def apply_bag(destination_folder):
     print("[bold yellow]Creating BagIt structure...[/bold yellow]")
-    items = [item for item in os.listdir(destination_folder) if os.path.isdir(os.path.join(destination_folder, item))]
-    with Progress( SpinnerColumn(),
+    items = [
+        item
+        for item in os.listdir(destination_folder)
+        if os.path.isdir(os.path.join(destination_folder, item))
+    ]
+    with Progress(
+        SpinnerColumn(),
         TextColumn("[progress.description]{task.description}"),
         BarColumn(),
         TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
     ) as progress:
-        task = progress.add_task("[bold blue]Creating BagIt structure...", total=len(items))
+        task = progress.add_task(
+            "[bold blue]Creating BagIt structure...", total=len(items)
+        )
         for item in items:
             item_path = os.path.join(destination_folder, item)
             if os.path.exists(os.path.join(item_path, "bagit.txt")):
                 bag = bagit.Bag(item_path)
                 if not bag.is_valid():
-                    print(f"[bold yellow]Bag at {item_path} is invalid. Updating manifest...[/bold yellow]")
+                    print(
+                        f"[bold yellow]Bag at {item_path} is invalid. Updating manifest...[/bold yellow]"
+                    )
                     bag.save(manifests=True)  # Recalculate and save the manifest
                 else:
-                    print(f"[bold green]Bag at {item_path} is valid. Skipping...[/bold green]")
+                    print(
+                        f"[bold green]Bag at {item_path} is valid. Skipping...[/bold green]"
+                    )
                 continue
 
             bagit.make_bag(item_path, checksums=["sha256"])
@@ -32,5 +46,50 @@ def apply_bag(destination_folder):
             bag.save(manifests=True)
 
             progress.advance(task)
-    
+
     print("[bold green]:heavy_check_mark: BagIt structure created![/bold green]")
+
+
+def check_bag_integrity(destination_folder):
+    print("[bold yellow]Checking BagIt integrity...[/bold yellow]")
+    items = [
+        os.path.join(root, file)
+        for root, _, files in os.walk(destination_folder)
+        for file in files
+        if file == "bagit.txt"
+    ]
+
+    # Prepare CSV file
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    csv_filename = f"bag_integrity_{date_str}.csv"
+    csv_filepath = os.path.join(destination_folder, csv_filename)
+    with open(csv_filepath, mode="w", newline="", encoding="utf-8") as csvfile:
+        csv_writer = csv.writer(csvfile)
+        csv_writer.writerow(["Path", "Status", "Affected Files"])
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            BarColumn(),
+            TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+        ) as progress:
+            task = progress.add_task(
+                "[bold blue]Checking BagIt integrity...", total=len(items)
+            )
+            for bagit_file in items:
+                item_path = os.path.dirname(bagit_file)
+                bag = bagit.Bag(item_path)
+                is_valid, warnings = bag.validate(return_warnings=True)
+                if not is_valid:
+                    print(f"[bold red]Bag at {item_path} is invalid![/bold red]")
+                    affected_files = (
+                        "; ".join(warnings) if warnings else "Unknown issues"
+                    )
+                    csv_writer.writerow([item_path, "❌", affected_files])
+                else:
+                    print(f"[bold green]Bag at {item_path} is valid.[/bold green]")
+                    csv_writer.writerow([item_path, "✅", ""])
+                progress.advance(task)
+
+    print("[bold green]:heavy_check_mark: BagIt integrity check complete![/bold green]")
+    print(f"[bold blue]Results saved to {csv_filepath}[/bold blue]")
