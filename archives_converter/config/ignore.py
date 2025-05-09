@@ -1,9 +1,9 @@
 text_files_to_ignore = [
     "bagit.txt",
     "bagit.txt",
-    "bag_info.txt",
-    "manifest_sha256.txt",
-    "tagmanifest_sha256.txt",
+    "bag-info.txt",
+    "manifest-sha256.txt",
+    "tagmanifest-sha256.txt",
 ]
 image_extensions = [".jpg", ".jpeg", ".tif", ".tiff", ".png", ".gif", ".bmp"]
 video_extensions = [".mp4", ".avi", ".mov", ".flv", ".mkv"]
