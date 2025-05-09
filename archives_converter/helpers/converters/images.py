@@ -23,7 +23,6 @@ def convert_image(files, root, output_format, quality=None):
         input_path = os.path.join(root, img_file)
         output_ext = ".tiff" if output_format == "tiff" else ".jpg"
         output_path = os.path.splitext(input_path)[0] + f"_{output_format}{output_ext}"
-        metadata_file = os.path.join(os.path.dirname(input_path), "metadata.json")
 
         if not os.path.exists(input_path):
             logging.warning(f"Skipping {img_file}: File not found")
