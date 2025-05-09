@@ -1,6 +1,8 @@
+import cv2
 import os
 import logging
 import shutil
+from helpers.metadata import extract_metadata, append_metadata
 from PIL import Image
 
 
@@ -27,6 +29,7 @@ def convert_image(files, root, output_format, quality=None):
             continue
 
         original_stat = os.stat(input_path)
+        metadata = extract_metadata(input_path)
 
         try:
             if output_format == "tiff" and img_file.lower().endswith(".tif"):
@@ -79,6 +82,7 @@ def convert_image(files, root, output_format, quality=None):
 
                 # Preserve original file's metadata
                 os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+                append_metadata(metadata, metadata_file, output_path)
 
                 # Remove input file after successful conversion
                 if os.path.exists(output_path) and os.path.getsize(output_path) > 0:

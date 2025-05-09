@@ -1,6 +1,7 @@
 import os
 import subprocess
 import shutil
+from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_ffv1(files, root):
@@ -34,6 +35,7 @@ def convert_video(files, root, output_suffix, video_codec):
                     original_stat = os.stat(input_path)
 
                     # Extract metadata before conversion
+                    metadata = extract_metadata(input_path)
 
                     ffmpeg_command = [
                         "ffmpeg",
@@ -88,6 +90,8 @@ def convert_video(files, root, output_suffix, video_codec):
                     os.utime(
                         output_path, (original_stat.st_atime, original_stat.st_mtime)
                     )
+
+                    append_metadata(metadata, metadata_file, output_path)
 
                     try:
                         os.remove(input_path)  # Remove the original video file

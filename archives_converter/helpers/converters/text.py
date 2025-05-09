@@ -3,6 +3,7 @@ import subprocess
 import logging
 import time
 import shutil
+from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_pdfa(files, root):
@@ -23,11 +24,13 @@ def convert_pdfa(files, root):
 
         if file.lower().endswith(".pdf"):
             conversion_performed = (
-                convert_pdf_to_pdfa(input_path, output_path) or conversion_performed
+                convert_pdf_to_pdfa(input_path, output_path, metadata_file)
+                or conversion_performed
             )
         elif file.lower().endswith((".txt", ".doc", ".docx", ".rtf", ".odt")):
             conversion_performed = (
-                convert_to_pdf(input_path, output_path) or conversion_performed
+                convert_to_pdf(input_path, output_path, metadata_file)
+                or conversion_performed
             )
 
         original_file = output_path.replace(".pdf", ".pdf_original")
@@ -82,6 +85,9 @@ def convert_to_pdf(input_path, output_path, metadata_file):
 
         original_stat = os.stat(input_path)
 
+        # Extract metadata before conversion
+        metadata = extract_metadata(input_path)
+
         exiftool_command = [
             "exiftool",
             "-tagsFromFile",
@@ -99,6 +105,8 @@ def convert_to_pdf(input_path, output_path, metadata_file):
         # Set original file's timestamps on the new file
         os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
 
+        append_metadata(metadata, metadata_file, input_path)
+
         os.remove(input_path)  # Remove the original text file
         return True
     except subprocess.CalledProcessError as e:
@@ -111,6 +119,7 @@ def convert_to_pdf(input_path, output_path, metadata_file):
 def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
     try:
         original_stat = os.stat(input_path)
+        metadata = extract_metadata(input_path)
 
         # Add retry mechanism for ghostscript conversion
         max_retries = 3
@@ -169,6 +178,8 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
 
         # Set original file's timestamps on the new file
         os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+
+        append_metadata(metadata, metadata_file, output_path)
 
         try:
             if os.path.exists(input_path):

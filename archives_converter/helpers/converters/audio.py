@@ -1,6 +1,7 @@
 import os
 import subprocess
 import logging
+from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_wav(files, root):
@@ -38,6 +39,9 @@ def convert_audio(files, root, target_format, codec, sample_rate):
             # Get original file's timestamps
             original_stat = os.stat(input_path)
 
+            # Extract metadata before conversion
+            metadata = extract_metadata(input_path)
+
             ffmpeg_command = [
                 "ffmpeg",
                 "-i",
@@ -61,6 +65,8 @@ def convert_audio(files, root, target_format, codec, sample_rate):
 
             # Set the new file's timestamps to match the original
             os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
+
+            append_metadata(metadata, metadata_file, output_path)
 
             os.remove(input_path)  # Remove the original audio file
             conversion_performed = True
