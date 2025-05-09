@@ -13,6 +13,7 @@ def convert_mp3(files, root):
 
 
 def convert_audio(files, root, target_format, codec, sample_rate):
+    metadata_file = os.path.join(root, "metadata.json")
     audio_files = [
         f
         for f in files
@@ -35,6 +36,7 @@ def convert_audio(files, root, target_format, codec, sample_rate):
                 )
                 counter += 1
 
+        metadata_file = os.path.join(os.path.dirname(input_path), "metadata.json")
         try:
             # Get original file's timestamps
             original_stat = os.stat(input_path)

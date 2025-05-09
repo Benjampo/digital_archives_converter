@@ -1,5 +1,6 @@
 text_files_to_ignore = [
     "bagit.txt",
+    "metadata.json",
     "bagit.txt",
     "bag_info.txt",
     "manifest_sha256.txt",
