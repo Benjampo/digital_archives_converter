@@ -53,10 +53,9 @@ def apply_bag(destination_folder):
 def check_bag_integrity(destination_folder):
     print("[bold yellow]Checking BagIt integrity...[/bold yellow]")
     items = [
-        os.path.join(root, file)
-        for root, _, files in os.walk(destination_folder)
-        for file in files
-        if file == "bagit.txt"
+        item
+        for item in os.listdir(destination_folder)
+        if os.path.isdir(os.path.join(destination_folder, item))
     ]
 
     # Prepare CSV file
@@ -65,7 +64,7 @@ def check_bag_integrity(destination_folder):
     csv_filepath = os.path.join(destination_folder, csv_filename)
     with open(csv_filepath, mode="w", newline="", encoding="utf-8") as csvfile:
         csv_writer = csv.writer(csvfile)
-        csv_writer.writerow(["Path", "Status", "Affected Files"])
+        csv_writer.writerow(["Path", "Status", "Details"])
 
         with Progress(
             SpinnerColumn(),
@@ -76,19 +75,30 @@ def check_bag_integrity(destination_folder):
             task = progress.add_task(
                 "[bold blue]Checking BagIt integrity...", total=len(items)
             )
-            for bagit_file in items:
-                item_path = os.path.dirname(bagit_file)
-                bag = bagit.Bag(item_path)
-                is_valid, warnings = bag.validate(return_warnings=True)
-                if not is_valid:
-                    print(f"[bold red]Bag at {item_path} is invalid![/bold red]")
-                    affected_files = (
-                        "; ".join(warnings) if warnings else "Unknown issues"
-                    )
-                    csv_writer.writerow([item_path, "❌", affected_files])
+            for item in items:
+                item_path = os.path.join(destination_folder, item)
+                if os.path.exists(os.path.join(item_path, "bagit.txt")):
+                    bag = bagit.Bag(item_path)
+                    try:
+                        bag.validate()
+                        print(f"[bold green]Bag at {item_path} is valid.[/bold green]")
+                        csv_writer.writerow([item_path, "✅", "Valid Bag"])
+                    except bagit.BagValidationError as e:
+                        print(f"[bold red]Bag at {item_path} is invalid![/bold red]")
+                        details = "; ".join(
+                            [
+                                f"{type(d).__name__}: {d.path} (expected {d.expected}, found {d.found})"
+                                if isinstance(d, bagit.ChecksumMismatch)
+                                else f"{type(d).__name__}: {d.path}"
+                                for d in e.details
+                            ]
+                        )
+                        csv_writer.writerow([item_path, "❌", details])
                 else:
-                    print(f"[bold green]Bag at {item_path} is valid.[/bold green]")
-                    csv_writer.writerow([item_path, "✅", ""])
+                    print(
+                        f"[bold red]No bagit.txt found at {item_path}. Skipping...[/bold red]"
+                    )
+                    csv_writer.writerow([item_path, "❌", "Missing bagit.txt"])
                 progress.advance(task)
 
     print("[bold green]:heavy_check_mark: BagIt integrity check complete![/bold green]")
