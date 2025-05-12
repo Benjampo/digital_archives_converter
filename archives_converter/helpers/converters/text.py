@@ -74,7 +74,7 @@ def convert_to_pdf(input_path, output_path, metadata_file):
                 ]
                 subprocess.run(
                     unoconv_command,
-                    timeout=600,
+                    timeout=100,
                     check=True,
                     capture_output=True,
                     text=True,

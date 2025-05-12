@@ -1,5 +1,7 @@
 import os
 import concurrent.futures
+import csv
+from datetime import datetime
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.console import Console
 from rich import print
@@ -18,7 +20,9 @@ from config.ignore import text_files_to_ignore
 console = Console()
 
 
-def process_file(convert_type, file, root, progress, task, selected_media_types):
+def process_file(
+    convert_type, destination_folder, file, root, progress, task, selected_media_types
+):
     if file == ".DS_Store":  # Skip .DS_Store files
         return
 
@@ -38,51 +42,68 @@ def process_file(convert_type, file, root, progress, task, selected_media_types)
     progress.update(task, current_file=f"Converting {file}")
 
     conversion_performed = False
-    if "image" in selected_media_types:
-        if convert_type == "AIP":
-            conversion_performed = convert_tiff([file], root) or conversion_performed
-        elif convert_type == "DIP":
-            conversion_performed = convert_jpg([file], root) or conversion_performed
-    if "audio" in selected_media_types:
-        if convert_type == "AIP":
-            conversion_performed = convert_wav([file], root) or conversion_performed
-        elif convert_type == "DIP":
-            conversion_performed = convert_mp3([file], root) or conversion_performed
-    if "video" in selected_media_types:
-        if convert_type == "AIP":
-            conversion_performed = convert_ffv1([file], root) or conversion_performed
-        elif convert_type == "DIP":
-            conversion_performed = convert_mp4([file], root) or conversion_performed
-    if "text" in selected_media_types and file.lower() not in text_files_to_ignore:
-        if convert_type == "AIP":
-            conversion_performed = convert_pdfa([file], root) or conversion_performed
-        elif convert_type == "DIP":
-            conversion_performed = convert_pdfa([file], root) or conversion_performed
-    if "dvd" in selected_media_types and file == "VIDEO_TS":
-        video_ts_folder = os.path.join(root, "VIDEO_TS")
-        progress.update(task, current_file="VIDEO_TS")
-        if convert_type == "AIP":
-            convert_dvd_to_mkv([root], root)
-        elif convert_type == "DIP":
-            convert_dvd_to_mp4([root], root)
-        print(f"[bold green]Converted VIDEO_TS:[/bold green] {root}")
-        video_ts_files = len(
-            [f for f in os.listdir(video_ts_folder) if f != ".DS_Store"]
-        )
-        progress.update(
-            task, advance=video_ts_files, current_file=f"Completed VIDEO_TS: {root}"
-        )
-        return
+    try:
+        if "image" in selected_media_types:
+            if convert_type == "AIP":
+                conversion_performed = (
+                    convert_tiff([file], root) or conversion_performed
+                )
+            elif convert_type == "DIP":
+                conversion_performed = convert_jpg([file], root) or conversion_performed
+        if "audio" in selected_media_types:
+            if convert_type == "AIP":
+                conversion_performed = convert_wav([file], root) or conversion_performed
+            elif convert_type == "DIP":
+                conversion_performed = convert_mp3([file], root) or conversion_performed
+        if "video" in selected_media_types:
+            if convert_type == "AIP":
+                conversion_performed = (
+                    convert_ffv1([file], root) or conversion_performed
+                )
+            elif convert_type == "DIP":
+                conversion_performed = convert_mp4([file], root) or conversion_performed
+        if "text" in selected_media_types and file.lower() not in text_files_to_ignore:
+            if convert_type == "AIP":
+                conversion_performed = (
+                    convert_pdfa([file], root) or conversion_performed
+                )
+            elif convert_type == "DIP":
+                conversion_performed = (
+                    convert_pdfa([file], root) or conversion_performed
+                )
+        if "dvd" in selected_media_types and file == "VIDEO_TS":
+            video_ts_folder = os.path.join(root, "VIDEO_TS")
+            progress.update(task, current_file="VIDEO_TS")
+            if convert_type == "AIP":
+                convert_dvd_to_mkv([root], root)
+            elif convert_type == "DIP":
+                convert_dvd_to_mp4([root], root)
+            print(f"[bold green]Converted VIDEO_TS:[/bold green] {root}")
+            video_ts_files = len(
+                [f for f in os.listdir(video_ts_folder) if f != ".DS_Store"]
+            )
+            progress.update(
+                task, advance=video_ts_files, current_file=f"Completed VIDEO_TS: {root}"
+            )
+            return
 
-    if conversion_performed:
-        print(
-            f"[bold green]:heavy_check_mark: Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]"
-        )
-        progress.update(
-            task,
-            advance=1,
-            current_file=f"Completed [link=file://{parent_folder}]{file}[/link]",
-        )
+        if conversion_performed:
+            print(
+                f"[bold green]:heavy_check_mark: Converted file:[/bold green] [link=file://{parent_folder}]{file_path}[/link]"
+            )
+            progress.update(
+                task,
+                advance=1,
+                current_file=f"Completed [link=file://{parent_folder}]{file}[/link]",
+            )
+    except Exception as e:
+        print(f"Exception caught: {e}")
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+        error_log_file = os.path.join(destination_folder, f"errors_{timestamp}.csv")
+        with open(error_log_file, mode="a", newline="") as csvfile:
+            csv_writer = csv.writer(csvfile)
+            csv_writer.writerow([file_path, str(e)])
+        print(f"[bold red]Error processing file:[/bold red] {file_path} - {e}")
 
 
 def convert_files(destination_folder, convert_type, selected_media_types):
@@ -111,6 +132,7 @@ def convert_files(destination_folder, convert_type, selected_media_types):
                     executor.submit(
                         process_file,
                         convert_type,
+                        destination_folder,
                         file,
                         root,
                         progress,
