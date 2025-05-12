@@ -1,7 +1,5 @@
 import os
 import concurrent.futures
-import csv
-from datetime import datetime
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.console import Console
 from rich import print
