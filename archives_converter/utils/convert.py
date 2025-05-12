@@ -98,12 +98,6 @@ def process_file(
             )
     except Exception as e:
         print(f"Exception caught: {e}")
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-        error_log_file = os.path.join(destination_folder, f"errors_{timestamp}.csv")
-        with open(error_log_file, mode="a", newline="") as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow([file_path, str(e)])
-        print(f"[bold red]Error processing file:[/bold red] {file_path} - {e}")
 
 
 def convert_files(destination_folder, convert_type, selected_media_types):
