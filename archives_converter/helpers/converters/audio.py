@@ -1,7 +1,7 @@
 import os
 import subprocess
 import logging
-from helpers.metadata import extract_metadata, append_metadata
+# from helpers.metadata import extract_metadata, append_metadata
 
 
 def convert_wav(files, root):
@@ -13,7 +13,7 @@ def convert_mp3(files, root):
 
 
 def convert_audio(files, root, target_format, codec, sample_rate):
-    metadata_file = os.path.join(root, "metadata.json")
+    # metadata_file = os.path.join(root, "metadata.json")
     audio_files = [
         f
         for f in files
@@ -36,13 +36,13 @@ def convert_audio(files, root, target_format, codec, sample_rate):
                 )
                 counter += 1
 
-        metadata_file = os.path.join(os.path.dirname(input_path), "metadata.json")
+        # metadata_file = os.path.join(os.path.dirname(input_path), "metadata.json")
         try:
             # Get original file's timestamps
             original_stat = os.stat(input_path)
 
             # Extract metadata before conversion
-            metadata = extract_metadata(input_path)
+            # metadata = extract_metadata(input_path)
 
             ffmpeg_command = [
                 "ffmpeg",
@@ -68,7 +68,7 @@ def convert_audio(files, root, target_format, codec, sample_rate):
             # Set the new file's timestamps to match the original
             os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
 
-            append_metadata(metadata, metadata_file, output_path)
+            # append_metadata(metadata, metadata_file, output_path)
 
             os.remove(input_path)  # Remove the original audio file
             conversion_performed = True

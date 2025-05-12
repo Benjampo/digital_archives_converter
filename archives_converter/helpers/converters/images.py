@@ -2,7 +2,8 @@ import cv2
 import os
 import logging
 import shutil
-from helpers.metadata import extract_metadata, append_metadata
+
+# from helpers.metadata import extract_metadata, append_metadata
 from PIL import Image
 
 
@@ -23,14 +24,14 @@ def convert_image(files, root, output_format, quality=None):
         input_path = os.path.join(root, img_file)
         output_ext = ".tiff" if output_format == "tiff" else ".jpg"
         output_path = os.path.splitext(input_path)[0] + f"_{output_format}{output_ext}"
-        metadata_file = os.path.join(os.path.dirname(input_path), "metadata.json")
+        # metadata_file = os.path.join(os.path.dirname(input_path), "metadata.json")
 
         if not os.path.exists(input_path):
             logging.warning(f"Skipping {img_file}: File not found")
             continue
 
         original_stat = os.stat(input_path)
-        metadata = extract_metadata(input_path)
+        # metadata = extract_metadata(input_path)
 
         try:
             if output_format == "tiff" and img_file.lower().endswith(".tif"):
@@ -83,7 +84,7 @@ def convert_image(files, root, output_format, quality=None):
 
                 # Preserve original file's metadata
                 os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
-                append_metadata(metadata, metadata_file, output_path)
+                # append_metadata(metadata, metadata_file, output_path)
 
                 # Remove input file after successful conversion
                 if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
