@@ -50,7 +50,7 @@ def clone_folder(
 def cloning_changes_to_folder(
     source_folder, destination_folder, selected_media_types, clone_type
 ):
-    print(f"[bold yellow]Cloning changes to folder...[/bold yellow]")
+    print("[bold yellow]Cloning changes to folder...[/bold yellow]")
     destination_files = False
 
     for root, dirs, files in os.walk(destination_folder):
