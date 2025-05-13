@@ -34,7 +34,6 @@ def process_file(
     if any(
         file_name_without_ext.lower().endswith(suffix) for suffix in converted_suffixes
     ):
-        print(f"[bold yellow]Skipping:[/bold yellow] {file}")
         return
 
     progress.update(task, current_file=f"Converting {file}")
@@ -153,38 +152,9 @@ def convert_folder(
 
     rename_files_and_folders(destination_folder, selected_media_types)
     convert_files(destination_folder, convert_type, selected_media_types)
-
-    items = [
-        item
-        for item in os.listdir(destination_folder)
-        if os.path.isdir(os.path.join(destination_folder, item))
-    ]
-    with Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-    ) as progress:
-        task = progress.add_task(
-            "[bold blue]Deleting empty folders...", total=len(items)
-        )
-        for item in items:
-            progress.update(
-                task,
-                description="[bold blue]Processing metadatas",
-                current_file=f"Processing {item}",
-            )
-    print("[bold yellow]Creating metadata HTML table...[/bold yellow]")
-
-    total_files, _ = count_files_and_folders(destination_folder, selected_media_types)
-
-    delete_task = progress.add_task(
-        "[bold red]Deleting empty folders...[/bold red]", total=total_files
-    )
+    print("[bold magenta2]Cleaning up...[/bold magenta2]")
     delete_empty_folders(destination_folder)
-    progress.update(delete_task, completed=total_files)
+
     console.print(
         "[bold green]:heavy_check_mark: Conversion completed![/bold green] :sparkles:"
     )
-
-    print("[bold green]:heavy_check_mark: Metadata HTML table created![/bold green]")

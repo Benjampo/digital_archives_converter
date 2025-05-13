@@ -51,7 +51,6 @@ Tag-File-Character-Encoding: UTF-8
 
 def create_bag_info(bag_dir):
     """Creates or updates the bag-info.txt file in the BagIt with specific information."""
-    bag_info_path = os.path.join(bag_dir, "bag-info.txt")
     creation_date = datetime.now().strftime("%Y-%m-%d")
     bag_name = os.path.basename(bag_dir)
     bag_size = sum(
@@ -83,6 +82,7 @@ def create_bag_info(bag_dir):
     """
 
     if "bagit.txt" in list(os.listdir(bag_dir)):
+        bag_info_path = os.path.join(bag_dir, "bag-info.txt")
         added_files = list(os.listdir(bag_info_path))
         modification_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         try:

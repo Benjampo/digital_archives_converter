@@ -25,7 +25,6 @@ def convert_video(files, root, output_suffix, video_codec):
 
         # Skip files that are already converted
         if file.lower().endswith(output_suffix):
-            print(f"[bold salmon1]Skipping:[/bold salmon1] {file}")
             continue
 
         for video_file in video_files:

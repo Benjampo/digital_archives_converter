@@ -18,7 +18,6 @@ def convert_pdfa(files, root):
             "manifest-sha256.txt",
             "tagmanifest-sha256.txt",
         ]:
-            print(f"[bold yellow]Skipping:[/bold yellow] {file}")
             return conversion_performed
 
         input_path = os.path.join(root, file)

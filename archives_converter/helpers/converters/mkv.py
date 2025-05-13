@@ -21,9 +21,6 @@ def convert_vob_to_output(input_file, output_file, output_format):
     duration_output = subprocess.check_output(duration_command).decode("utf-8").strip()
 
     if duration_output == "N/A" or float(duration_output) < 5:
-        print(
-            f"[bold salmon1]Skipping:[/bold salmon1] {os.path.basename(input_file)} (duration: {duration_output})"
-        )
         return None
 
     # FFmpeg command to convert each VOB file to the desired format
