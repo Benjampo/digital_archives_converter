@@ -74,23 +74,26 @@ def cloning_changes_to_folder(
             for data_file in data_files:
                 src_file = os.path.join(data_root, data_file)
                 relative_path = to_snake_case(os.path.relpath(src_file, bagit_data_dir))
-                dst_file = (
+
+                dst_dir = (
                     os.path.join(data_dir, os.path.dirname(relative_path))
                     if destination_files
                     else os.path.join(
                         destination_folder, os.path.dirname(relative_path)
                     )
                 )
-            if not os.path.exists(
-                predict_name_based_on_extension(dst_file, clone_type)
-            ):
-                if should_copy_file(data_file, selected_media_types):
-                    os.makedirs(os.path.dirname(dst_file), exist_ok=True)
-                    shutil.copy2(src_file, dst_file)
-            else:
-                print(
-                    f"[bold salmon1]File already exists: {relative_path}[/bold salmon1]"
-                )
+                dst_file = os.path.join(dst_dir, os.path.basename(relative_path))
+
+                if not os.path.exists(
+                    predict_name_based_on_extension(dst_file, clone_type)
+                ):
+                    if should_copy_file(data_file, selected_media_types):
+                        os.makedirs(os.path.dirname(dst_dir), exist_ok=True)
+                        shutil.copy2(src_file, dst_file)
+                else:
+                    print(
+                        f"[bold salmon1]File already exists: {relative_path}[/bold salmon1]"
+                    )
         return
 
     for root, dirs, files in os.walk(source_folder):
@@ -118,5 +121,5 @@ def cloning_changes_to_folder(
                     shutil.copy2(src_file, dst_file)
             else:
                 print(
-                    f"[bold salmon1]File already exists: {relative_path}[/bold salmon1]"
+                    f"[bold orange]File already exists: {relative_path}[/bold orange]"
                 )
