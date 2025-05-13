@@ -143,7 +143,7 @@ def convert_files(destination_folder, convert_type, selected_media_types):
 def convert_folder(
     source_folder, convert_type, selected_media_types, destination_folder=None
 ):
-    destination_folder = clone_folder(
+    destination_folder = clone_folder(  
         source_folder, convert_type, selected_media_types, destination_folder
     )
 

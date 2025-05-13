@@ -53,6 +53,24 @@ def cloning_changes_to_folder(
     print("[bold yellow]Cloning changes to folder...[/bold yellow]")
     destination_files = False
 
+    bagit_data_dir = None
+    for root, dirs, files in os.walk(source_folder):
+        if "bagit.txt" in files:
+            bagit_data_dir = os.path.join(root, "data")
+            break
+
+    if bagit_data_dir and os.path.exists(bagit_data_dir):
+        for data_root, data_dirs, data_files in os.walk(bagit_data_dir):
+            for data_file in data_files:
+                src_file = os.path.join(data_root, data_file)
+                relative_path = to_snake_case(os.path.relpath(src_file, bagit_data_dir))
+                dst_file = os.path.join(destination_folder, relative_path)
+
+                if should_copy_file(data_file, selected_media_types):
+                    os.makedirs(os.path.dirname(dst_file), exist_ok=True)
+                    shutil.copy2(src_file, dst_file)
+        return
+
     for root, dirs, files in os.walk(destination_folder):
         for file in files:
             if file == "bagit.txt":
