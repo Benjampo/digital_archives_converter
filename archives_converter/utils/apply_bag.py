@@ -25,6 +25,11 @@ def apply_bag(destination_folder):
         )
         for item in items:
             item_path = os.path.join(destination_folder, item)
+            for root, dirs, files in os.walk(item_path):
+                for file in files:
+                    if file == ".DS_Store":
+                        os.remove(os.path.join(root, file))
+
             if os.path.exists(os.path.join(item_path, "bagit.txt")):
                 bag = bagit.Bag(item_path)
                 try:
@@ -32,7 +37,7 @@ def apply_bag(destination_folder):
                         print(
                             f"[bold yellow]Bag at {item_path} is invalid. Updating manifest...[/bold yellow]"
                         )
-                        bag.save(manifests=True)  # Recalculate and save the manifest
+                        bag.save(manifests=True)
                     else:
                         print(
                             f"[bold green]Bag at {item_path} is valid. Skipping...[/bold green]"
@@ -42,6 +47,8 @@ def apply_bag(destination_folder):
                         f"[bold red]Error updating manifest for {item_path}: {e}[/bold red]"
                     )
                 continue
+
+            # Remove .DS_Store files from item_path
 
             bagit.make_bag(item_path, checksums=["sha256"])
             create_bagit_txt(item_path)
