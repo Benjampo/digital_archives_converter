@@ -34,7 +34,7 @@ def process_file(
     if any(
         file_name_without_ext.lower().endswith(suffix) for suffix in converted_suffixes
     ):
-        print(f"[bold orange]Skipping:[/bold orange] {file}")
+        print(f"[bold yellow]Skipping:[/bold yellow] {file}")
         return
 
     progress.update(task, current_file=f"Converting {file}")
@@ -143,7 +143,7 @@ def convert_files(destination_folder, convert_type, selected_media_types):
 def convert_folder(
     source_folder, convert_type, selected_media_types, destination_folder=None
 ):
-    destination_folder = clone_folder(  
+    destination_folder = clone_folder(
         source_folder, convert_type, selected_media_types, destination_folder
     )
 

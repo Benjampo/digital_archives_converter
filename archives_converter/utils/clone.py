@@ -70,7 +70,6 @@ def cloning_changes_to_folder(
             break
 
     if bagit_data_dir and os.path.exists(bagit_data_dir):
-        print("good path", bagit_data_dir)
         for data_root, data_dirs, data_files in os.walk(bagit_data_dir):
             for data_file in data_files:
                 src_file = os.path.join(data_root, data_file)
@@ -90,7 +89,7 @@ def cloning_changes_to_folder(
                     shutil.copy2(src_file, dst_file)
             else:
                 print(
-                    f"[bold orange]File already exists: {relative_path}[/bold orange]"
+                    f"[bold salmon1]File already exists: {relative_path}[/bold salmon1]"
                 )
         return
 
@@ -119,5 +118,5 @@ def cloning_changes_to_folder(
                     shutil.copy2(src_file, dst_file)
             else:
                 print(
-                    f"[bold orange]File already exists: {relative_path}[/bold orange]"
+                    f"[bold salmon1]File already exists: {relative_path}[/bold salmon1]"
                 )
