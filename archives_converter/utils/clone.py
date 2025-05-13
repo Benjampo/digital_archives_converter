@@ -82,9 +82,16 @@ def cloning_changes_to_folder(
                         destination_folder, os.path.dirname(relative_path)
                     )
                 )
+            if not os.path.exists(
+                predict_name_based_on_extension(dst_file, clone_type)
+            ):
                 if should_copy_file(data_file, selected_media_types):
                     os.makedirs(os.path.dirname(dst_file), exist_ok=True)
                     shutil.copy2(src_file, dst_file)
+            else:
+                print(
+                    f"[bold orange]File already exists: {relative_path}[/bold orange]"
+                )
         return
 
     for root, dirs, files in os.walk(source_folder):
@@ -111,4 +118,6 @@ def cloning_changes_to_folder(
                     os.makedirs(os.path.dirname(dst_file), exist_ok=True)
                     shutil.copy2(src_file, dst_file)
             else:
-                print(f"File already exists: {relative_path}")
+                print(
+                    f"[bold orange]File already exists: {relative_path}[/bold orange]"
+                )

@@ -12,7 +12,7 @@ def apply_bag(destination_folder):
     items = [
         item
         for item in os.listdir(destination_folder)
-        if os.path.isdir(os.path.join(destination_folder, item))
+        if os.path.isdir(os.path.join(destination_folder, item)) and item != ".DS_Store"
     ]
     with Progress(
         SpinnerColumn(),
@@ -27,14 +27,19 @@ def apply_bag(destination_folder):
             item_path = os.path.join(destination_folder, item)
             if os.path.exists(os.path.join(item_path, "bagit.txt")):
                 bag = bagit.Bag(item_path)
-                if not bag.is_valid():
+                try:
+                    if not bag.is_valid():
+                        print(
+                            f"[bold yellow]Bag at {item_path} is invalid. Updating manifest...[/bold yellow]"
+                        )
+                        bag.save(manifests=True)  # Recalculate and save the manifest
+                    else:
+                        print(
+                            f"[bold green]Bag at {item_path} is valid. Skipping...[/bold green]"
+                        )
+                except Exception as e:
                     print(
-                        f"[bold yellow]Bag at {item_path} is invalid. Updating manifest...[/bold yellow]"
-                    )
-                    bag.save(manifests=True)  # Recalculate and save the manifest
-                else:
-                    print(
-                        f"[bold green]Bag at {item_path} is valid. Skipping...[/bold green]"
+                        f"[bold red]Error updating manifest for {item_path}: {e}[/bold red]"
                     )
                 continue
 
@@ -55,7 +60,7 @@ def check_bag_integrity(destination_folder):
     items = [
         item
         for item in os.listdir(destination_folder)
-        if os.path.isdir(os.path.join(destination_folder, item))
+        if os.path.isdir(os.path.join(destination_folder, item)) and item != ".DS_Store"
     ]
 
     # Prepare CSV file
