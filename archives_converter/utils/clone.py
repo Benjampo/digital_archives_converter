@@ -5,6 +5,7 @@ import shutil
 from helpers.to_snake_case import to_snake_case
 from helpers.folders import should_copy_file
 from helpers.name_identifier import predict_name_based_on_extension
+from utils.apply_bag import check_bag_integrity
 
 
 def clone_folder(
@@ -34,9 +35,14 @@ def clone_folder(
             raise ValueError(f"Invalid clone type: {clone_type}")
 
     if os.path.exists(destination_folder):
-        cloning_changes_to_folder(
-            source_folder, destination_folder, selected_media_types, clone_type
-        )
+        check = check_bag_integrity(source_folder)
+        if check:
+            cloning_changes_to_folder(
+                source_folder, destination_folder, selected_media_types, clone_type
+            )
+        else:
+            print("[bold red]Bag is not valid. Please update before[/bold red]")
+            return
     else:
         print("[bold yellow]Cloning source folder...[/bold yellow]")
         copy_folder_with_progress(

@@ -70,6 +70,8 @@ def check_bag_integrity(destination_folder):
         if os.path.isdir(os.path.join(destination_folder, item)) and item != ".DS_Store"
     ]
 
+    all_valid = True  # Track overall validity
+
     # Prepare CSV file
     date_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     csv_filename = f"bag_integrity_{date_str}.csv"
@@ -106,12 +108,15 @@ def check_bag_integrity(destination_folder):
                             ]
                         )
                         csv_writer.writerow([item_path, "❌", details])
+                        all_valid = False  # Mark as invalid
                 else:
                     print(
                         f"[bold red]No bagit.txt found at {item_path}. Skipping...[/bold red]"
                     )
                     csv_writer.writerow([item_path, "❌", "Missing bagit.txt"])
+                    all_valid = False  # Mark as invalid
                 progress.advance(task)
 
     print("[bold green]:heavy_check_mark: BagIt integrity check complete![/bold green]")
     print(f"[bold blue]Results saved to {csv_filepath}[/bold blue]")
+    return all_valid
