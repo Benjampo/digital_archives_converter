@@ -47,7 +47,7 @@ def process_file(
     selected_media_types,
     error_log_path,
 ):
-    if file == ".DS_Store":  # Skip .DS_Store files
+    if file == ".DS_Store":
         return
 
     file_path = os.path.join(root, file)
