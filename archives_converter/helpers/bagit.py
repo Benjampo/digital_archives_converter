@@ -105,3 +105,26 @@ def create_bag_info(bag_dir):
         print(f"✅ bag-info.txt created for {bag_name}.")
     except Exception as e:
         print(f"❌ Error creating bag-info.txt: {e}")
+
+
+def update_bag_info(bag_dir, bag_file):
+    bag_info_path = os.path.join(bag_dir, "bag-info.txt")
+    bag_size = sum(
+        os.path.getsize(os.path.join(root, file))
+        for root, dirs, files in os.walk(bag_dir)
+        for file in files
+    )
+    formatted_bag_size = format_bag_size(bag_size)
+    modification_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    bagit_version = pkg_resources.get_distribution("bagit").version
+
+    try:
+        with open(bag_info_path, "a") as f:
+            f.write(f"\n--- Mise à jour du {modification_date} ---\n")
+            f.write(f"BagIt-Version: {bagit_version}\n")
+            f.write(f"Bag-Size: {formatted_bag_size}\n")
+
+            f.write(f"- {bag_file}\n")
+
+    except Exception as e:
+        print(f"❌ Erreur lors de la mise à jour de bag-info.txt : {e}")

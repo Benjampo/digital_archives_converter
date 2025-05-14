@@ -32,11 +32,13 @@ def apply_bag(destination_folder):
 
             if os.path.exists(os.path.join(item_path, "bagit.txt")):
                 bag = bagit.Bag(item_path)
+
                 try:
                     if not bag.is_valid():
                         print(
                             f"[bold yellow]Bag at {item_path} is invalid. Updating manifest...[/bold yellow]"
                         )
+
                         bag.save(manifests=True)
                     else:
                         print(

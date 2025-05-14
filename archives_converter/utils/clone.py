@@ -5,6 +5,7 @@ import shutil
 from helpers.to_snake_case import to_snake_case
 from helpers.folders import should_copy_file
 from helpers.name_identifier import predict_name_based_on_extension
+from helpers.bagit import update_bag_info
 
 
 def clone_folder(
@@ -55,6 +56,7 @@ def cloning_changes_to_folder(
 
     bagit_data_dir = None
 
+    # check if the destination folder is a bagit folder
     for root, dirs, files in os.walk(destination_folder):
         for file in files:
             if file == "bagit.txt":
@@ -64,6 +66,7 @@ def cloning_changes_to_folder(
                         for data_file in data_files:
                             destination_files = True
 
+    # check if the source folder is a bagit folder
     for root, dirs, files in os.walk(source_folder):
         if "bagit.txt" in files:
             bagit_data_dir = os.path.join(root, "data")
@@ -88,6 +91,7 @@ def cloning_changes_to_folder(
                     predict_name_based_on_extension(dst_file, clone_type)
                 ):
                     if should_copy_file(data_file, selected_media_types):
+                        # update_bag_info(dst_dir, dst_file)
                         os.makedirs(os.path.dirname(dst_dir), exist_ok=True)
                         shutil.copy2(src_file, dst_file)
                 else:
@@ -97,6 +101,7 @@ def cloning_changes_to_folder(
         return
 
     for root, dirs, files in os.walk(source_folder):
+        print("loop of source no bag")
         for file in files:
             new_name_file = to_snake_case(file)
             os.rename(os.path.join(root, file), os.path.join(root, new_name_file))
@@ -107,12 +112,15 @@ def cloning_changes_to_folder(
             relative_path = to_snake_case(os.path.relpath(src_file, source_folder))
 
             dst_dir = (
-                os.path.join(destination_folder, "data", os.path.dirname(relative_path))
+                os.path.join(destination_folder, os.path.dirname(relative_path), "data")
                 if destination_files
                 else os.path.join(destination_folder, os.path.dirname(relative_path))
             )
             dst_file = os.path.join(dst_dir, os.path.basename(relative_path))
-
+            print(f"src_file: {src_file}")
+            print(f"dst_file: {dst_file}")
+            print(f"dst_dir: {dst_dir}")
+            print(f"relative_path: {relative_path}")
             if not os.path.exists(
                 predict_name_based_on_extension(dst_file, clone_type)
             ):
