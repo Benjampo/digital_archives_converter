@@ -1,6 +1,5 @@
 import os
 import subprocess
-import logging
 import time
 import shutil
 # from helpers.metadata import extract_metadata, append_metadata
@@ -86,9 +85,7 @@ def convert_to_pdf(input_path, output_path, metadata_file):
                 exiftool_command, timeout=60, check=True, capture_output=True, text=True
             )
         except subprocess.CalledProcessError as e:
-            logging.error(
-                f"Exiftool command failed for {input_path}: {e.stderr.strip()}"
-            )
+            print(f"Exiftool command failed for {input_path}: {e.stderr.strip()}")
             raise
 
         shutil.chown(output_path, original_stat.st_uid, original_stat.st_gid)
@@ -98,7 +95,7 @@ def convert_to_pdf(input_path, output_path, metadata_file):
         os.remove(input_path)
         return True
     except Exception as e:
-        logging.error(f"Unexpected error converting {input_path}: {str(e)}")
+        print(f"Unexpected error converting {input_path}: {str(e)}")
     return False
 
 
@@ -145,9 +142,7 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
                 text=True,
             )
         except subprocess.CalledProcessError as e:
-            logging.error(
-                f"Exiftool command failed for {input_path}: {e.stderr.strip()}"
-            )
+            print(f"Exiftool command failed for {input_path}: {e.stderr.strip()}")
             raise
 
         shutil.chown(output_path, original_stat.st_uid, original_stat.st_gid)
@@ -158,22 +153,20 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
             if os.path.exists(input_path):
                 os.remove(input_path)
             else:
-                logging.warning(f"Original file not found for deletion: {input_path}")
+                print(f"Original file not found for deletion: {input_path}")
         except PermissionError:
-            logging.error(f"Permission denied when trying to delete: {input_path}")
+            print(f"Permission denied when trying to delete: {input_path}")
             raise
         except Exception as e:
-            logging.error(f"Error deleting original file {input_path}: {str(e)}")
+            print(f"Error deleting original file {input_path}: {str(e)}")
             raise
 
         return True
 
     except subprocess.TimeoutExpired:
-        logging.error(
-            f"Ghostscript command timed out after {timeout} seconds for {input_path}"
-        )
+        print(f"Ghostscript command timed out after {timeout} seconds for {input_path}")
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error in Ghostscript command for {input_path}: {e.stderr}")
+        print(f"Error in Ghostscript command for {input_path}: {e.stderr}")
     except Exception as e:
-        logging.error(f"Unexpected error converting {input_path}: {str(e)}")
+        print(f"Unexpected error converting {input_path}: {str(e)}")
     return False
