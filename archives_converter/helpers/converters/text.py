@@ -79,9 +79,9 @@ def convert_to_pdf(input_path, output_path, metadata_file):
                     text=True,
                 )
                 break  # If successful, exit the retry loop
-            except subprocess.CalledProcessError as e:
+            except Exception as e:
                 logging.error(
-                    f"Error converting {input_path} to PDF using unoconv: {e.stderr}"
+                    f"Error during attempt {attempt + 1} converting {input_path} to PDF: {str(e)}"
                 )
                 if attempt == max_retries - 1:  # Last attempt
                     raise
@@ -113,8 +113,6 @@ def convert_to_pdf(input_path, output_path, metadata_file):
 
         os.remove(input_path)  # Remove the original text file
         return True
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Error converting {input_path} to PDF/A-2b: {e.stderr}")
     except Exception as e:
         logging.error(f"Unexpected error converting {input_path}: {str(e)}")
     return False
