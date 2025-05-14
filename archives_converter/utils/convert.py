@@ -1,5 +1,6 @@
 import os
 import concurrent.futures
+import csv
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
 from rich.console import Console
 from rich import print
@@ -14,12 +15,37 @@ from helpers.folders import count_files_and_folders
 from utils.clone import clone_folder
 from utils.rename import rename_files_and_folders
 from config.ignore import text_files_to_ignore
+import time
 
 console = Console()
 
 
+def initialize_error_log(destination_folder):
+    timestamp = time.strftime("%Y%m%d-%H%M")
+    error_log_path = os.path.join(
+        destination_folder, f"conversion_errors_{timestamp}.csv"
+    )
+    with open(error_log_path, mode="w", newline="") as error_file:
+        writer = csv.writer(error_file)
+        writer.writerow(["File", "Error"])
+    return error_log_path
+
+
+def log_error(error_log_path, file_path, error_message):
+    with open(error_log_path, mode="a", newline="") as error_file:
+        writer = csv.writer(error_file)
+        writer.writerow([file_path, error_message])
+
+
 def process_file(
-    convert_type, destination_folder, file, root, progress, task, selected_media_types
+    convert_type,
+    destination_folder,
+    file,
+    root,
+    progress,
+    task,
+    selected_media_types,
+    error_log_path,
 ):
     if file == ".DS_Store":  # Skip .DS_Store files
         return
@@ -30,7 +56,15 @@ def process_file(
         return
 
     file_name_without_ext = os.path.splitext(file)[0]
-    converted_suffixes = ["_pdfa", "_tiff", "_wav", "_ffv1", "_mp4", "_mp3", "_jpg"]
+    converted_suffixes = [
+        "_pdfa",
+        "_tiff",
+        "_wav",
+        "_ffv1",
+        "_mp4",
+        "_mp3",
+        "_jpg",
+    ]
     if any(
         file_name_without_ext.lower().endswith(suffix) for suffix in converted_suffixes
     ):
@@ -94,11 +128,15 @@ def process_file(
                 current_file=f"Completed [link=file://{parent_folder}]{file}[/link]",
             )
     except Exception as e:
-        print(f"Exception caught: {e}")
+        error_message = str(e)
+        log_error(error_log_path, file_path, error_message)
+        print(f"Exception caught: {error_message}")
 
 
 def convert_files(destination_folder, convert_type, selected_media_types):
     print("[bold cyan]Starting conversion[/bold cyan] :gear:")
+
+    error_log_path = initialize_error_log(destination_folder)
 
     with Progress(
         SpinnerColumn(),
@@ -129,6 +167,7 @@ def convert_files(destination_folder, convert_type, selected_media_types):
                         progress,
                         convert_task,
                         selected_media_types,
+                        error_log_path,
                     )
                     for file in files + dirs
                     if file != ".DS_Store"
@@ -137,6 +176,13 @@ def convert_files(destination_folder, convert_type, selected_media_types):
 
         final_completed = progress.tasks[convert_task].completed
         progress.update(convert_task, total=final_completed, completed=final_completed)
+
+    # Check if the error log is empty and remove it if so
+    if os.path.exists(error_log_path) and os.path.getsize(error_log_path) == 0:
+        os.remove(error_log_path)
+        print(
+            "[bold green]No errors logged. Empty error log file removed.[/bold green]"
+        )
 
 
 def convert_folder(

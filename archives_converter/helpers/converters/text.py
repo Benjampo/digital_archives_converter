@@ -80,6 +80,9 @@ def convert_to_pdf(input_path, output_path, metadata_file):
                 )
                 break  # If successful, exit the retry loop
             except subprocess.CalledProcessError as e:
+                logging.error(
+                    f"Error converting {input_path} to PDF using unoconv: {e.stderr}"
+                )
                 if attempt == max_retries - 1:  # Last attempt
                     raise
                 time.sleep(5)  # Wait before retrying

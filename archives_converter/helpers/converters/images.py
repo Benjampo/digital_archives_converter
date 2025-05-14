@@ -4,6 +4,10 @@ import shutil
 
 # from helpers.metadata import extract_metadata, append_metadata
 from PIL import Image
+from pillow_heif import register_heif_opener
+
+# Register HEIF/HEIC format support
+register_heif_opener()
 
 
 def convert_tiff(files, root):
