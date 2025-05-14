@@ -25,6 +25,14 @@ def apply_bag(destination_folder):
         )
         for item in items:
             item_path = os.path.join(destination_folder, item)
+
+            # Ensure item_path is a directory
+            if not os.path.isdir(item_path):
+                print(
+                    f"[bold red]Error: {item_path} is not a directory. Skipping...[/bold red]"
+                )
+                continue
+
             for root, dirs, files in os.walk(item_path):
                 for file in files:
                     if file == ".DS_Store":
@@ -50,7 +58,12 @@ def apply_bag(destination_folder):
                     )
                 continue
 
-            # Remove .DS_Store files from item_path
+            # Ensure item_path is still a directory before creating a BagIt structure
+            if not os.path.isdir(item_path):
+                print(
+                    f"[bold red]Error: {item_path} is not a directory after processing. Skipping...[/bold red]"
+                )
+                continue
 
             bagit.make_bag(item_path, checksums=["sha256"])
             create_bagit_txt(item_path)

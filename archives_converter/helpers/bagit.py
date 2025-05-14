@@ -52,6 +52,7 @@ Tag-File-Character-Encoding: UTF-8
 def create_bag_info(bag_dir):
     """Creates or updates the bag-info.txt file in the BagIt with specific information."""
     creation_date = datetime.now().strftime("%Y-%m-%d")
+    bag_info_path = os.path.join(bag_dir, "bag-info.txt")
     bag_name = os.path.basename(bag_dir)
     bag_size = sum(
         os.path.getsize(os.path.join(root, file))
@@ -81,24 +82,6 @@ def create_bag_info(bag_dir):
         Checksum-Algorithm: SHA-256
     """
 
-    if "bagit.txt" in list(os.listdir(bag_dir)):
-        bag_info_path = os.path.join(bag_dir, "bag-info.txt")
-        added_files = list(os.listdir(bag_info_path))
-        modification_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        try:
-            with open(bag_info_path, "a") as f:
-                f.write(f"\n--- Mise à jour du {modification_date} ---\n")
-                f.write(f"BagIt-Version: {bagit_version}\n")
-                f.write(f"Bag-Size: {formatted_bag_size}\n")
-                f.write(f"Nombre de fichiers ajoutés: {len(added_files)}\n")
-
-                for file in added_files:
-                    f.write(f"- {file}\n")
-
-            print(f"✅ bag-info.txt mis à jour avec {len(added_files)} fichiers")
-        except Exception as e:
-            print(f"❌ Erreur lors de la mise à jour de bag-info.txt : {e}")
-
     try:
         with open(bag_info_path, "w") as f:
             f.write(bag_info_content)
@@ -120,6 +103,6 @@ def update_bag_info(bag_info_path, added_files):
         bag_info_file.write(f"BagIt-Version: {bagit_version}\n")
 
         bag_info_file.write(f"Nombre de fichiers ajoutés: {len(added_files)}\n")
-        bag_info_file.write("\n-- Added Files --\n")
+        bag_info_file.write("\n# Added Files \n")
         for file in added_files:
             bag_info_file.write(f"{file}\n")
