@@ -107,24 +107,24 @@ def create_bag_info(bag_dir):
         print(f"❌ Error creating bag-info.txt: {e}")
 
 
-def update_bag_info(bag_dir, bag_file):
-    bag_info_path = os.path.join(bag_dir, "bag-info.txt")
+def update_bag_info(bag_info_path, added_files):
+    """
+    Updates the bag-info.txt file with information about added files.
+    """
     bag_size = sum(
         os.path.getsize(os.path.join(root, file))
-        for root, dirs, files in os.walk(bag_dir)
+        for root, dirs, files in os.walk(bag_info_path)
         for file in files
     )
     formatted_bag_size = format_bag_size(bag_size)
     modification_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     bagit_version = pkg_resources.get_distribution("bagit").version
 
-    try:
-        with open(bag_info_path, "a") as f:
-            f.write(f"\n--- Mise à jour du {modification_date} ---\n")
-            f.write(f"BagIt-Version: {bagit_version}\n")
-            f.write(f"Bag-Size: {formatted_bag_size}\n")
-
-            f.write(f"- {bag_file}\n")
-
-    except Exception as e:
-        print(f"❌ Erreur lors de la mise à jour de bag-info.txt : {e}")
+    with open(bag_info_path, "a") as bag_info_file:
+        bag_info_file.write(f"\n--- Updated at {modification_date} ---\n")
+        bag_info_file.write(f"BagIt-Version: {bagit_version}\n")
+        bag_info_file.write(f"Bag-Size: {formatted_bag_size}\n")
+        bag_info_file.write(f"Nombre de fichiers ajoutés: {len(added_files)}\n")
+        bag_info_file.write("\n-- Added Files --\n")
+        for file in added_files:
+            bag_info_file.write(f"{file}\n")
