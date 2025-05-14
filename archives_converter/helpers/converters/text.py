@@ -43,54 +43,36 @@ def convert_pdfa(files, root):
 
 def convert_to_pdf(input_path, output_path, metadata_file):
     try:
-        # Start a unoconv listener with longer timeout and better error handling
         try:
             subprocess.run(
                 ["unoconv", "--listener"],
-                timeout=30,  # Increased timeout for listener startup
+                timeout=30,
                 check=False,
                 capture_output=True,
             )
-            # Increased delay to ensure listener is fully ready
             time.sleep(5)
         except subprocess.TimeoutExpired:
-            # If timeout occurs, assume listener is already running
             pass
 
-        # Add retry mechanism for conversion
-        max_retries = 3
-        for attempt in range(max_retries):
-            try:
-                unoconv_command = [
-                    "unoconv",
-                    "-f",
-                    "pdf",
-                    "-eSelectPdfVersion=2",
-                    "-ePDFACompliance=2",
-                    "-o",
-                    output_path,
-                    input_path,
-                ]
-                subprocess.run(
-                    unoconv_command,
-                    timeout=100,
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                )
-                break  # If successful, exit the retry loop
-            except Exception as e:
-                logging.error(
-                    f"Error during attempt {attempt + 1} converting {input_path} to PDF: {str(e)}"
-                )
-                if attempt == max_retries - 1:  # Last attempt
-                    raise
-                time.sleep(5)  # Wait before retrying
+        unoconv_command = [
+            "unoconv",
+            "-f",
+            "pdf",
+            "-eSelectPdfVersion=2",
+            "-ePDFACompliance=2",
+            "-o",
+            output_path,
+            input_path,
+        ]
+        subprocess.run(
+            unoconv_command,
+            timeout=100,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
 
         original_stat = os.stat(input_path)
-
-        # Extract metadata before conversion
-        # metadata = extract_metadata(input_path)
 
         exiftool_command = [
             "exiftool",
@@ -99,19 +81,21 @@ def convert_to_pdf(input_path, output_path, metadata_file):
             "-all:all",
             output_path,
         ]
-        subprocess.run(
-            exiftool_command, timeout=60, check=True, capture_output=True, text=True
-        )
+        try:
+            subprocess.run(
+                exiftool_command, timeout=60, check=True, capture_output=True, text=True
+            )
+        except subprocess.CalledProcessError as e:
+            logging.error(
+                f"Exiftool command failed for {input_path}: {e.stderr.strip()}"
+            )
+            raise
 
         shutil.chown(output_path, original_stat.st_uid, original_stat.st_gid)
         os.chmod(output_path, original_stat.st_mode)
-
-        # Set original file's timestamps on the new file
         os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
 
-        # append_metadata(metadata, metadata_file, input_path)
-
-        os.remove(input_path)  # Remove the original text file
+        os.remove(input_path)
         return True
     except Exception as e:
         logging.error(f"Unexpected error converting {input_path}: {str(e)}")
@@ -121,48 +105,29 @@ def convert_to_pdf(input_path, output_path, metadata_file):
 def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
     try:
         original_stat = os.stat(input_path)
-        # metadata = extract_metadata(input_path)
 
-        # Add retry mechanism for ghostscript conversion
-        max_retries = 3
         timeout = 300
+        gs_command = [
+            "gs",
+            "-dPDFA=2",
+            "-dBATCH",
+            "-dNOPAUSE",
+            "-sColorConversionStrategy=UseDeviceIndependentColor",
+            "-sProcessColorModel=DeviceCMYK",
+            "-sDEVICE=pdfwrite",
+            "-dPDFACompatibilityPolicy=1",
+            "-dOverwritePDFMark=true",
+            f"-sOutputFile={output_path}",
+            input_path,
+        ]
 
-        for attempt in range(max_retries):
-            try:
-                gs_command = [
-                    "gs",
-                    "-dPDFA=2",
-                    "-dBATCH",
-                    "-dNOPAUSE",
-                    "-sColorConversionStrategy=UseDeviceIndependentColor",
-                    "-sProcessColorModel=DeviceCMYK",
-                    "-sDEVICE=pdfwrite",
-                    "-dPDFACompatibilityPolicy=1",
-                    "-dOverwritePDFMark=true",
-                    f"-sOutputFile={output_path}",
-                    input_path,
-                ]
-
-                process = subprocess.run(
-                    gs_command,
-                    capture_output=True,
-                    text=True,
-                    timeout=timeout,
-                    check=True,
-                )
-                break  # If successful, exit retry loop
-
-            except (subprocess.TimeoutExpired, subprocess.CalledProcessError) as e:
-                logging.warning(
-                    f"Attempt {attempt + 1} failed for {input_path}: {str(e)}"
-                )
-                if attempt == max_retries - 1:  # Last attempt
-                    raise
-                time.sleep(5)  # Wait before retrying
-
-                # Clean up partial output file if it exists
-                if os.path.exists(output_path):
-                    os.remove(output_path)
+        subprocess.run(
+            gs_command,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=True,
+        )
 
         exiftool_command = [
             "exiftool",
@@ -171,17 +136,23 @@ def convert_pdf_to_pdfa(input_path, output_path, metadata_file):
             "-all:all",
             output_path,
         ]
-        subprocess.run(
-            exiftool_command, timeout=300, check=True, capture_output=True, text=True
-        )
+        try:
+            subprocess.run(
+                exiftool_command,
+                timeout=300,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except subprocess.CalledProcessError as e:
+            logging.error(
+                f"Exiftool command failed for {input_path}: {e.stderr.strip()}"
+            )
+            raise
 
         shutil.chown(output_path, original_stat.st_uid, original_stat.st_gid)
         os.chmod(output_path, original_stat.st_mode)
-
-        # Set original file's timestamps on the new file
         os.utime(output_path, (original_stat.st_atime, original_stat.st_mtime))
-
-        # append_metadata(metadata, metadata_file, output_path)
 
         try:
             if os.path.exists(input_path):
