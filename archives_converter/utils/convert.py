@@ -178,11 +178,14 @@ def convert_files(destination_folder, convert_type, selected_media_types):
         progress.update(convert_task, total=final_completed, completed=final_completed)
 
     # Check if the error log is empty and remove it if so
-    if os.path.exists(error_log_path) and os.path.getsize(error_log_path) == 0:
-        os.remove(error_log_path)
-        print(
-            "[bold green]No errors logged. Empty error log file removed.[/bold green]"
-        )
+    if os.path.exists(error_log_path):
+        with open(error_log_path, mode="r") as error_file:
+            lines = error_file.readlines()
+            if len(lines) <= 1:
+                os.remove(error_log_path)
+                print(
+                    "[bold green]No errors logged. Empty error log file removed.[/bold green]"
+                )
 
 
 def convert_folder(
