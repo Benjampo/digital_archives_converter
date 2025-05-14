@@ -111,19 +111,14 @@ def update_bag_info(bag_info_path, added_files):
     """
     Updates the bag-info.txt file with information about added files.
     """
-    bag_size = sum(
-        os.path.getsize(os.path.join(root, file))
-        for root, dirs, files in os.walk(bag_info_path)
-        for file in files
-    )
-    formatted_bag_size = format_bag_size(bag_size)
+
     modification_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     bagit_version = pkg_resources.get_distribution("bagit").version
 
     with open(bag_info_path, "a") as bag_info_file:
         bag_info_file.write(f"\n--- Updated at {modification_date} ---\n")
         bag_info_file.write(f"BagIt-Version: {bagit_version}\n")
-        bag_info_file.write(f"Bag-Size: {formatted_bag_size}\n")
+
         bag_info_file.write(f"Nombre de fichiers ajoutés: {len(added_files)}\n")
         bag_info_file.write("\n-- Added Files --\n")
         for file in added_files:
