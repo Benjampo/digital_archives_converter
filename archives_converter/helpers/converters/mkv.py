@@ -122,7 +122,6 @@ def convert_dvd_to_format(video_ts_paths, output_folder, output_format):
             if re.search(r"VTS_(\d+)_", x)
             else 0,
         )
-        print(video_ts_folder)
         # Create a subfolder for intermediate and final outputs
         subfolder = os.path.join(output_folder, "converting_videos")
         os.makedirs(subfolder, exist_ok=True)
