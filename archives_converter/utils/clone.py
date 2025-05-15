@@ -5,7 +5,7 @@ import shutil
 from helpers.to_snake_case import to_snake_case
 from helpers.folders import should_copy_file
 from helpers.name_identifier import predict_name_based_on_extension
-from helpers.bagit import update_bag_info
+from config.ignore import text_files_to_ignore
 
 
 def clone_folder(
@@ -72,7 +72,7 @@ def cloning_changes_to_folder(
     for root, dirs, files in os.walk(source_folder):
         if "bagit.txt" in files:
             bagit_data_dir = os.path.join(root, "data")
-            bag_info_src_path = os.path.join(root, "bag-info.txt")
+            # bag_info_src_path = os.path.join(root, "bag-info.txt")
             break
 
     if bagit_data_dir and os.path.exists(bagit_data_dir):
@@ -123,10 +123,17 @@ def cloning_changes_to_folder(
             dst_dir = (
                 os.path.join(destination_folder, os.path.dirname(relative_path), "data")
                 if destination_files
+                and "data" not in src_file
+                and file not in text_files_to_ignore
                 else os.path.join(destination_folder, os.path.dirname(relative_path))
             )
             dst_file = os.path.join(dst_dir, os.path.basename(relative_path))
-
+            print("dst_file", dst_file)
+            print("prediction", predict_name_based_on_extension(dst_file, clone_type))
+            print(
+                "is same",
+                dst_file == predict_name_based_on_extension(dst_file, clone_type),
+            )
             if not os.path.exists(
                 predict_name_based_on_extension(dst_file, clone_type)
             ):
