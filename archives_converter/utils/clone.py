@@ -55,7 +55,7 @@ def cloning_changes_to_folder(
     destination_files = False
 
     bagit_data_dir = None
-    added_files = []  # Track added files
+    added_files = []
 
     # check if the destination folder is a bagit folder
     for root, dirs, files in os.walk(destination_folder):
@@ -71,7 +71,7 @@ def cloning_changes_to_folder(
     # check if the source folder is a bagit folder
     for root, dirs, files in os.walk(source_folder):
         if "bagit.txt" in files:
-            bagit_data_dir = os.path.join(root, "data")
+            # bagit_data_dir = os.path.join(root, "data")
             # bag_info_src_path = os.path.join(root, "bag-info.txt")
             break
 
@@ -84,6 +84,8 @@ def cloning_changes_to_folder(
                 dst_dir = (
                     os.path.join(data_dir, os.path.dirname(relative_path))
                     if destination_files
+                    and "data" not in src_file
+                    and data_file not in text_files_to_ignore
                     else os.path.join(
                         destination_folder, os.path.dirname(relative_path)
                     )
@@ -112,8 +114,11 @@ def cloning_changes_to_folder(
 
     for root, dirs, files in os.walk(source_folder):
         for file in files:
-            new_name_file = to_snake_case(file)
-            os.rename(os.path.join(root, file), os.path.join(root, new_name_file))
+            if file in text_files_to_ignore:
+                new_name_file = file
+            else:
+                new_name_file = to_snake_case(file)
+                # os.rename(os.path.join(root, file), os.path.join(root, new_name_file))
             if file == ".DS_Store":
                 continue
 
@@ -128,12 +133,7 @@ def cloning_changes_to_folder(
                 else os.path.join(destination_folder, os.path.dirname(relative_path))
             )
             dst_file = os.path.join(dst_dir, os.path.basename(relative_path))
-            print("dst_file", dst_file)
-            print("prediction", predict_name_based_on_extension(dst_file, clone_type))
-            print(
-                "is same",
-                dst_file == predict_name_based_on_extension(dst_file, clone_type),
-            )
+
             if not os.path.exists(
                 predict_name_based_on_extension(dst_file, clone_type)
             ):

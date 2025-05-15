@@ -2,6 +2,7 @@ from config.ignore import (
     image_extensions,
     video_extensions,
     audio_extensions,
+    text_files_to_ignore,
     text_extensions,
 )
 
@@ -24,5 +25,7 @@ def predict_name_based_on_extension(input_name, convert_type):
         input_name = input_name.replace(extension, "_mp3.mp3")
     elif extension in text_extensions:
         input_name = input_name.replace(extension, "_pdfa.pdf")
+    elif extension in text_files_to_ignore:
+        return input_name
 
     return input_name
