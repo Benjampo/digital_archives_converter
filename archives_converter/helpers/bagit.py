@@ -70,17 +70,17 @@ def create_bag_info(bag_dir):
         if file != ".DS_Store"
     )  # Count the number of files in the bag, excluding .DS_Store
     bag_info_content = f"""Bag-Name: {bag_name}
-        Bag-Size: {formatted_bag_size}
-        Creation-Date: {creation_date}
-        BagIt-Version: {bagit_version}
-        Source-Organization: Centre des littératures en Suisse romande de l'Université de Lausanne
-        Contact-Email: clsr@unil.ch
-        Version: 1.0
-        Bagging-Date: {creation_date}
-        Format: {formats}
-        Number-of-Files: {total_files}
-        Checksum-Algorithm: SHA-256
-    """
+Bag-Size: {formatted_bag_size}
+Creation-Date: {creation_date}
+BagIt-Version: {bagit_version}
+Source-Organization: Centre des littératures en Suisse romande de l'Université de Lausanne
+Contact-Email: clsr@unil.ch
+Version: 1.0
+Bagging-Date: {creation_date}
+Format: {formats}
+Number-of-Files: {total_files}
+Checksum-Algorithm: SHA-256
+"""
 
     try:
         with open(bag_info_path, "w") as f:
@@ -101,8 +101,7 @@ def update_bag_info(bag_info_path, added_files):
     with open(bag_info_path, "a") as bag_info_file:
         bag_info_file.write(f"\n--- Updated at {modification_date} ---\n")
         bag_info_file.write(f"BagIt-Version: {bagit_version}\n")
-
         bag_info_file.write(f"Nombre de fichiers ajoutés: {len(added_files)}\n")
-        bag_info_file.write("\n# Added Files \n")
+        bag_info_file.write("Fichiers ajoutés:\n")
         for file in added_files:
-            bag_info_file.write(f"{file}\n")
+            bag_info_file.write(f"- {file}\n")
