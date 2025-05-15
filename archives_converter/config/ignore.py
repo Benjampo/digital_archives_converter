@@ -9,7 +9,26 @@ text_files_to_ignore = [
     "manifest-sha256.txt",
     "tagmanifest-sha256.txt",
 ]
-image_extensions = [".jpg", ".jpeg", ".tif", ".tiff", ".png", ".gif", ".bmp", ".heic"]
+image_extensions = [
+    ".jpg",
+    ".jpeg",
+    ".tif",
+    ".tiff",
+    ".png",
+    ".gif",
+    ".bmp",
+    ".heic",
+    ".JPG",
+    ".JPEG",
+    ".TIF",
+    ".TIFF",
+    ".PNG",
+    ".GIF",
+    ".BMP",
+    ".HEIC",
+    ".webp",
+    ".WEBP",
+]
 video_extensions = [".mp4", ".avi", ".mov", ".flv", ".mkv"]
 audio_extensions = [".wav", ".mp3", ".aac", ".m4a", ".flac", ".ogg", ".aif", ".aiff"]
 text_extensions = [".txt", ".doc", ".docx", ".rtf", ".odt", ".pdf"]
