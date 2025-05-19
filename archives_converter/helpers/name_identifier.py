@@ -5,10 +5,13 @@ from config.ignore import (
     text_files_to_ignore,
     text_extensions,
 )
+from .to_snake_case import to_snake_case
 
 
 def predict_name_based_on_extension(input_name, convert_type):
     # get file extension
+    if "." not in input_name:  # likely a folder, no extension
+        return to_snake_case(input_name)
     extension = "." + input_name.split(".")[-1]
     # replace extension based on the conversion
     if extension in image_extensions and convert_type == "AIP":

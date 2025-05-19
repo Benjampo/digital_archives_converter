@@ -80,7 +80,6 @@ def cloning_changes_to_folder(
             for data_file in data_files:
                 src_file = os.path.join(data_root, data_file)
                 relative_path = to_snake_case(os.path.relpath(src_file, bagit_data_dir))
-                print("relative path", relative_path)
                 dst_dir = (
                     os.path.join(data_dir, os.path.dirname(relative_path))
                     if destination_files
@@ -113,11 +112,8 @@ def cloning_changes_to_folder(
 
     for root, dirs, files in os.walk(source_folder):
         for file in files:
-            if file in text_files_to_ignore:
-                new_name_file = file
-            else:
-                new_name_file = to_snake_case(file)
-                # os.rename(os.path.join(root, file), os.path.join(root, new_name_file))
+            new_name_file = to_snake_case(file)
+
             if file == ".DS_Store":
                 continue
 
