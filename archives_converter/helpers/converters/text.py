@@ -42,6 +42,9 @@ def convert_pdfa(files, root):
 
 def convert_to_pdf(input_path, output_path, metadata_file):
     try:
+        # Kill any lingering soffice.bin processes before starting unoconv
+        subprocess.run(["pkill", "-f", "soffice.bin"], check=False, capture_output=True)
+
         try:
             subprocess.run(
                 ["unoconv", "--listener"],
