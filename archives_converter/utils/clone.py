@@ -80,7 +80,7 @@ def cloning_changes_to_folder(
             for data_file in data_files:
                 src_file = os.path.join(data_root, data_file)
                 relative_path = to_snake_case(os.path.relpath(src_file, bagit_data_dir))
-
+                print("relative path", relative_path)
                 dst_dir = (
                     os.path.join(data_dir, os.path.dirname(relative_path))
                     if destination_files
@@ -109,8 +109,7 @@ def cloning_changes_to_folder(
         #     if os.path.exists(bag_info_src_path):
         #         # update_bag_info(bag_info_src_path, added_files)
         #     if "bag_info_dest_path" in locals() and os.path.exists(bag_info_dest_path):
-        #         update_bag_info(bag_info_dest_path, added_files)
-        # return
+        #         update_bag_info(bag_info_dest_path, added_files)        # return
 
     for root, dirs, files in os.walk(source_folder):
         for file in files:
