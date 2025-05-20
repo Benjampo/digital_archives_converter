@@ -49,6 +49,10 @@ make run
    ```
    brew install python@3.12 python-tk@3.12 ffmpeg libreoffice exiftool unoconv ghostscript
    ```
+   > **Note:** If you already have LibreOffice installed, make sure it is the latest version. You can update it with:
+   > ```
+   > brew upgrade --cask libreoffice
+   > ```
 
 ### Linux (Ubuntu/Debian)
 
@@ -68,6 +72,7 @@ make run
    - Download from [ffmpeg.org](https://ffmpeg.org/download.html)
    - Add FFmpeg to your system PATH
 3. Install LibreOffice from the [official website](https://www.libreoffice.org/download/download/).
+   > **Note:** If you already have LibreOffice installed, make sure it is the latest version.
 4. Install ExifTool:
    - Download from [exiftool.org](https://exiftool.org/install.html)
    - Add ExifTool to your system PATH
