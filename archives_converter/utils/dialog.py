@@ -36,8 +36,25 @@ def dialog():
     It can clone, rename, or convert directories.
     [/yellow]
     """
+    thank_you_message = """
+        [bold cyan]
+         ████████╗██╗  ██╗ █████╗ ███╗   ██╗██╗  ██╗███████╗
+        ╚══██╔══╝██║  ██║██╔══██╗████╗  ██║██║ ██╔╝██╔════╝
+           ██║   ███████║███████║██╔██╗ ██║█████╔╝ ███████╗
+           ██║   ██╔══██║██╔══██║██║╚██╗██║██╔═██╗ ╚════██║
+           ██║   ██║  ██║██║  ██║██║ ╚████║██║  ██╗███████║
+           ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
+        [/bold cyan]
+        [bold green]
+        ╔═════════════════════════════════════════════╗
+        ║ THANK YOU FOR USING THE ARCHIVE CONVERTER!  ║
+        ╚═════════════════════════════════════════════╝
+        [/bold green]
+        [yellow]
+        Re-launch the script to convert another folder.
+        [/yellow]
+        """
     print(welcome_message)
-
     try:
         while True:
             questions = [
@@ -58,6 +75,7 @@ def dialog():
             action = inquirer.prompt(questions)["action"]
 
             if action == "Exit":
+                print(thank_you_message)
                 break
 
             if action == "Clone and convert directory":
@@ -93,7 +111,7 @@ def dialog():
                     continue
                 print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
                 convert_folder(source_folder, convert_type, selected_media_types)
-                break
+                continue
             elif action == "Clone directory":
                 conversion_options = [
                     inquirer.Checkbox(
@@ -118,48 +136,29 @@ def dialog():
                     continue
                 print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
                 clone_folder(source_folder, "clone", selected_media_types)
-                break
+                continue
             elif action == "Rename directory":
                 source_folder = select_folder()
                 if not source_folder:
                     print("[bold red]No folder selected. Please try again.[/bold red]")
                     continue
                 rename_files_and_folders(source_folder)
-                break
+                continue
             elif action == "apply Bagit format":
                 source_folder = select_folder()
                 if not source_folder:
                     print("[bold red]No folder selected. Please try again.[/bold red]")
                     continue
                 apply_bag(source_folder)
-                break
+                continue
             elif action == "Check Bag integrity":
                 source_folder = select_folder()
                 if not source_folder:
                     print("[bold red]No folder selected. Please try again.[/bold red]")
                     continue
                 check_bag_integrity(source_folder)
-                break
+                continue
 
     except Exception as e:
         print(f"[bold red]An error occurred: {e}[/bold red]")
-    finally:
-        thank_you_message = """
-        [bold cyan]
-         ████████╗██╗  ██╗ █████╗ ███╗   ██╗██╗  ██╗███████╗
-        ╚══██╔══╝██║  ██║██╔══██╗████╗  ██║██║ ██╔╝██╔════╝
-           ██║   ███████║███████║██╔██╗ ██║█████╔╝ ███████╗
-           ██║   ██╔══██║██╔══██║██║╚██╗██║██╔═██╗ ╚════██║
-           ██║   ██║  ██║██║  ██║██║ ╚████║██║  ██╗███████║
-           ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝
-        [/bold cyan]
-        [bold green]
-        ╔═════════════════════════════════════════════╗
-        ║ THANK YOU FOR USING THE ARCHIVE CONVERTER!  ║
-        ╚═════════════════════════════════════════════╝
-        [/bold green]
-        [yellow]
-        Re-launch the script to convert another folder.
-        [/yellow]
-        """
         print(thank_you_message)
