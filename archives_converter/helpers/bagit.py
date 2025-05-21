@@ -2,6 +2,7 @@ import os
 import pkg_resources
 import mimetypes
 from datetime import datetime
+import bagit
 
 
 def detect_formats(bag_dir):
@@ -90,18 +91,17 @@ Checksum-Algorithm: SHA-256
         print(f"❌ Error creating bag-info.txt: {e}")
 
 
-def update_bag_info(bag_info_path, added_files):
+def update_bag_info(bag_path, added_files):
     """
     Updates the bag-info.txt file with information about added files.
     """
-
+    bag = bagit.Bag(bag_path)
     modification_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    bagit_version = pkg_resources.get_distribution("bagit").version
 
-    with open(bag_info_path, "a") as bag_info_file:
-        bag_info_file.write(f"\n--- Updated at {modification_date} ---\n")
-        bag_info_file.write(f"BagIt-Version: {bagit_version}\n")
-        bag_info_file.write(f"Nombre de fichiers ajoutés: {len(added_files)}\n")
-        bag_info_file.write("Fichiers ajoutés:\n")
-        for file in added_files:
-            bag_info_file.write(f"- {file}\n")
+    bag.info["Last-Modified"] = modification_date
+    bag.info["Format"] = detect_formats(bag_path)
+    if added_files:
+        bag.info[f"{modification_date}-Number-of-Files"] = len(added_files)
+        bag.info[f"{modification_date}-Updated-files"] = ", ".join(added_files)
+
+    bag.save()
