@@ -115,7 +115,7 @@ def cloning_changes_to_folder(
             if os.path.exists(bag_info_src_path):
                 update_bag_info(bag_info_src_path, added_files)
             if "bag_info_dest_path" in locals() and os.path.exists(bag_info_dest_path):
-                update_bag_info(bag_info_dest_path, added_files)  # return
+                update_bag_info(bag_info_dest_path, added_files)
 
     # Walk through all files in the source folder to copy new/changed files
     for root, dirs, files in os.walk(source_folder):
