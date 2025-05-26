@@ -8,16 +8,39 @@ from rich import print
 from .apply_bag import apply_bag, check_bag_integrity
 import sys
 import termios
-import tty
+
+# Save the original terminal settings at module load
+try:
+    if sys.stdin.isatty():
+        _original_term_settings = termios.tcgetattr(sys.stdin.fileno())
+    else:
+        _original_term_settings = None
+except Exception:
+    _original_term_settings = None
 
 
 def reset_terminal():
-    if sys.stdin.isatty():
-        fd = sys.stdin.fileno()
-        termios.tcsetattr(fd, termios.TCSADRAIN, termios.tcgetattr(fd))
+    """
+    Restore the terminal to its original settings if possible.
+    """
+    if sys.stdin.isatty() and _original_term_settings is not None:
+        try:
+            termios.tcsetattr(
+                sys.stdin.fileno(), termios.TCSADRAIN, _original_term_settings
+            )
+        except Exception:
+            pass
 
 
 def select_folder():
+    # Save terminal state before using tkinter
+    if sys.stdin.isatty():
+        try:
+            saved_settings = termios.tcgetattr(sys.stdin.fileno())
+        except Exception:
+            saved_settings = None
+    else:
+        saved_settings = None
     root = tk.Tk()
     root.withdraw()
     folder = None
@@ -26,6 +49,12 @@ def select_folder():
     finally:
         root.destroy()
         tk._default_root = None  # Ensure the default root is cleared
+        # Restore terminal state after tkinter
+        if sys.stdin.isatty() and saved_settings is not None:
+            try:
+                termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, saved_settings)
+            except Exception:
+                pass
         reset_terminal()
     return folder
 
@@ -79,7 +108,7 @@ def dialog():
                     pass
                 tk._default_root = None
 
-            questions = [
+            questions = (
                 inquirer.List(
                     "action",
                     message="What do you want to do today?",
@@ -93,8 +122,11 @@ def dialog():
                     ],
                     default="Clone and convert directory",
                 ),
-            ]
+            )
+
+            reset_terminal()
             action = inquirer.prompt(questions)["action"]
+            reset_terminal()
 
             if action == "Exit":
                 print(thank_you_message)
@@ -109,7 +141,9 @@ def dialog():
                         default="AIP",
                     )
                 ]
+                reset_terminal()
                 convert_type = inquirer.prompt(convert_type_options)["convert_type"]
+                reset_terminal()
                 conversion_options = [
                     inquirer.Checkbox(
                         "media_types",
@@ -124,9 +158,11 @@ def dialog():
                         default=["audio", "video", "image", "text"],
                     )
                 ]
+                reset_terminal()
                 selected_media_types = inquirer.prompt(conversion_options)[
                     "media_types"
                 ]
+                reset_terminal()
                 source_folder = select_folder()
                 if not source_folder:
                     print("[bold red]No folder selected. Please try again.[/bold red]")
@@ -149,9 +185,11 @@ def dialog():
                         default=["audio", "video", "image", "text", "dvd"],
                     )
                 ]
+                reset_terminal()
                 selected_media_types = inquirer.prompt(conversion_options)[
                     "media_types"
                 ]
+                reset_terminal()
                 source_folder = select_folder()
                 if not source_folder:
                     print("[bold red]No folder selected. Please try again.[/bold red]")
