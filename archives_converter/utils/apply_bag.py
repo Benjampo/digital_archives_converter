@@ -128,7 +128,7 @@ def check_bag_integrity(destination_folder):
                                 e
                             )  # Fallback to exception message if no details
                         csv_writer.writerow([item_path, "❌", details])
-                        all_valid = False  # Mark as invalid
+                        all_valid = False
                 else:
                     print(
                         f"[bold red]No bagit.txt found at {item_path}. Skipping...[/bold red]"
