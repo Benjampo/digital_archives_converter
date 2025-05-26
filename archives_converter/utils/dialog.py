@@ -11,8 +11,12 @@ from .apply_bag import apply_bag, check_bag_integrity
 def select_folder():
     root = tk.Tk()
     root.withdraw()
-    folder = filedialog.askdirectory(title="Select Source Folder")
-    root.destroy()
+    folder = None
+    try:
+        folder = filedialog.askdirectory(title="Select Source Folder")
+    finally:
+        root.destroy()
+        tk._default_root = None  # Ensure the default root is cleared
     return folder
 
 
@@ -57,6 +61,14 @@ def dialog():
     print(welcome_message)
     try:
         while True:
+            # Ensure any lingering Tkinter root windows are destroyed before showing the menu again
+            if hasattr(tk, "_default_root") and tk._default_root is not None:
+                try:
+                    tk._default_root.destroy()
+                except Exception:
+                    pass
+                tk._default_root = None
+
             questions = [
                 inquirer.List(
                     "action",
