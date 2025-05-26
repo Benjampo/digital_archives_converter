@@ -84,10 +84,10 @@ def cloning_changes_to_folder(
             for data_file in data_files:
                 src_file = os.path.join(data_root, data_file)
 
-                relative_path = to_snake_case(os.path.relpath(src_file, bagit_data_dir))
+                relative_path = to_snake_case(os.path.relpath(src_file, source_folder))
 
                 dst_dir = (
-                    os.path.join(data_dir, os.path.dirname(relative_path))
+                    os.path.join(data_root, os.path.dirname(relative_path))
                     if destination_files
                     and "data" not in src_file
                     and data_file not in text_files_to_ignore
@@ -95,6 +95,7 @@ def cloning_changes_to_folder(
                         destination_folder, os.path.dirname(relative_path)
                     )
                 )
+
                 dst_file = os.path.join(dst_dir, os.path.basename(relative_path))
 
                 # Only copy if file does not already exist in destination
@@ -128,7 +129,7 @@ def cloning_changes_to_folder(
             src_file = os.path.join(root, new_name_file)
 
             relative_path = to_snake_case(os.path.relpath(src_file, source_folder))
-
+            print("relative_path:", relative_path)
             dst_dir = (
                 os.path.join(destination_folder, os.path.dirname(relative_path), "data")
                 if destination_files
