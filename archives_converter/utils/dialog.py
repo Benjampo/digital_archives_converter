@@ -6,6 +6,15 @@ import tkinter as tk
 from tkinter import filedialog
 from rich import print
 from .apply_bag import apply_bag, check_bag_integrity
+import sys
+import termios
+import tty
+
+
+def reset_terminal():
+    if sys.stdin.isatty():
+        fd = sys.stdin.fileno()
+        termios.tcsetattr(fd, termios.TCSADRAIN, termios.tcgetattr(fd))
 
 
 def select_folder():
@@ -17,6 +26,7 @@ def select_folder():
     finally:
         root.destroy()
         tk._default_root = None  # Ensure the default root is cleared
+        reset_terminal()
     return folder
 
 

@@ -120,8 +120,10 @@ def update_bag_info(bag_path, current_files):
 
     bag.info["Last-Modified"] = modification_date
     bag.info["Format"] = detect_formats(bag_path)
+    multiline_value = ",\n ".join(sorted(new_files))
+
     if new_files:
         bag.info[f"￭-{modification_date}-New-Files-Count"] = len(new_files)
-        bag.info[f"￭-{modification_date}-New-Files"] = ",\n".join(sorted(new_files))
+        bag.info[f"￭-{modification_date}-New-Files"] = multiline_value
 
     bag.save(manifests=True)
