@@ -114,14 +114,19 @@ def check_bag_integrity(destination_folder):
                         csv_writer.writerow([item_path, "✅", "Valid Bag"])
                     except bagit.BagValidationError as e:
                         print(f"[bold red]Bag at {item_path} is invalid![/bold red]")
-                        details = "; ".join(
-                            [
-                                f"{type(d).__name__}: {d.path} (expected {d.expected}, found {d.found})"
-                                if isinstance(d, bagit.ChecksumMismatch)
-                                else f"{type(d).__name__}: {d.path}"
-                                for d in e.details
-                            ]
-                        )
+                        if hasattr(e, "details") and e.details:
+                            details = "; ".join(
+                                [
+                                    f"{type(d).__name__}: {d.path} (expected {getattr(d, 'expected', '?')}, found {getattr(d, 'found', '?')})"
+                                    if isinstance(d, bagit.ChecksumMismatch)
+                                    else f"{type(d).__name__}: {getattr(d, 'path', '?')}"
+                                    for d in e.details
+                                ]
+                            )
+                        else:
+                            details = str(
+                                e
+                            )  # Fallback to exception message if no details
                         csv_writer.writerow([item_path, "❌", details])
                         all_valid = False  # Mark as invalid
                 else:
