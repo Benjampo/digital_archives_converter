@@ -91,17 +91,37 @@ Checksum-Algorithm: SHA-256
         print(f"❌ Error creating bag-info.txt: {e}")
 
 
-def update_bag_info(bag_path, added_files):
+def update_bag_info(bag_path, current_files):
     """
-    Updates the bag-info.txt file with information about added files.
+    Updates the bag-info.txt file with information about new files added since the last bag.
     """
+    import glob
+
     bag = bagit.Bag(bag_path)
     modification_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    # Find all manifest files (e.g., manifest-sha256.txt)
+    manifest_files = glob.glob(os.path.join(bag_path, "manifest-*.txt"))
+
+    previous_files = set()
+    for manifest in manifest_files:
+        with open(manifest, "r") as f:
+            for line in f:
+                parts = line.strip().split(None, 1)
+                if len(parts) == 2:
+                    # The second part is the file path
+                    previous_files.add(
+                        parts[1].lstrip("*").split("/")[-1]
+                    )  # Remove leading * if present
+
+    # current_files is a list of file paths
+    current_file_set = set(current_files)
+    new_files = current_file_set - previous_files
+
     bag.info["Last-Modified"] = modification_date
     bag.info["Format"] = detect_formats(bag_path)
-    if added_files:
-        bag.info[f"{modification_date}-Number-of-Files"] = len(added_files)
-        bag.info[f"{modification_date}-Updated-files"] = ", ".join(added_files)
+    if new_files:
+        bag.info[f"￭-{modification_date}-New-Files-Count"] = len(new_files)
+        bag.info[f"￭-{modification_date}-New-Files"] = ",\n".join(sorted(new_files))
 
-    bag.save()
+    bag.save(manifests=True)

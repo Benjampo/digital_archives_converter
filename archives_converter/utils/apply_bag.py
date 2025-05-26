@@ -5,6 +5,7 @@ from helpers.bagit import create_bag_info, create_bagit_txt
 import bagit
 import csv
 from datetime import datetime
+from helpers.bagit import update_bag_info
 
 
 def apply_bag(destination_folder):
@@ -46,8 +47,9 @@ def apply_bag(destination_folder):
                         print(
                             f"[bold yellow]Bag at {item_path} is invalid. Updating manifest...[/bold yellow]"
                         )
+                        # Update the info for the update
 
-                        bag.save(manifests=True)
+                        update_bag_info(item_path, files)
                     else:
                         print(
                             f"[bold green]Bag at {item_path} is valid. Skipping...[/bold green]"
