@@ -126,8 +126,9 @@ def cloning_changes_to_folder(
             if file == ".DS_Store":
                 continue
 
-            src_file = os.path.join(root, new_name_file)
+            src_file = os.path.join(root, file)
 
+            # Apply snake_case to the relative path for the destination
             relative_path = to_snake_case(os.path.relpath(src_file, source_folder))
             print("relative_path:", relative_path)
             dst_dir = (
