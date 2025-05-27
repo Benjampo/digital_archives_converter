@@ -47,8 +47,24 @@ def apply_bag(destination_folder):
                         print(
                             f"[bold yellow]Bag at {item_path} is invalid. Updating manifest...[/bold yellow]"
                         )
-
-                        update_bag_info(item_path, files)
+                        # Gather all data file paths relative to item_path
+                        relative_file_paths = []
+                        for root, dirs, files in os.walk(item_path):
+                            for file in files:
+                                if file == ".DS_Store":
+                                    continue
+                                # Exclude tag files (bagit.txt, bag-info.txt, manifest-*.txt, etc.)
+                                if file.endswith(".txt") and (
+                                    file.startswith("bagit")
+                                    or file.startswith("bag-info")
+                                    or file.startswith("manifest-")
+                                    or file.startswith("tagmanifest-")
+                                ):
+                                    continue
+                                abs_path = os.path.join(root, file)
+                                rel_path = os.path.relpath(abs_path, item_path)
+                                relative_file_paths.append(rel_path)
+                        update_bag_info(item_path, relative_file_paths)
                     else:
                         print(
                             f"[bold green]Bag at {item_path} is valid. Skipping...[/bold green]"

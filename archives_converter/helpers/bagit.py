@@ -93,7 +93,6 @@ Checksum-Algorithm: SHA-256
 
 
 def update_bag_info(bag_path, current_files):
-    print("test")
     bag = bagit.Bag(bag_path)
     modification_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -108,17 +107,13 @@ def update_bag_info(bag_path, current_files):
                 if len(parts) == 2:
                     # The second part is the file path
                     previous_files.add(
-                        parts[1].lstrip("*").split("/")[-1]
+                        parts[1].lstrip("*")
                     )  # Remove leading * if present
 
     # current_files is a list of file paths
 
     current_file_set = set(current_files)
     new_files = current_file_set - previous_files
-
-    print(f"Previous files: {previous_files}")
-    print(f"Current files: {current_file_set}")
-    print(f"New files detected: {new_files}")
 
     bag.info["Last-Modified"] = modification_date
     bag.info["Format"] = detect_formats(bag_path)
