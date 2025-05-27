@@ -118,7 +118,6 @@ def cloning_changes_to_folder(
 
             # Apply snake_case to the relative path for the destination
             relative_path = to_snake_case(os.path.relpath(src_file, source_folder))
-            print("relative_path:", relative_path)
             dst_dir = (
                 os.path.join(destination_folder, os.path.dirname(relative_path), "data")
                 if destination_files

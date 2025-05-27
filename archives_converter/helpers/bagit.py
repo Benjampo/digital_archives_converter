@@ -4,6 +4,7 @@ import mimetypes
 from datetime import datetime
 import bagit
 import glob
+from rich import print
 
 
 def detect_formats(bag_dir):
@@ -114,7 +115,9 @@ def update_bag_info(bag_path, current_files):
 
     current_file_set = set(current_files)
     new_files = current_file_set - previous_files
-
+    print("previous_files:", previous_files)
+    print("current_files:", current_file_set)
+    print("new_files:", new_files)
     bag.info["Last-Modified"] = modification_date
     bag.info["Format"] = detect_formats(bag_path)
     multiline_value = ",\n ".join(sorted(new_files))
