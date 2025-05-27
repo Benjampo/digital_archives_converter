@@ -3,6 +3,7 @@ import pkg_resources
 import mimetypes
 from datetime import datetime
 import bagit
+import glob
 
 
 def detect_formats(bag_dir):
@@ -92,11 +93,7 @@ Checksum-Algorithm: SHA-256
 
 
 def update_bag_info(bag_path, current_files):
-    """
-    Updates the bag-info.txt file with information about new files added since the last bag.
-    """
-    import glob
-
+    print("test")
     bag = bagit.Bag(bag_path)
     modification_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -115,8 +112,13 @@ def update_bag_info(bag_path, current_files):
                     )  # Remove leading * if present
 
     # current_files is a list of file paths
+
     current_file_set = set(current_files)
     new_files = current_file_set - previous_files
+
+    print(f"Previous files: {previous_files}")
+    print(f"Current files: {current_file_set}")
+    print(f"New files detected: {new_files}")
 
     bag.info["Last-Modified"] = modification_date
     bag.info["Format"] = detect_formats(bag_path)

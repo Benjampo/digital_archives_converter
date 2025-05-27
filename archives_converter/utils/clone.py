@@ -6,7 +6,6 @@ from helpers.to_snake_case import to_snake_case
 from helpers.folders import should_copy_file
 from helpers.name_identifier import predict_name_based_on_extension
 from config.ignore import text_files_to_ignore
-from helpers.bagit import update_bag_info
 
 
 def clone_folder(
@@ -58,14 +57,12 @@ def cloning_changes_to_folder(
     destination_files = False
 
     bagit_data_dir = None
-    added_files = []
 
     # Check if the destination folder is a BagIt folder by looking for bagit.txt
     for root, dirs, files in os.walk(destination_folder):
         for file in files:
             if file == "bagit.txt":
                 data_dir = os.path.join(root, "data")
-                bag_info_dest_path = os.path.join(root)
                 if os.path.exists(data_dir):
                     for data_root, data_dirs, data_files in os.walk(data_dir):
                         for data_file in data_files:
@@ -75,7 +72,6 @@ def cloning_changes_to_folder(
     for root, dirs, files in os.walk(source_folder):
         if "bagit.txt" in files:
             bagit_data_dir = os.path.join(root, "data")
-            bag_info_src_path = os.path.join(root)
             break
 
     # If source is a BagIt folder, copy new files from its data directory
@@ -105,24 +101,16 @@ def cloning_changes_to_folder(
                     if should_copy_file(data_file, selected_media_types):
                         os.makedirs(os.path.dirname(dst_dir), exist_ok=True)
                         shutil.copy2(src_file, dst_file)
-                        added_files.append(relative_path)  # Track added file
                 else:
                     print(
                         f"[bold salmon1]File already exists in data: {relative_path}[/bold salmon1]"
                     )
 
         # Update bag-info.txt in source and destination if files were added
-        if added_files:
-            if os.path.exists(bag_info_src_path):
-                update_bag_info(bag_info_src_path, added_files)
-            if "bag_info_dest_path" in locals() and os.path.exists(bag_info_dest_path):
-                update_bag_info(bag_info_dest_path, added_files)
 
     # Walk through all files in the source folder to copy new/changed files
     for root, dirs, files in os.walk(source_folder):
         for file in files:
-            new_name_file = to_snake_case(file)
-
             if file == ".DS_Store":
                 continue
 

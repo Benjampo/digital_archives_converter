@@ -47,7 +47,6 @@ def apply_bag(destination_folder):
                         print(
                             f"[bold yellow]Bag at {item_path} is invalid. Updating manifest...[/bold yellow]"
                         )
-                        # Update the info for the update
 
                         update_bag_info(item_path, files)
                     else:
