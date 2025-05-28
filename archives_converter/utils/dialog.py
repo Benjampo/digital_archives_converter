@@ -59,6 +59,42 @@ def select_folder():
     return folder
 
 
+def select_format_type():
+    convert_type_options = [
+        inquirer.List(
+            "convert_type",
+            message="Select convert type:",
+            choices=["AIP", "DIP"],
+            default="AIP",
+        )
+    ]
+    reset_terminal()
+    convert_type = inquirer.prompt(convert_type_options)["convert_type"]
+    reset_terminal()
+    conversion_options = [
+        inquirer.Checkbox(
+            "media_types",
+            message="Select media types to convert:",
+            choices=[
+                ("Audio files", "audio"),
+                ("Video files", "video"),
+                ("Image files", "image"),
+                ("Text files", "text"),
+                ("DVD (VIDEO_TS)", "dvd"),
+            ],
+            default=["audio", "video", "image", "text"],
+        )
+    ]
+    reset_terminal()
+    selected_media_types = inquirer.prompt(conversion_options)["media_types"]
+    reset_terminal()
+    source_folder = select_folder()
+    if not source_folder:
+        print("[bold red]No folder selected. Please try again.[/bold red]")
+    print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
+    return source_folder, convert_type, selected_media_types
+
+
 def dialog():
     welcome_message = """
     [bold cyan]
@@ -113,14 +149,15 @@ def dialog():
                     "action",
                     message="What do you want to do today?",
                     choices=[
-                        "Clone and convert directory",
+                        "Clone, update, convert and bag",
+                        "Clone/update and convert directory",
                         "apply Bagit format",
                         "Check Bag integrity",
                         "Clone directory",
                         "Rename directory",
                         "Exit",
                     ],
-                    default="Clone and convert directory",
+                    default="Clone, update, convert and bag",
                 ),
             )
 
@@ -133,43 +170,16 @@ def dialog():
                 break
 
             if action == "Clone and convert directory":
-                convert_type_options = [
-                    inquirer.List(
-                        "convert_type",
-                        message="Select convert type:",
-                        choices=["AIP", "DIP"],
-                        default="AIP",
-                    )
-                ]
-                reset_terminal()
-                convert_type = inquirer.prompt(convert_type_options)["convert_type"]
-                reset_terminal()
-                conversion_options = [
-                    inquirer.Checkbox(
-                        "media_types",
-                        message="Select media types to convert:",
-                        choices=[
-                            ("Audio files", "audio"),
-                            ("Video files", "video"),
-                            ("Image files", "image"),
-                            ("Text files", "text"),
-                            ("DVD (VIDEO_TS)", "dvd"),
-                        ],
-                        default=["audio", "video", "image", "text"],
-                    )
-                ]
-                reset_terminal()
-                selected_media_types = inquirer.prompt(conversion_options)[
-                    "media_types"
-                ]
-                reset_terminal()
-                source_folder = select_folder()
-                if not source_folder:
-                    print("[bold red]No folder selected. Please try again.[/bold red]")
-                    continue
-                print(f"Selected source folder: [cyan]{source_folder}[/cyan]")
+                source_folder, convert_type, selected_media_types = select_format_type()
                 convert_folder(source_folder, convert_type, selected_media_types)
                 continue
+            elif action == "Clone, update, convert and bag":
+                source_folder, convert_type, selected_media_types = select_format_type()
+                check_bag_integrity(source_folder)
+                convert_folder(source_folder, convert_type, selected_media_types)
+                apply_bag(source_folder)
+                continue
+
             elif action == "Clone directory":
                 conversion_options = [
                     inquirer.Checkbox(
