@@ -7,6 +7,12 @@ from rich.progress import (
     TimeRemainingColumn,
     SpinnerColumn,
 )
+from config.ignore import (
+    image_extensions,
+    video_extensions,
+    audio_extensions,
+    text_extensions,
+)
 
 
 def count_files_and_folders(folder, selected_media_types):
@@ -22,67 +28,43 @@ def count_files_and_folders(folder, selected_media_types):
 
 def should_copy_file(file, selected_media_types):
     lower_file = file.lower()
-    if "dvd" in selected_media_types and lower_file.endswith((".vob", ".ifo", ".bup")):
-        return True
-    if "audio" in selected_media_types and lower_file.endswith(
-        (
-            ".mp3",
-            ".aac",
-            ".m4a",
-            ".m4p",
-            ".flac",
-            ".ogg",
-            ".aif",
-            ".aiff",
-            ".wav",
-            ".wma",
-            ".alac",
-        )
-    ):
-        return True
-    if "video" in selected_media_types and lower_file.endswith(
-        (
-            ".mp4",
-            ".avi",
-            ".mov",
-            ".mkv",
-            ".wmv",
-            ".flv",
-            ".webm",
-            ".mpeg",
-            ".mpg",
-            ".m4v",
-            ".3gp",
-            ".3g2",
-        )
-    ):
-        return True
-    if "image" in selected_media_types and lower_file.endswith(
-        (
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".gif",
-            ".tiff",
-            ".tif",
-            ".bmp",
-            ".webp",
-            ".psd",
-            ".svg",
-            ".heic",
-            ".raw",
-            ".cr2",
-            ".nef",
-            ".orf",
-            ".sr2",
-        )
-    ):
-        return True
-    if "text" in selected_media_types and lower_file.endswith(
-        (".txt", ".pdf", ".doc", ".docx", ".rtf", ".odt", ".tex", ".wpd")
-    ):
-        return True
-    return False
+    # All known extensions
+    known_exts = set(
+        [
+            ext.lower()
+            for ext in audio_extensions
+            + video_extensions
+            + image_extensions
+            + text_extensions
+        ]
+        + [".vob", ".ifo", ".bup"]
+    )
+
+    # If file matches a known extension, only copy if its type is selected
+    if lower_file.endswith(tuple(known_exts)):
+        if "dvd" in selected_media_types and lower_file.endswith(
+            (".vob", ".ifo", ".bup")
+        ):
+            return True
+        if "audio" in selected_media_types and any(
+            lower_file.endswith(ext.lower()) for ext in audio_extensions
+        ):
+            return True
+        if "video" in selected_media_types and any(
+            lower_file.endswith(ext.lower()) for ext in video_extensions
+        ):
+            return True
+        if "image" in selected_media_types and any(
+            lower_file.endswith(ext.lower()) for ext in image_extensions
+        ):
+            return True
+        if "text" in selected_media_types and any(
+            lower_file.endswith(ext.lower()) for ext in text_extensions
+        ):
+            return True
+        return False  # Known extension but not selected
+    # If file does not match any known extension, always copy
+    return True
 
 
 def copy_folder_with_progress(source, destination, selected_media_types):

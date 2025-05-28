@@ -149,7 +149,6 @@ def dialog():
                     "action",
                     message="What do you want to do today?",
                     choices=[
-                        "Clone, update, convert and bag",
                         "Clone/update and convert directory",
                         "apply Bagit format",
                         "Check Bag integrity",
@@ -169,17 +168,10 @@ def dialog():
                 print(thank_you_message)
                 break
 
-            if action == "Clone and convert directory":
+            if action == "Clone/update and convert directory":
                 source_folder, convert_type, selected_media_types = select_format_type()
                 convert_folder(source_folder, convert_type, selected_media_types)
                 continue
-            elif action == "Clone, update, convert and bag":
-                source_folder, convert_type, selected_media_types = select_format_type()
-                check_bag_integrity(source_folder)
-                convert_folder(source_folder, convert_type, selected_media_types)
-                apply_bag(source_folder)
-                continue
-
             elif action == "Clone directory":
                 conversion_options = [
                     inquirer.Checkbox(

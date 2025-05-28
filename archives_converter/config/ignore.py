@@ -29,6 +29,19 @@ image_extensions = [
     ".webp",
     ".WEBP",
 ]
-video_extensions = [".mp4", ".avi", ".mov", ".flv", ".mkv"]
+video_extensions = [
+    ".mp4",
+    ".avi",
+    ".mov",
+    ".mkv",
+    ".wmv",
+    ".flv",
+    ".webm",
+    ".mpeg",
+    ".mpg",
+    ".m4v",
+    ".3gp",
+    ".3g2",
+]
 audio_extensions = [".wav", ".mp3", ".aac", ".m4a", ".flac", ".ogg", ".aif", ".aiff"]
 text_extensions = [".txt", ".doc", ".docx", ".rtf", ".odt", ".pdf"]
