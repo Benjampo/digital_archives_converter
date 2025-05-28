@@ -20,7 +20,8 @@ def convert_pdfa(files, root):
             return conversion_performed
 
         input_path = os.path.join(root, file)
-        output_path = os.path.splitext(input_path)[0] + "_pdfa.pdf"
+        extension = os.path.splitext(input_path)[1].lower().lstrip(".")
+        output_path = os.path.splitext(input_path)[0] + f"_{extension}.pdf"
 
         if file.lower().endswith(".pdf"):
             conversion_performed = (

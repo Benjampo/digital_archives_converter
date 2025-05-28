@@ -1,4 +1,4 @@
-from config.ignore import (
+from config.formats import (
     image_extensions,
     video_extensions,
     audio_extensions,
@@ -15,19 +15,19 @@ def predict_name_based_on_extension(input_name, convert_type):
     extension = "." + input_name.split(".")[-1]
     # replace extension based on the conversion
     if extension in image_extensions and convert_type == "AIP":
-        input_name = input_name.replace(extension, "_tiff.tiff")
+        input_name = input_name.replace(extension, f"_{extension}.tiff")
     elif extension in image_extensions and convert_type == "DIP":
-        input_name = input_name.replace(extension, "_jpg.jpg")
+        input_name = input_name.replace(extension, f"_{extension}.jpg")
     elif extension in video_extensions and convert_type == "AIP":
-        input_name = input_name.replace(extension, "_ffv1.mkv")
+        input_name = input_name.replace(extension, f"_{extension}.mkv")
     elif extension in video_extensions and convert_type == "DIP":
-        input_name = input_name.replace(extension, "_mp4.mp4")
+        input_name = input_name.replace(extension, f"_{extension}.mp4")
     elif extension in audio_extensions and convert_type == "AIP":
-        input_name = input_name.replace(extension, "_wav.wav")
+        input_name = input_name.replace(extension, f"_{extension}.wav")
     elif extension in audio_extensions and convert_type == "DIP":
-        input_name = input_name.replace(extension, "_mp3.mp3")
+        input_name = input_name.replace(extension, f"_{extension}.mp3")
     elif extension in text_extensions:
-        input_name = input_name.replace(extension, "_pdfa.pdf")
+        input_name = input_name.replace(extension, f"_{extension}.pdf")
     elif extension in text_files_to_ignore:
         return input_name
 

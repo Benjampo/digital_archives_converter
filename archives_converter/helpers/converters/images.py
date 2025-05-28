@@ -35,7 +35,8 @@ def convert_image(files, root, output_format, quality=None):
     for img_file in image_files:
         input_path = os.path.join(root, img_file)
         output_ext = ".tiff" if output_format == "tiff" else ".jpg"
-        output_path = os.path.splitext(input_path)[0] + f"_{output_format}{output_ext}"
+        extension = os.path.splitext(input_path)[1].lower().lstrip(".")
+        output_path = os.path.splitext(input_path)[0] + f"_{extension}{output_ext}"
         # metadata_file = os.path.join(os.path.dirname(input_path), "metadata.json")
 
         if not os.path.exists(input_path):
@@ -62,7 +63,8 @@ def convert_image(files, root, output_format, quality=None):
                     os.remove(output_path)
                 continue  # Skip the rest of the processing for this file
         elif output_format == "jpg" and img_file.lower().endswith((".jpeg", ".jpg")):
-            output_path = os.path.splitext(input_path)[0] + "_jpg.jpg"
+            extension = os.path.splitext(input_path)[1].lower().lstrip(".")
+            output_path = os.path.splitext(input_path)[0] + f"_{extension}.jpg"
             shutil.copy2(input_path, output_path)
             os.remove(input_path)
             conversion_performed = True

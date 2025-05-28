@@ -5,7 +5,7 @@ import shutil
 from helpers.to_snake_case import to_snake_case
 from helpers.folders import should_copy_file
 from helpers.name_identifier import predict_name_based_on_extension
-from config.ignore import text_files_to_ignore
+from config.formats import text_files_to_ignore
 
 
 def clone_folder(

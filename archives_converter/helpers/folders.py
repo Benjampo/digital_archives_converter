@@ -7,7 +7,7 @@ from rich.progress import (
     TimeRemainingColumn,
     SpinnerColumn,
 )
-from config.ignore import (
+from config.formats import (
     image_extensions,
     video_extensions,
     audio_extensions,

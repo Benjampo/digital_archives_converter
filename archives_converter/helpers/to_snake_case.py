@@ -1,7 +1,7 @@
 import unicodedata
 import re
 import os
-from config.ignore import text_files_to_ignore
+from config.formats import text_files_to_ignore
 
 
 def to_snake_case(file_path):

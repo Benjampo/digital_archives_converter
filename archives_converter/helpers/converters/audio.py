@@ -25,7 +25,8 @@ def convert_audio(files, root, target_format, codec, sample_rate):
     for audio_file in audio_files:
         input_path = os.path.join(root, audio_file)
         base_output_path = os.path.splitext(input_path)[0]
-        output_path = f"{base_output_path}_{target_format}.{target_format}"
+        extension = os.path.splitext(input_path)[1].lower().lstrip(".")
+        output_path = f"{base_output_path}_{extension}.{target_format}"
 
         # If output file already exists, add numeric suffix
         if os.path.exists(output_path):

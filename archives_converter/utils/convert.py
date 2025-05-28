@@ -14,7 +14,8 @@ from helpers.delete_empty_folders import delete_empty_folders
 from helpers.folders import count_files_and_folders
 from utils.clone import clone_folder
 from utils.rename import rename_files_and_folders
-from config.ignore import text_files_to_ignore
+from config.formats import text_files_to_ignore
+from config.formats import converted_suffixes
 import time
 
 console = Console()
@@ -55,18 +56,9 @@ def process_file(
     if not os.path.exists(file_path):
         return
 
-    file_name_without_ext = os.path.splitext(file)[0]
-    converted_suffixes = [
-        "_pdfa",
-        "_tiff",
-        "_wav",
-        "_ffv1",
-        "_mp4",
-        "_mp3",
-        "_jpg",
-    ]
+    file_without_extension = os.path.splitext(file)[0]
     if any(
-        file_name_without_ext.lower().endswith(suffix) for suffix in converted_suffixes
+        file_without_extension.lower().endswith(suffix) for suffix in converted_suffixes
     ):
         return
 

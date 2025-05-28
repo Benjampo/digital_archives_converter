@@ -131,8 +131,9 @@ def convert_dvd_to_format(video_ts_paths, output_folder, output_format):
             conversion_tasks = []
             for vob_file in vob_files:
                 input_file = os.path.join(video_ts_folder, vob_file)
-                output_file = os.path.join(
-                    subfolder, f"{os.path.splitext(vob_file)[0]}.{output_format}"
+                extension = os.path.splitext(input_file)[1].lower().lstrip(".")
+                output_file = (
+                    os.path.splitext(input_file)[0] + f"_{extension}.{output_format}"
                 )
                 conversion_tasks.append((input_file, output_file, output_format))
 

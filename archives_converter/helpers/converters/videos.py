@@ -29,7 +29,11 @@ def convert_video(files, root, output_suffix, video_codec):
 
         for video_file in video_files:
             if video_file == file:
-                output_path = os.path.splitext(input_path)[0] + output_suffix
+                extension = os.path.splitext(input_path)[1].lower().lstrip(".")
+                output_path = (
+                    os.path.splitext(input_path)[0]
+                    + f"_{extension}{output_suffix[-4:]}"
+                )
                 try:
                     # Store original file metadata
                     original_stat = os.stat(input_path)

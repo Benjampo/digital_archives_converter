@@ -45,3 +45,8 @@ video_extensions = [
 ]
 audio_extensions = [".wav", ".mp3", ".aac", ".m4a", ".flac", ".ogg", ".aif", ".aiff"]
 text_extensions = [".txt", ".doc", ".docx", ".rtf", ".odt", ".pdf"]
+
+converted_suffixes = [
+    f"_{ext.split('.')[-1]}"
+    for ext in image_extensions + video_extensions + audio_extensions + text_extensions
+]
