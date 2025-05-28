@@ -57,9 +57,13 @@ def process_file(
         return
 
     file_without_extension = os.path.splitext(file)[0]
+    print(f"[bold blue]Processing file:[/bold blue] {file_path}")
     if any(
         file_without_extension.lower().endswith(suffix) for suffix in converted_suffixes
     ):
+        print(
+            f"[bold yellow]Skipping already converted file:[/bold yellow] [link=file://{parent_folder}]{file_path}[/link]"
+        )
         return
 
     progress.update(task, current_file=f"Converting {file}")
