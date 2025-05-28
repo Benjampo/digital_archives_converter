@@ -31,5 +31,5 @@ def predict_name_based_on_extension(input_name, convert_type):
         input_name = input_name.replace(extension, f"_{name_extension}.pdf")
     elif extension in text_files_to_ignore:
         return input_name
-    print(input_name)
+
     return input_name
